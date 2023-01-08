@@ -49,6 +49,7 @@ const MyRoutes = () => {
   return (
     <BrowserRouter
       // basename={process.env.NODE_ENV === "production" ? "ciscryp" : "ciscryp"}
+      
     >
       <ScrollToTop />
       <SiteHeader />
