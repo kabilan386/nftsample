@@ -17,8 +17,10 @@ import BlogSingle from "containers/BlogPage/BlogSingle";
 import SiteHeader from "containers/SiteHeader";
 import NftDetailPage from "containers/NftDetailPage/NftDetailPage";
 import PageCollection from "containers/PageCollection";
+import Collection from "containers/Collection";
 import PageSearch from "containers/PageSearch";
 import PageUploadItem from "containers/PageUploadItem";
+import CreateCollection from "containers/CreateCollection";
 import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
 import PageHome3 from "containers/PageHome/PageHome3";
@@ -31,6 +33,7 @@ export const pages: Page[] = [
   { path: "/home-header-2", component: PageHome },
   { path: "/nft-detailt", component: NftDetailPage },
   { path: "/page-collection", component: PageCollection },
+  { path: "/collection", component: Collection },
   { path: "/page-search", component: PageSearch },
   { path: "/page-author", component: AuthorPage },
   { path: "/account", component: AccountPage },
@@ -43,6 +46,7 @@ export const pages: Page[] = [
   { path: "/signup", component: PageSignUp },
   { path: "/login", component: PageLogin },
   { path: "/subscription", component: PageSubcription },
+  { path: "/create-collection", component: CreateCollection },
 ];
 
 const MyRoutes = () => {

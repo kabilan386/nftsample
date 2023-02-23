@@ -7,6 +7,7 @@ export interface LocationStates {
   "/home3"?: {};
   "/nft-detailt"?: {};
   "/page-collection"?: {};
+  "/collection"?: {};
   "/page-search"?: {};
   "/page-author"?: {};
   "/page-upload-item"?: {};
@@ -22,6 +23,7 @@ export interface LocationStates {
   "/forgot-pass"?: {};
   "/page404"?: {};
   "/subscription"?: {};
+  "/create-collection"?: {};
 }
 
 export type PathName = keyof LocationStates;

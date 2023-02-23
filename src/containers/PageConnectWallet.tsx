@@ -38,30 +38,41 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
   //Does the User have an Ethereum wallet/account?
   async function connectWallet(): Promise<void> {
     //to get around type checking
+    
     (window as any).ethereum
       .request({
         method: "eth_requestAccounts",
       })
       .then((accounts: string[]) => {
-        WalletLogin({ address: accounts[0] }).then((res: any) => {
-          if (res.status) {
-            sessionStorage.setItem('address', accounts[0]);
-            sessionStorage.setItem('Connected', "true");
-            setAccount(accounts[0]);
-            navigate("/")
-          }
-        })
+        console.log("networkVersion",(window as any).ethereum.networkVersion);
+        if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
+          WalletLogin({ address: accounts[0] }).then((res: any) => {
+            if (res.status) {
+              sessionStorage.setItem('address', accounts[0]);
+              sessionStorage.setItem('Connected', "true");
+              setAccount(accounts[0]);
+              navigate("/")
+            }
+          })
+        }
+        
       })
       .catch((error: any) => {
         showToastMessage(error.message);
       });
   }
   ethereum.on('accountsChanged', (accounts: any) => {
-    console.log("accountsChanged", accounts);
-
+    connectWallet();
   });
 
   ethereum.on('chainChanged', (chainId: any) => {
+    if(process.env.REACT_APP_CHAIN_ID === chainId){
+      sessionStorage.removeItem('address');
+      sessionStorage.removeItem('Connected');
+    }else{
+      sessionStorage.removeItem('address');
+      sessionStorage.removeItem('Connected');
+    }
     console.log("chainChanged", chainId);
     window.location.reload();
   });
