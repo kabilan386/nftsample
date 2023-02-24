@@ -24,6 +24,7 @@ export interface LocationStates {
   "/page404"?: {};
   "/subscription"?: {};
   "/create-collection"?: {};
+  "/collection/:id"?: {};
 }
 
 export type PathName = keyof LocationStates;

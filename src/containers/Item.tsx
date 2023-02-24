@@ -19,7 +19,7 @@ import LikeButton from "../components/LikeButton";
 import Avatar from "shared/Avatar/Avatar";
 import Prices from "../components/Prices";
 import { ClockIcon } from "@heroicons/react/outline";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export interface PageCollectionProps {
   className?: string;
@@ -52,10 +52,14 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   const [collectionData, setCollectionData] = useState<any[]>([])
 
+  const id = useParams();
+
+  console.log(id, "idCollection")
+
 
 
   const getCollection = () => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list?page=1&&type=my`).then(res => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?collection_id=${id?.id}`).then(res => {
       setCollectionData(res?.data?.data?.docs)
       console.log(res, "res")
     })
@@ -76,7 +80,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       data-nc-id="PageCollection"
     >
       <Helmet>
-        <title>Collection || Ciscryp NFT Template</title>
+        <title>Item || Ciscryp NFT Template</title>
       </Helmet>
 
 
@@ -84,12 +88,19 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       <div className="container py-10 lg:pb-28 lg:pt-10 space-y-20 lg:space-y-28">
         <main>
           <div className="flex justify-end">
-            <ButtonPrimary
-              href="/create-collection"
+           
+          
+          <ButtonPrimary
               sizeClass="px-4 py-2 sm:px-5"
+              
+              
             >
-              Create Collection
+                <Link to={"/page-upload-item"} state={{ id: id?.id }}>
+              Create Item
+              </Link>
             </ButtonPrimary>
+         
+
           </div>
 
           {/* LOOP ITEMS */}
@@ -99,26 +110,22 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           { collectionData?.map((e: any ) => {
           return (
                <>
- 
-<div
 
+<div
       
       data-nc-id="CardNFT"
     >
-      
-       
       <div className="relative flex-shrink-0 ">
-       <Link to={`/collection/${e?._id}`}>
-        
-       <div>
-        
+              <Link to={`/collection/${e?._id}`}>
+              <div>
           <NcImage
-            
-            src={`${process.env.REACT_APP_BACKEND_URL}${e?.image}`}
+            containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
+            src={`${process.env.REACT_APP_BACKEND_URL}/images/item/media/${e?.image}`}
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
-          />
+          />  
         </div>
-       </Link>
+        </Link>
+
         {Math.random() > 0.5 ? (
           <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
         ) : (
@@ -155,8 +162,6 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         </div>
       </div>
 
-    
-        
      
     </div>
 

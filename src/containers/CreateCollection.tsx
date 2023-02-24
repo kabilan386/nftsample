@@ -14,6 +14,10 @@ import MySwitch from "components/MySwitch";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcImage from "shared/NcImage/NcImage";
 import { CollectionMediaUpload } from "../API/Collection_mediaupload";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 import {
   Formik,
   FormikHelpers,
@@ -129,6 +133,11 @@ const formik = useFormik({
         .then((res) => {
             console.log(res, "789")
             setLogoFile(res?.data?.filepath)
+            if (res.data.status == true) {
+                     toast.success(res.data.message)
+                     setTimeout(() => (window.location.href = "/collection"), 1500);
+                     
+             }
         })
         // createPost(postData)
         //.then(res => {

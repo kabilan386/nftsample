@@ -52,6 +52,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
               toast.success(`${res?.message}`)
               sessionStorage.setItem('address', accounts[0]);
               sessionStorage.setItem("token", res?.token)
+              sessionStorage.setItem("user_id", res.user_id)
               sessionStorage.setItem('Connected', "true");
               setAccount(accounts[0]);
               navigate("/")
