@@ -44,11 +44,11 @@ const PropertyTypeSelect: FC<PropertyTypeSelectProps> = ({
               open ? "nc-hero-field-focused" : ""
             }`}
             // PHẦN LOCATION-INPUT KHÔNG BẮT ĐƯỢC EVEN-CLICK KHI CLICK VÀO NÚT NÀY, NÊN CẦN CHẠY HACK NÀY
-            onClick={() => {
-              if (window.innerWidth >= 1024) {
-                document.querySelector("html")?.click();
-              }
-            }}
+            // onClick={() => {
+            //   if (window.innerWidth >= 1024) {
+            //     document.querySelector("html")?.click();
+            //   }
+            // }}
           >
             <div className="text-neutral-300 dark:text-neutral-400">
               <svg
