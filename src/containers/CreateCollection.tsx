@@ -1,5 +1,5 @@
 import Label from "components/Label/Label";
-import React, { FC, useState } from "react";
+import React, { CSSProperties, FC, useState } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
@@ -16,6 +16,7 @@ import NcImage from "shared/NcImage/NcImage";
 import { CollectionMediaUpload } from "../API/Collection_mediaupload";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 import {
@@ -26,6 +27,7 @@ import {
   Field,
   FieldProps,
 } from 'formik';
+import { CircleLoader } from "react-spinners";
 
 interface MyFormValues {
   collectionName: string;
@@ -62,7 +64,18 @@ const plans = [
   },
 ];
 
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "white",
+};
+
+
+
+
+
 const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
+  const supportedFormates = ['image/jpeg', 'image/jpg', 'image/png'];
   const [selected, setSelected] = useState(plans[1]);
   const [logoFile, setLogoFile] = useState("");
   const [bannerFile, setBannerFile] = useState("");
@@ -73,6 +86,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [loading, setLoading] = useState(false);
   const [royalties, setRoyalties] = useState("");
   const initialValues: MyFormValues = { collectionName: '' };
+  let [color, setColor] = useState("#ffffff");
 
   const CollectionLogoUpload = (e: any) => {
     const formData = new FormData();
@@ -81,108 +95,128 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     // CollectionMediaUpload()
   }
 
-//   const schema = yup.object().shape({
-//     logo: yup.mixed().required("Logo image is required").test("fileSize", "The file is too large", (value) => {
-//         return !value || value[0].size <= 2000000
-//     }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
-//         return !value || checkIfFilesAreCorrectType(value[0]);
-//     }),
-//     banner: yup.mixed().required("Banner file is required").test("fileSize", "The file is too large", (value) => {
-//         return !value || value[0].size <= 2000000
-//     }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
-//         return !value || checkIfFilesAreCorrectType(value[0]);
-//     }),
-//     title: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
-//     description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
-//     royalties: yup.string().required("Royalties is required").test(
-//         'Is positive?',
-//         'Royalties must be greater than 0!',
-//         (value) => value >= 0
-//     ).test(
-//         'Less then 10?',
-//         'Royalties must be equal or less then 10',
-//         (value) => value < 11
-//     ),
+  const checkIfFilesAreCorrectType = (files: any) => {
+    let valid = true;
+    if (files) {
+      if (!supportedFormates.includes(files.type)) {
+        valid = false;
+      }
+    }
+    return valid;
+  }
 
-// });
-const formik = useFormik({
+
+
+
+  const schema = yup.object().shape({
+    // logo: yup.mixed().required("Logo image is required").test("fileSize", "The file is too large", (value) => {
+    //   return (!value || value[0].size <= 2000000)
+    // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
+    //   return !value || checkIfFilesAreCorrectType(value[0]);
+    // }),
+    // banner: yup.mixed().required("Banner file is required").test("fileSize", "The file is too large", (value) => {
+    //   return !value || value[0].size <= 2000000
+    // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
+    //   return !value || checkIfFilesAreCorrectType(value[0]);
+    // }),
+    title: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
+    royalties: yup.string().required("Royalties is required").test(
+      'Is positive?',
+      'Royalties must be greater than 0!',
+      (value) => Number(value) >= 0
+    ).test(
+      'Less then 10?',
+      'Royalties must be equal or less then 10',
+      (value) => Number(value) < 11
+    ),
+
+  });
+  const formik = useFormik({
     initialValues: {
-        logo: null,
-        banner: null,
-        title: "",
-        description: "",
-        royalties: 0
+      logo: null,
+      banner: null,
+      title: "",
+      description: "",
+      royalties: 0
     },
     enableReinitialize: true,
+    validationSchema: schema,
     onSubmit: values => {
-        setSpinner(true);
-        let postData = {
-            name: values.title,
-            description: values.description,
-            banner: bannerFile,
-            image: logoFile,
-            royalties: values.royalties
-        }
+      setSpinner(true);
+      setLoading(true)
+      let postData = {
+        name: values.title,
+        description: values.description,
+        banner: bannerFile,
+        image: logoFile,
+        royalties: values.royalties
+      }
 
-        const config = {
-          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-        };
+      const config = {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+      };
 
-        axios
+      axios
         .post(`${process.env.REACT_APP_BACKEND_URL}/collection/add`, postData, config)
         .then((res) => {
-            console.log(res, "789")
-            setLogoFile(res?.data?.filepath)
-            if (res.data.status == true) {
-                     toast.success(res.data.message)
-                     setTimeout(() => (window.location.href = "/collection"), 1500);
-                     
-             }
+          console.log(res, "789")
+          setLogoFile(res?.data?.filepath)
+          if (res.data.status == true) {
+            setLoading(false)
+            toast.success(res.data.message)
+            setTimeout(() => (window.location.href = "/collection"), 1500);
+
+          } else {
+            toast.error(res.data.message)
+            setTimeout(() => {
+              setLoading(false)
+            }, 1000);
+          }
         })
-        // createPost(postData)
-        //.then(res => {
-        //     console.log(res.data);
-        //     if (res.data.status == true) {
-        //         toast.success(res.data.message)
-        //     }
-        // });
+      // createPost(postData)
+      //.then(res => {
+      //     console.log(res.data);
+      //     if (res.data.status == true) {
+      //         toast.success(res.data.message)
+      //     }
+      // });
     },
-});
-const ImagehandleChange = (e: any) => {
+  });
+  const ImagehandleChange = (e: any) => {
     setLogoFile(e.target.files[0])
     console.log(process.env.REACT_APP_BACKEND_URL, "backendUrl")
     console.log(e.target.files[0], "789")
     setInputImage(URL.createObjectURL(e.target.files[0]));
     console.log(logoFile, "789")
-     setTimeout(() => {
+    setTimeout(() => {
 
-        var formData = new FormData();
-        formData.append('file', e.target.files[0]);
-        axios
-            .post(`${process.env.REACT_APP_BACKEND_URL}/media/collectionlogo`, formData, {
-            })
-            .then((res) => {
-                console.log(res, "789")
-                setLogoFile(res?.data?.filepath)
-            })
+      var formData = new FormData();
+      formData.append('file', e.target.files[0]);
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}/media/collectionlogo`, formData, {
+        })
+        .then((res) => {
+          console.log(res, "789")
+          setLogoFile(res?.data?.filepath)
+        })
     }, 1000)
 
-}
-const bannerhandleChange = (e: any) => {
+  }
+  const bannerhandleChange = (e: any) => {
     setBannerImage(URL.createObjectURL(e.target.files[0]));
     setTimeout(() => {
-        var formData = new FormData();
-        formData.append('file', e.target.files[0]);
+      var formData = new FormData();
+      formData.append('file', e.target.files[0]);
 
-        axios
-            .post(`${process.env.REACT_APP_BACKEND_URL}media/collectionbanner`, formData, {
-            })
-            .then((res) => {
-                console.log(res, "789")
-                setBannerFile(res?.data?.filepath)
-            })
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}media/collectionbanner`, formData, {
+        })
+        .then((res) => {
+          console.log(res, "789")
+          setBannerFile(res?.data?.filepath)
+        })
     }, 1000)
-}
+  }
 
   return (
     <div
@@ -221,44 +255,58 @@ const bannerhandleChange = (e: any) => {
                   <span className="text-neutral-500 dark:text-neutral-400 text-sm">
                     This image will also be used for navigation. 350 x 350 recommended.
                   </span>
-                  <div className="mt-5" style={{ width: "35%" }}>
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
-                      <div className="space-y-1 text-center">
-                        <svg
-                          className="mx-auto h-12 w-12 text-neutral-400"
-                          stroke="currentColor"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                        </svg>
-                        <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                          >
-                            <span>Upload a file</span>
-                            <input
-                              id="file-upload"
-                              name="file-upload"
-                              type="file"
-                              className="sr-only"
-                              onChange={e => ImagehandleChange(e) }
-                            />
-                          </label>
+                  {inputImage ?
+                    <>
+                      <div className="nft-card card shadow-sm">
+                        <div className="card-body">
+                          <div className="img-wrap">
+                            <img src={inputImage} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                          </div>
                         </div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                          PNG, JPG, JPEG
-                        </p>
                       </div>
-                    </div>
-                  </div>
+
+
+                    </> :
+                    <>
+                      <div className="mt-5" style={{ width: "100%" }}>
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
+                          <div className="space-y-1 text-center">
+                            <svg
+                              className="mx-auto h-12 w-12 text-neutral-400"
+                              stroke="currentColor"
+                              fill="none"
+                              viewBox="0 0 48 48"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  onChange={e => ImagehandleChange(e)}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                              PNG, JPG, JPEG
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>}
                 </div>
                 <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
@@ -267,53 +315,67 @@ const bannerhandleChange = (e: any) => {
                   <span className="text-neutral-500 dark:text-neutral-400 text-sm">
                     This image will appear at the top of your collection page. Avoid including too much text in this banner image, as the dimensions change on different devices. 1400 x 350 recommended.
                   </span>
-                  <div className="mt-5 ">
-                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
-                      <div className="space-y-1 text-center">
-                        <svg
-                          className="mx-auto h-12 w-12 text-neutral-400"
-                          stroke="currentColor"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                        </svg>
-                        <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
-                          >
-                            <span>Upload a file</span>
-                            <input
-                              id="file-upload"
-                              name="file-upload"
-                              type="file"
-                              className="sr-only"
-                              onChange={e => bannerhandleChange(e) }
-                            />
-                          </label>
+                  {bannerImage ?
+                    <>
+                      <div className="nft-card card shadow-sm">
+                        <div className="card-body">
+                          <div className="img-wrap">
+                            <img src={bannerImage} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                          </div>
                         </div>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                          PNG, JPG, JPEG
-                        </p>
                       </div>
-                    </div>
-                  </div>
+
+                    </> :
+                    <>
+                      <div className="mt-5 ">
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
+                          <div className="space-y-1 text-center">
+                            <svg
+                              className="mx-auto h-12 w-12 text-neutral-400"
+                              stroke="currentColor"
+                              fill="none"
+                              viewBox="0 0 48 48"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  onChange={e => bannerhandleChange(e)}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                              PNG, JPG, JPEG
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>}
                 </div>
                 {/* ---- */}
                 <FormItem label="Collection name">
-                 <Input   className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
+                  <Input className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
                     placeholder="Collection Name"
                     id="title" type="text" name='title' onChange={formik.handleChange} ></Input>
+                    <div className="form-error">{formik.errors.title}</div>
                 </FormItem>
 
-             
+
 
 
                 {/* ---- */}
@@ -328,11 +390,22 @@ const bannerhandleChange = (e: any) => {
                   {/* ---- */}
                   <FormItem label="Royalties">
                     <Input placeholder="10%" />
+                    <div className="form-error">{formik.errors.royalties}</div>
                   </FormItem>
                 </div>
                 {/* ---- */}
                 <div className="justify-center">
-                  <ButtonPrimary className=" w-1/2">Upload Collection</ButtonPrimary>
+                  {loading ? <ButtonPrimary className=" w-1/2">
+                    <ClipLoader
+                      color={color}
+                      loading={loading}
+                      cssOverride={override}
+                      size={35}
+                      aria-label="Loading Spinner"
+                      data-testid="loader"
+                    />
+                  </ButtonPrimary> : <ButtonPrimary className=" w-1/2" type="submit">Upload Collection</ButtonPrimary>}
+
                 </div>
               </div>
             </Form>

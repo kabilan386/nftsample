@@ -77,43 +77,43 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   console.log(collectionData, "collection")
 
-  const marketClaim = async (id) => {
-    if (!active) {
-        toast.warning("Please connect wallet")
-        setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
-    } else {
-        try {
-            setSpinner(true);
-            await new Web3(window.web3.currentProvider);
-            window.web3 = new Web3(window.web3.currentProvider);
-            setLoading(false)
-            const accountResponse = await window.web3.eth.getAccounts();
-            const instance = accountResponse[0];
-            const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI), data?.data?.result?.contract_address);
-            try {
-                const approve = await claimContract.methods.mint(1).send({ from: instance })
-                if (approve) {
-                    createPost3({
-                        "item_id": id,
-                        "token_id": approve?.events?.Transfer?.returnValues?.tokenId
-                    })
-                    setSpinner(false)
-                }
-            } catch (error) {
-                if (error.code === 4001) {
-                    toast.warning(error.message)
-                }
-                setSpinner(false)
-            }
-        } catch (err) {
+//   const marketClaim = async (id) => {
+//     if (!active) {
+//         toast.warning("Please connect wallet")
+//         setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
+//     } else {
+//         try {
+//             setSpinner(true);
+//             await new Web3(window.web3.currentProvider);
+//             window.web3 = new Web3(window.web3.currentProvider);
+//             setLoading(false)
+//             const accountResponse = await window.web3.eth.getAccounts();
+//             const instance = accountResponse[0];
+//             const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI), data?.data?.result?.contract_address);
+//             try {
+//                 const approve = await claimContract.methods.mint(1).send({ from: instance })
+//                 if (approve) {
+//                     createPost3({
+//                         "item_id": id,
+//                         "token_id": approve?.events?.Transfer?.returnValues?.tokenId
+//                     })
+//                     setSpinner(false)
+//                 }
+//             } catch (error) {
+//                 if (error.code === 4001) {
+//                     toast.warning(error.message)
+//                 }
+//                 setSpinner(false)
+//             }
+//         } catch (err) {
 
-            if (err.code === 4001) {
-                toast.error("User Reject The Request");
-                setSpinner(false)
-            }
-        }
-    }
-}
+//             if (err.code === 4001) {
+//                 toast.error("User Reject The Request");
+//                 setSpinner(false)
+//             }
+//         }
+//     }
+// }
 
 
 

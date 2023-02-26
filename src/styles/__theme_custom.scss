@@ -203,3 +203,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     opacity: 1;
   }
 }
+
+.form-error {
+  color: red;
+  text-align: left;
+  padding-top: 4px;
+  padding-left: 7px;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
