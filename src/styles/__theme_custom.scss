@@ -212,3 +212,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-size: 14px;
   letter-spacing: 1px;
 }
+
+.dropdown-toggle::after {
+  display: none !important; 
+  border-radius: none;
+}
+
+.dropdown-toggle {
+  border: none;
+}

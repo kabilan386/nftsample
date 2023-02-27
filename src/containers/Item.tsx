@@ -22,10 +22,19 @@ import { ClockIcon } from "@heroicons/react/outline";
 import { Link, useParams } from "react-router-dom";
 import Dropdown from 'react-bootstrap/Dropdown';
 import Web3 from "web3"
+import { ToastContainer, toast } from 'react-toastify';
+
+
 
 export interface PageCollectionProps {
   className?: string;
 }
+
+declare let window: any;
+
+
+
+
 
 const renderAvatars = () => {
   return (
@@ -53,8 +62,12 @@ const renderAvatars = () => {
 const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   const [collectionData, setCollectionData] = useState<any[]>([])
-
+  const [specData, setSpecData] = useState<any[]>([])
+  const [spinner, setSpinner] = useState(false)
+  const [loading, setLoading] = useState(false)
+ 
   const id = useParams();
+  
 
   console.log(id, "idCollection")
 
@@ -67,53 +80,87 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
     })
   }
 
+  const getSpecificCollection = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/detail?collection_id=${id?.id}`).then(res => {
+      setSpecData(res?.data?.result?.contract_address)
+      console.log(res, "res")
+    })
+
+  }
+
+  console.log(specData, "specData")
+
   useEffect(() => {
 
      getCollection()
+     getSpecificCollection()
 
   }, [])
 
 
+ 
 
   console.log(collectionData, "collection")
+ 
 
-//   const marketClaim = async (id) => {
-//     if (!active) {
-//         toast.warning("Please connect wallet")
-//         setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
-//     } else {
-//         try {
-//             setSpinner(true);
-//             await new Web3(window.web3.currentProvider);
-//             window.web3 = new Web3(window.web3.currentProvider);
-//             setLoading(false)
-//             const accountResponse = await window.web3.eth.getAccounts();
-//             const instance = accountResponse[0];
-//             const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI), data?.data?.result?.contract_address);
-//             try {
-//                 const approve = await claimContract.methods.mint(1).send({ from: instance })
-//                 if (approve) {
-//                     createPost3({
-//                         "item_id": id,
-//                         "token_id": approve?.events?.Transfer?.returnValues?.tokenId
-//                     })
-//                     setSpinner(false)
-//                 }
-//             } catch (error) {
-//                 if (error.code === 4001) {
-//                     toast.warning(error.message)
-//                 }
-//                 setSpinner(false)
-//             }
-//         } catch (err) {
+  const marketClaim = async (id: any) => {
+   
+        try {
+           
+            await new Web3(window.web3.currentProvider);
+            window.web3 = new Web3(window.web3.currentProvider);
+           console.log("HI There")
+            const accountResponse = await window.web3.eth.getAccounts();
+           
+            const instance = accountResponse[0];
+            console.log(instance, "instance")
+            
+            const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI || '{}'), specData);
 
-//             if (err.code === 4001) {
-//                 toast.error("User Reject The Request");
-//                 setSpinner(false)
-//             }
-//         }
-//     }
-// }
+           console.log(claimContract, "claim")
+           console.log(id, "mintID")
+            try {
+                const approve = await claimContract.methods.mint(1).send({ from: instance })
+                if (approve) {
+
+                  const postData = {
+                    "item_id": id,
+                    "token_id": approve?.events?.Transfer?.returnValues?.tokenId
+                  }
+                  const config = {
+                    headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+                  };
+
+                  axios
+                  .post(`${process.env.REACT_APP_BACKEND_URL}/item/publish`, postData, config)
+                  .then((res) => {
+                    console.log(res, "789")
+          
+                    if (res?.data?.status === true) {
+                      toast.success(res?.data?.message)
+                      setSpinner(false)
+                    } else if (res?.data?.status === false) {
+                      toast.error(res?.data?.message)
+                      setSpinner(false)
+                  }
+                  })
+                    setSpinner(false)
+                }
+            } catch (error: any) {
+                if (error?.code === 4001) {
+                    toast.warning(error.message)
+                }
+                setSpinner(false)
+            }
+        } catch (err: any) {
+
+            if (err?.code === 4001) {
+                toast.error("User Reject The Request");
+                setSpinner(false)
+            }
+        }
+    
+}
 
 
 
@@ -163,7 +210,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               <div>
               <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
-            src={`${process.env.REACT_APP_BACKEND_URL}/images/item/media/${e?.image}`}
+            src={`${process.env.REACT_APP_BACKEND_URL}/${e?.media}`}
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
           />  
         </div>
@@ -180,7 +227,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           <div className="absolute top-3 right-3 !w-9 !h-9">
                                         <Dropdown>
                                             <Dropdown.Toggle className="rounded-pill shadow-sm" >
-                                                <i className="bi bi-three-dots-vertical" style={{ color: "blue" }}  />
+                                            <i className="fas fa-ellipsis-v"></i>
                                             </Dropdown.Toggle>
 
                                             <Dropdown.Menu align="end" >
@@ -193,8 +240,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                                                             DELETE
 
                                                         </Link>
-                                                        <Link key="index6" className="dropdown-item" to="/mint" >
-                                                            MINT
+                                                        <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                                                            Mint
                                                         </Link>
                                                         <Link key="index6" className="dropdown-item" to={`/item`}  >
                                                             ITEM DETAILS

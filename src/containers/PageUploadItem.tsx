@@ -61,8 +61,12 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const collectionId = useParams();
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#ffffff");
+  const [choose, setChoose] = useState("")
+  const [plan, setPlan] = useState(collectionData[0])
 
   console.log(collectionId, "collectionId")
+
+  console.log(collectionData, "Data")
 
 
   const id = location.state || {};
@@ -363,7 +367,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       };
       let postData = {
         "thumb": thumbFile,
-        "collection_id": id?.id,
+        "collection_id": plan?._id,
         "description": values.description,
         "enableAuction": values.enableAuction,
         "enableBID": values.enableBID,
@@ -387,7 +391,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           if (res.data.status == true) {
             toast.success(res.data.message)
             setLoading(true);
-            //setTimeout(() => (window.location.href = "/collection"), 1500);
+            setTimeout(() => (window.location.href = `/collection/${plan?._id}`), 1500);
 
           } else {
             toast.error(res.data.message)
@@ -408,22 +412,6 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   console.log("formik.values", formik.values);
   const selectCata = useRef();
 
-  // useEffect(() => {
-  //     if (responseInfo?.data?.status === true) {
-  //         toast.success(responseInfo?.data?.message)
-  //         setSpinner(false);
-  //         setTimeout(() => (window.location.href = `/collection/${id?.ids}`), 2000);
-
-  //     } else if (responseInfo?.data?.status === false) {
-  //         if (responseInfo?.data?.message === "Request failed") {
-  //             toast.error(JSON.stringify(responseInfo?.data?.errors))
-  //         } else {
-  //             toast.error(responseInfo?.data?.message)
-  //         }
-  //         setSpinner(false);
-  //     }
-  //     $(selectCata.current).niceSelect();
-  // }, [responseInfo]);
 
   const getCollection = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list?page=1&&type=my`).then(res => {
@@ -437,6 +425,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     getCollection()
 
   }, [])
+
+  console.log(plan, "plan")
 
 
 
@@ -567,15 +557,18 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
               <div className="text-neutral-500 dark:text-neutral-400 text-sm">
                 Choose an exiting collection or create a new one
               </div>
-              <RadioGroup>
+              <RadioGroup value={plan} onChange={setPlan}>
                 <RadioGroup.Label className="sr-only">
                   Server size
                 </RadioGroup.Label>
                 <div className="flex overflow-auto py-2 space-x-4 customScrollBar">
                   {collectionData.map((plan, index) => (
+                    
                     <RadioGroup.Option
+                    
                       key={index}
                       value={plan}
+                               
                       className={({ active, checked }) =>
                         `${active
                           ? "ring-2 ring-offset-2 ring-offset-sky-300 ring-white ring-opacity-60"
@@ -604,6 +597,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                     />
                                   </RadioGroup.Description>
                                   {checked && (
+                                    
                                     <div className="flex-shrink-0 text-white">
                                       <CheckIcon className="w-6 h-6" />
                                     </div>
