@@ -206,7 +206,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       data-nc-id="CardNFT"
     >
       <div className="relative flex-shrink-0 ">
-              <Link to={`/collection/${e?._id}`}>
+              
               <div>
               <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
@@ -216,7 +216,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         </div>
 
       
-                                  </Link>
+                              
 
         
         {Math.random() > 0.5 ? (
