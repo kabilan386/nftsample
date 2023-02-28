@@ -593,7 +593,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                   >
                                     <NcImage
                                       containerClassName="aspect-w-1 aspect-h-1 rounded-full overflow-hidden"
-                                      src={plan?.image}
+                                      src={`${process.env.REACT_APP_BACKEND_URL}${plan?.image}`}
                                     />
                                   </RadioGroup.Description>
                                   {checked && (

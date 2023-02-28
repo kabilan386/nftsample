@@ -74,7 +74,11 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
 
   const getCollection = () => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?collection_id=${id?.id}`).then(res => {
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?collection_id=${id?.id}`, config).then(res => {
       setCollectionData(res?.data?.data?.docs)
       console.log(res, "res")
     })
@@ -262,7 +266,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         <div className="flex justify-between">
           {renderAvatars()}
           <span className="text-neutral-700 dark:text-neutral-400 text-xs">
-            {Math.floor(Math.random() * 90) + 10} in stock
+            01 in stock
           </span>
         </div>
         <h2 className={`text-lg font-medium`}>
@@ -273,12 +277,12 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
         <div className="flex justify-between items-end ">
           <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
-          <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+          {/* <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
             <ClockIcon className="w-4 h-4" />
             <span className="ml-1 mt-0.5">
               {Math.floor(Math.random() * 20) + 1} hours left
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -293,10 +297,10 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           
 
           {/* PAGINATION */}
-          <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+          {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
             <Pagination />
             <ButtonPrimary loading>Show me more</ButtonPrimary>
-          </div>
+          </div> */}
         </main>
 
         {/* === SECTION 5 === */}

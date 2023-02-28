@@ -105,10 +105,11 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       
       data-nc-id="CardNFT"
     >
+       <Link to={`/collection/${e?._id}`}>
       
        
       <div className="relative flex-shrink-0 ">
-       <Link to={`/collection/${e?._id}`}>
+      
         
        <div>
         
@@ -118,7 +119,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
           />
         </div>
-       </Link>
+      
         {Math.random() > 0.5 ? (
           <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
         ) : (
@@ -135,7 +136,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         <div className="flex justify-between">
           {renderAvatars()}
           <span className="text-neutral-700 dark:text-neutral-400 text-xs">
-            {Math.floor(Math.random() * 90) + 10} in stock
+            02 in stock
           </span>
         </div>
         <h2 className={`text-lg font-medium`}>
@@ -144,7 +145,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
         <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
 
-        <div className="flex justify-between items-end ">
+        {/* <div className="flex justify-between items-end ">
           <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
             <ClockIcon className="w-4 h-4" />
@@ -152,13 +153,14 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               {Math.floor(Math.random() * 20) + 1} hours left
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
 
     
         
-     
+    </Link>
     </div>
+    
 
                </>
           )
@@ -168,10 +170,10 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           
 
           {/* PAGINATION */}
-          <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+          {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
             <Pagination />
             <ButtonPrimary loading>Show me more</ButtonPrimary>
-          </div>
+          </div> */}
         </main>
 
         {/* === SECTION 5 === */}
