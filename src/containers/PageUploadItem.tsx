@@ -624,34 +624,34 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             {/* ---- */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
               {/* ---- */}
-              <FormItem label="Royalties">
+              {/* <FormItem label="Royalties">
                 <Input placeholder="20%" />
-              </FormItem>
+              </FormItem> */}
               {/* ---- */}
-              <FormItem label="Size">
+              {/* <FormItem label="Size">
                 <Input placeholder="165Mb" />
-              </FormItem>
+              </FormItem> */}
               {/* ---- */}
-              <FormItem label="Propertie">
+              {/* <FormItem label="Propertie">
                 <Input placeholder="Propertie" />
-              </FormItem>
+              </FormItem> */}
             </div>
 
             {/* ---- */}
-            <MySwitch enabled />
+            {/* <MySwitch enabled /> */}
 
             {/* ---- */}
-            <MySwitch
+            {/* <MySwitch
               label="Instant sale price"
               desc="Enter the price for which the item will be instantly sold"
-            />
+            /> */}
 
             {/* ---- */}
-            <MySwitch
+            {/* <MySwitch
               enabled
               label="Unlock once purchased"
               desc="Content will be unlocked after successful transaction"
-            />
+            /> */}
 
             {/* ---- */}
             <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
@@ -665,7 +665,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   data-testid="loader"
                 />
               </ButtonPrimary> : <ButtonPrimary className="flex-1" onClick={formik.handleSubmit} type="submit">Upload item</ButtonPrimary>}
-              <ButtonSecondary className="flex-1">Preview item</ButtonSecondary>
+              {/* <ButtonSecondary className="flex-1">Preview item</ButtonSecondary> */}
             </div>
           </div>
         </div>

@@ -63,7 +63,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   useEffect(() => {
 
-     getCollection()
+    getCollection()
 
   }, [])
 
@@ -96,56 +96,56 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10  mt-8 lg:mt-10">
 
-          { collectionData?.map((e: any ) => {
-          return (
-               <>
- 
-<div
+            {collectionData?.map((e: any) => {
+              return (
+                <>
 
-      
-      data-nc-id="CardNFT"
-    >
-       <Link to={`/collection/${e?._id}`}>
-      
-       
-      <div className="relative flex-shrink-0 ">
-      
-        
-       <div>
-        
-          <NcImage
-            
-            src={`${process.env.REACT_APP_BACKEND_URL}${e?.image}`}
-            className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
-          />
-        </div>
-      
-        {Math.random() > 0.5 ? (
-          <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
-        ) : (
-          <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
-        )}
-        {/* <LikeButton
+                  <div
+
+
+                    data-nc-id="CardNFT"
+                  >
+                    <Link to={`/collection/${e?._id}`}>
+
+
+                      <div className="relative flex-shrink-0 ">
+
+
+                        <div>
+
+                          <NcImage
+
+                            src={`${process.env.REACT_APP_BACKEND_URL}${e?.image}`} style={{ width: "300px", height: "250px" }}
+                            className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
+                          />
+                        </div>
+
+                        {/* {Math.random() > 0.5 ? (
+                          <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                        ) : ( */}
+                          <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                        {/* )} */}
+                        {/* <LikeButton
           liked={isLiked}
           className="absolute top-3 right-3 z-10 !h-9"
         /> */}
-        <div className="absolute top-3 inset-x-3 flex"></div>
-      </div>
+                        <div className="absolute top-3 inset-x-3 flex"></div>
+                      </div>
 
-      <div className="p-4 py-5 space-y-3">
-        <div className="flex justify-between">
-          {renderAvatars()}
-          <span className="text-neutral-700 dark:text-neutral-400 text-xs">
+                      <div className="p-4 py-5 space-y-3">
+                        <div className="flex justify-between">
+                          {/* {renderAvatars()} */}
+                          {/* <span className="text-neutral-700 dark:text-neutral-400 text-xs">
             02 in stock
-          </span>
-        </div>
-        <h2 className={`text-lg font-medium`}>
-          { e?.name } #{Math.floor(Math.random() * 1000) + 1000}
-        </h2>
+          </span> */}
+                        </div>
+                        <h2 className={`text-lg font-medium`}>
+                          {e?.name} #{Math.floor(Math.random() * 1000) + 1000}
+                        </h2>
 
-        <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
+                        <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
 
-        {/* <div className="flex justify-between items-end ">
+                        {/* <div className="flex justify-between items-end ">
           <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
             <ClockIcon className="w-4 h-4" />
@@ -154,20 +154,20 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             </span>
           </div>
         </div> */}
-      </div>
+                      </div>
 
-    
-        
-    </Link>
-    </div>
-    
 
-               </>
-          )
-         }) }
+
+                    </Link>
+                  </div>
+
+
+                </>
+              )
+            })}
           </div>
-         
-          
+
+
 
           {/* PAGINATION */}
           {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
