@@ -78,7 +78,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
     };
 
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?collection_id=${id?.id}`, config).then(res => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=mycollection&collection_id=${id?.id}`, config).then(res => {
       setCollectionData(res?.data?.data?.docs)
       console.log(res, "res")
     })
