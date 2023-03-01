@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const WalletLogin = payload => {
-  const URL = `http://localhost:6006/user/wallet-login`;
+  const URL = `${process.env.REACT_APP_BACKEND_URL}/user/wallet-login`;
   return axios(URL, {
     method: 'POST',
     headers: {
