@@ -6,6 +6,7 @@ export const WalletLogin = payload => {
     method: 'POST',
     headers: {
       'content-type': 'application/json', // whatever you want
+      "Access-Control-Allow-Origin": "*"
     },
     data: payload,
   })
