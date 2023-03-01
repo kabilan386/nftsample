@@ -140,7 +140,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           </span> */}
                         </div>
                         <h2 className={`text-lg font-medium`}>
-                          {e?.name} #{Math.floor(Math.random() * 1000) + 1000}
+                          {e?.name} 
+                          {/* #{Math.floor(Math.random() * 1000) + 1000} */}
                         </h2>
 
                         <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
