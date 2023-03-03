@@ -192,10 +192,35 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               <Link to={"/page-upload-item"} state={{ id: id?.id }}>
                 Create Item
               </Link>
+
+
             </ButtonPrimary>
+
+            <div>
+                        <Dropdown>
+                          <Dropdown.Toggle className="rounded-pill shadow-sm" >
+                            <i className="fas fa-ellipsis-v iconColor"></i>
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu align="end" >
+
+                            <>
+                              <Link key="index2" className="dropdown-item" to={`/editcollection/${id?.id}`}>
+                                EDIT
+                              </Link>
+                            
+                            </>
+
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+
+           
 
 
           </div>
+
+        
 
           {/* LOOP ITEMS */}
 
@@ -237,7 +262,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                           <Dropdown.Menu align="end" >
 
                             <>
-                              <Link key="index2" className="dropdown-item" to="/editItem">
+                              <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
                                 EDIT
                               </Link>
                               <Link key="index3" className="dropdown-item" to="/delete">

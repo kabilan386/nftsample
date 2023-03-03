@@ -25,6 +25,8 @@ export interface LocationStates {
   "/subscription"?: {};
   "/create-collection"?: {};
   "/collection/:id"?: {};
+  "/edititem/:id"?: {};
+  "/editcollection/:id"?: {};
 }
 
 export type PathName = keyof LocationStates;

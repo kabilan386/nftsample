@@ -21,7 +21,9 @@ import Collection from "containers/Collection";
 import PageSearch from "containers/PageSearch";
 import PageUploadItem from "containers/PageUploadItem";
 import CreateCollection from "containers/CreateCollection";
+import EditCollection from "containers/EditCollection";
 import ItemList from "containers/Item"
+import EditItem from "containers/EditItem"
 import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
 import PageHome3 from "containers/PageHome/PageHome3";
@@ -49,6 +51,8 @@ export const pages: Page[] = [
   { path: "/subscription", component: PageSubcription },
   { path: "/create-collection", component: CreateCollection },
   { path: "/collection/:id", component: ItemList },
+  { path: "/edititem/:id", component: EditItem },
+  { path: "/editcollection/:id", component: EditCollection }
 ];
 
 const MyRoutes = () => {
