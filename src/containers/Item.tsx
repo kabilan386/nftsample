@@ -269,9 +269,11 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                                 DELETE
 
                               </Link>
-                              <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                             { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
                                 Mint
-                              </Link>
+                              </Link> :  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                                Mint
+                              </Link> }
                               <Link key="index6" className="dropdown-item" to={`/item`}  >
                                 ITEM DETAILS
                               </Link>

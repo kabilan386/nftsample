@@ -175,7 +175,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       };
 
       axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/collection/update`, postData, config)
+        .put(`${process.env.REACT_APP_BACKEND_URL}/collection/update`, postData, config)
         .then((res) => {
           console.log(res, "789")
           setLogoFile(res?.data?.filepath)
@@ -238,6 +238,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
 
   console.log(logoFile, "logoFile")
+
+  console.log(inputImage, "inputImage")
   return (
     <div
       className={`nc-PageUploadItem ${className}`}
@@ -268,30 +270,77 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           >
             <Form onSubmit={formik.handleSubmit}>
               <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
-                <div>
+              <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
                     Logo image*
                   </h3>
                   <span className="text-neutral-500 dark:text-neutral-400 text-sm">
                     This image will also be used for navigation. 350 x 350 recommended.
                   </span>
-                  {inputImage ?
-                    <>
+                 
+                  { inputImage === "" ?   <>
                       <div className="nft-card card shadow-sm">
                         <div className="card-body">
                           <div className="img-wrap">
-                            <img src={logoFile} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                            <img src={`${process.env.REACT_APP_BACKEND_URL}/${logoFile}`} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
                           </div>
                         </div>
                       </div>
 
 
-                    </> :
+                    </> :   <>
+                      <div className="nft-card card shadow-sm">
+                        <div className="card-body">
+                          <div className="img-wrap">
+                            <img src={inputImage} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </>  }
                     <>
-                      
-                    </>}
+                      <div className="mt-5" style={{ width: "100%" }}>
+                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
+                          <div className="space-y-1 text-center">
+                            <svg
+                              className="mx-auto h-12 w-12 text-neutral-400"
+                              stroke="currentColor"
+                              fill="none"
+                              viewBox="0 0 48 48"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="flex text-sm text-neutral-6000 dark:text-neutral-300">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer  rounded-md font-medium text-primary-6000 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  onChange={e => ImagehandleChange(e)}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                              PNG, JPG, JPEG
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                 </div>
-                <div>
+                {/* <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
                     Banner image*
                   </h3>
@@ -349,7 +398,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                         </div>
                       </div>
                     </>}
-                </div>
+                </div> */}
                 {/* ---- */}
                 <FormItem label="Collection name">
                   <Input className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
