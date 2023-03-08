@@ -8,6 +8,8 @@ import AvatarImage from "../../../src/man.png"
 export default function AvatarDropdown() {
   const disConnect = ()=>{
     sessionStorage.removeItem("address");
+    sessionStorage.removeItem("token")
+    sessionStorage.removeItem("user_id")
     sessionStorage.removeItem("Connected");
 }
   return (
