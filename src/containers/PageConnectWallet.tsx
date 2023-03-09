@@ -48,7 +48,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
         if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
           WalletLogin({ address: accounts[0] }).then((res: any) => {
             if (res.status === true) {
-              console.log(res)
+              console.log(res, "resData")
               // toast.success(`${res?.message}`)
               sessionStorage.setItem('address', accounts[0]);
               sessionStorage.setItem("token", res?.token)
