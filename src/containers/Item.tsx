@@ -142,6 +142,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
               if (res?.data?.status === true) {
                 toast.success(res?.data?.message)
+                window.location.reload(false)
                 setSpinner(false)
               } else if (res?.data?.status === false) {
                 toast.error(res?.data?.message)
@@ -271,7 +272,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                               </Link>
                              { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
                                 Mint
-                              </Link> :  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                              </Link> :  <Link key="index6" to={`/createListItem/${e?._id}`} className="dropdown-item"  >
                                 LIST
                               </Link> }
                               <Link key="index6" className="dropdown-item" to={`/item`}  >
