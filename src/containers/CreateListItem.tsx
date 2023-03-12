@@ -11,268 +11,269 @@ import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import { Helmet } from "react-helmet";
 import FormItem from "components/FormItem";
+import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
+import Form from 'react-bootstrap/Form';
 import { RadioGroup } from "@headlessui/react";
+
 
 declare let window: any;
 
 interface data {
-    collection_id: String
+  collection_id: String
 
 }
 
 export interface PageUploadItemProps {
-    className?: string;
+  className?: string;
 }
 
 const override: CSSProperties = {
-    display: "block",
-    margin: "0 auto",
-    borderColor: "white",
+  display: "block",
+  margin: "0 auto",
+  borderColor: "white",
 };
 
 
 
 const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
-    const supportedFormates = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png', 'image/svg', 'image/webm', 'audio/wav', 'audio/ogg', 'audio/mpeg', 'audio/mp3', 'video/mp4'];
-    const supportedFormatesthump = ['image/jpeg', 'image/jpg', 'image/png'];
-    const [inputImage, setInputImage] = useState('');
-    const [inputImageformedia, setInputImageformedia] = useState('');
-    const [inputvideoformedia, setInputvideoformedia] = useState('');
-    const [inputmusicformedia, setInputmusicformedia] = useState('');
-    const [categorystate, setCategorystate] = useState([]);
-    const [formValues, setFormValues] = useState([])
-    const [formValuesforLevel, setFormValuesforLevel] = useState([])
-    const [formValuesforStats, setFormValuesforStats] = useState([])
-    const [propertiesValues, setpropertiesValues] = useState([])
-    const [levelValues, setlevelValues] = useState([])
-    const [getItemValue, setGetItem] = useState()
-    const [statValues, setstatValues] = useState([])
-    const [selectedOption, setSelectedOption] = useState(null)
-    const [enableAuctionSate, setenableAuctionSate] = useState("false")
-    const [enableBidSate, setenableBidSate] = useState("false")
-    const [collection_id, setCollection_id] = useState("")
-    const location = useLocation();
-    const [link, setLink] = useState("");
-    const [value, onChange] = useState([new Date(), new Date()]);
-    const [valueBid, onChangeBid] = useState([new Date(), new Date()]);
-    const idValue = useParams();
-    const [itemToken, setItemToken] = useState('');
-    const [itemName, setItemName] = useState('');
-    const [itemLink, setItemLink] = useState('');
-    const [itemImage, setItemImage] = useState('');
-    const [itemDescription, setItemDescription] = useState('');
-    let [color, setColor] = useState("#ffffff");
+  const [categorystate, setCategorystate] = useState([]);
+  const [formValues, setFormValues] = useState([])
+  const [formValuesforLevel, setFormValuesforLevel] = useState([])
+  const [formValuesforStats, setFormValuesforStats] = useState([])
+  const [propertiesValues, setpropertiesValues] = useState([])
+  const [levelValues, setlevelValues] = useState([])
+  const [getItemValue, setGetItem] = useState()
+  const [statValues, setstatValues] = useState([])
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [enableAuctionSate, setenableAuctionSate] = useState("false")
+  const [enableBidSate, setenableBidSate] = useState("false")
+  const [collection_id, setCollection_id] = useState("")
+  const location = useLocation();
+  const [link, setLink] = useState("");
+  const [value, onChange] = useState([new Date(), new Date()]);
+  const [valueBid, onChangeBid] = useState([new Date(), new Date()]);
+  const idValue = useParams();
+  const [itemToken, setItemToken] = useState('');
+  const [itemName, setItemName] = useState('');
+  const [itemLink, setItemLink] = useState('');
+  const [itemImage, setItemImage] = useState('');
+  const [address, setAddress] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [aution, setAuction] = useState<boolean>();
+  let [color, setColor] = useState("#ffffff");
 
-    const [thumb, setThumb] = useState("")
-    const [media, setMedia] = useState("")
-    const [thumbFile, setThumbFile] = useState("")
-    const [mediaFile, setMediaFile] = useState("")
-    const [spinner, setSpinner] = useState(false)
-    const [loading, setLoading] = useState();
+  const [thumb, setThumb] = useState("")
+  const [media, setMedia] = useState("")
+  const [thumbFile, setThumbFile] = useState("")
+  const [mediaFile, setMediaFile] = useState("")
+  const [spinner, setSpinner] = useState(false)
+  const [loading, setLoading] = useState();
 
-    const id = location.state || {};
-    console.log(idValue, "ids")
+  const id = location.state || {};
+  console.log(idValue, "ids")
 
 
 
 
-    const schema = yup.object().shape({
-        // thumbfile: yup.mixed().test("fileSize", "The file is too large", (value) => {
-        //     return !value || value[0].size <= 100000000
-        // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
-        //     return !value || checkIfFilesAreCorrectTypeThumb(value[0]);
-        // }),
-        // mediafile: yup.mixed().test("fileSize", "The file is too large", (value) => {
-        //     return !value || value[0].size <= 100000000
-        // }).test('FILE_Type', "Image file supported JPEG , PNG ,PNG, GIF, SVG, MP4, WEBM, MP3, WAV & OGG", (value) => {
-        //     return !value || checkIfFilesAreCorrectType(value[0]);
-        // }),
-        name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
-        description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
-        link: yup.string().min(3, "Item Link must be atleast 3 letter"),
-        price: yup.string().required("Item price is required").test(
-            'Is positive?',
-            'Price must be greater than 0!',
-            (value) => parseFloat(value) > 0
-        ),
-        // enableAuction: yup.boolean(),
-        // enableBID: yup.string().test("console","console",(value)=> {
-        //     console.log("bid value",value)
-        // }),
-        // category: yup.string().required("Category is required")
-    });
+  const schema = yup.object().shape({
+    // thumbfile: yup.mixed().test("fileSize", "The file is too large", (value) => {
+    //     return !value || value[0].size <= 100000000
+    // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
+    //     return !value || checkIfFilesAreCorrectTypeThumb(value[0]);
+    // }),
+    // mediafile: yup.mixed().test("fileSize", "The file is too large", (value) => {
+    //     return !value || value[0].size <= 100000000
+    // }).test('FILE_Type', "Image file supported JPEG , PNG ,PNG, GIF, SVG, MP4, WEBM, MP3, WAV & OGG", (value) => {
+    //     return !value || checkIfFilesAreCorrectType(value[0]);
+    // }),
+    name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
+    description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
+    link: yup.string().min(3, "Item Link must be atleast 3 letter"),
+    price: yup.string().required("Item price is required").test(
+      'Is positive?',
+      'Price must be greater than 0!',
+      (value) => parseFloat(value) > 0
+    ),
+    enableAuction: yup.boolean(),
+    // enableBID: yup.string().test("console","console",(value)=> {
+    //     console.log("bid value",value)
+    // }),
+    // category: yup.string().required("Category is required")
+  });
 
-    console.log(getItemValue, "getItem")
-
-
-    const formik = useFormik({
-        initialValues: {
-            collection_id: collection_id,
-            thumbfile: null,
-            mediafile: itemImage,
-            name: itemName,
-            description: itemDescription,
-            link: itemLink,
-            saletype: null,
-            price: 0,
-            elem: null
-        },
-        enableReinitialize: true,
-        validationSchema: schema,
-
-        onSubmit: values => {
-
-            const config = {
-                headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-            };
+  console.log(getItemValue, "getItem")
 
 
-            let postData = {
-                "collection_id": values?.collection_id,
-                "description": values?.description,
-                "item_id": idValue?.id,
-                "enableAuction": values.saletype === "offer" ? "true" : "false",
-                "enableBID": values.saletype === "bid" ? "true" : "false",
-                "external_link": values.link,
-                "dateRange": value,
-                "dateRangeBid": valueBid,
-                "media": values?.mediafile,
-                "name": values.name,
-                "price": values.price,
-                "attributes": formValues,
-                "levels": formValuesforStats,
-                "stats": formValuesforStats,
-            }
-            // if (thumbFile !== null) {
-            //     postData.thumb = thumbFile
-            // }
-            // if (mediaFile !== null) {
-            //     postData.media = mediaFile
-            // }
-            console.log("sadfasdf");
-            // if (formik.enableAuction === "true") {
-            //     postData.dateRange = value;
-            // }
+  const formik = useFormik({
+    initialValues: {
+      collection_id: collection_id,
+      thumbfile: null,
+      mediafile: itemImage,
+      name: itemName,
+      description: itemDescription,
+      link: itemLink,
+      saletype: null,
+      price: 0,
+      elem: null
+    },
+    enableReinitialize: true,
+    validationSchema: schema,
 
-            axios
-                .put(`${process.env.REACT_APP_BACKEND_URL}/item/update`, postData, config)
-                .then((res) => {
-                    console.log(res, "789")
+    onSubmit: values => {
 
-                    if (res?.data?.status === true) {
-                        toast.success(res?.data?.message)
-                        listNFT(itemToken, idValue?.id)
-                        // setTimeout(() => (window.location.href = `/author/${userId}`), 1500);
-                    } else if (res?.data?.status === false) {
-                        toast.error(res?.data?.message)
-                    }
+      const config = {
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+      };
 
 
-                })
-            console.log(postData, "789")
+      let postData = {
+        "collection_id": values?.collection_id,
+        "description": values?.description,
+        "item_id": idValue?.id,
+        "enableAuction": values.saletype === "offer" ? "true" : "false",
+        "enableBID": values.saletype === "bid" ? "true" : "false",
+        "external_link": values.link,
+        "dateRange": value,
+        "dateRangeBid": valueBid,
+        "media": values?.mediafile,
+        "name": values.name,
+        "price": values.price,
+        "attributes": formValues,
+        "levels": formValuesforStats,
+        "stats": formValuesforStats,
+      }
+      // if (thumbFile !== null) {
+      //     postData.thumb = thumbFile
+      // }
+      // if (mediaFile !== null) {
+      //     postData.media = mediaFile
+      // }
+      console.log("sadfasdf");
+      // if (formik.enableAuction === "true") {
+      //     postData.dateRange = value;
+      // }
 
+      axios
+        .put(`${process.env.REACT_APP_BACKEND_URL}/item/update`, postData, config)
+        .then((res) => {
+          console.log(res, "789")
 
-        },
-    });
+          if (res?.data?.status === true) {
+            toast.success(res?.data?.message)
+            listNFT(itemToken, idValue?.id)
+            // setTimeout(() => (window.location.href = `/author/${userId}`), 1500);
+          } else if (res?.data?.status === false) {
+            toast.error(res?.data?.message)
+          }
 
-    useEffect(() => {
-
-        getItem()
-
-    }, [])
-
-    const getItem = () => {
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${idValue?.id}`).then(res => {
-
-            console.log(res, "ids")
-            setGetItem(res?.data?.data?.docs?.[0])
-            setCollection_id(res?.data?.data?.docs?.[0]?.collection_id?._id)
-
-            setItemName(res?.data?.data?.docs?.[0]?.name)
-            setItemDescription(res?.data?.data?.docs?.[0]?.description)
-            setItemLink(res?.data?.data?.docs?.[0]?.external_link)
-            setItemImage(res?.data?.data?.docs?.[0]?.media)
-            setItemToken(res?.data?.data?.docs?.[0]?.token_id)
 
         })
-    }
+      console.log(postData, "789")
+
+
+    },
+  });
+
+  useEffect(() => {
+
+    getItem()
+
+  }, [])
+
+  const getItem = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${idValue?.id}`).then(res => {
+
+      console.log(res, "ids")
+      setGetItem(res?.data?.data?.docs?.[0])
+      setCollection_id(res?.data?.data?.docs?.[0]?.collection_id?._id)
+      setAddress(res?.data?.data?.docs?.[0]?.collection_id?.contract_address)
+
+      setItemName(res?.data?.data?.docs?.[0]?.name)
+      setItemDescription(res?.data?.data?.docs?.[0]?.description)
+      setItemLink(res?.data?.data?.docs?.[0]?.external_link)
+      setItemImage(res?.data?.data?.docs?.[0]?.media)
+      setItemToken(res?.data?.data?.docs?.[0]?.token_id)
+      setAuction(res?.data?.data?.docs?.[0]?.enableAuction)
+
+    })
+  }
 
 
 
 
-    const listNFT = async (id: any, item_id: any) => {
+  const listNFT = async (id: any, item_id: any) => {
 
-        try {
-            setSpinner(true);
-            await new Web3(window.web3.currentProvider)
-            window.web3 = new Web3(window.web3.currentProvider)
-            const accountResponse = await window.web3.eth.getAccounts();
-            const instance = accountResponse[0];
-            const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI || '{}'), "data?.data?.data?.docs[0]?.collection_id?.contract_address");
+    try {
+      setSpinner(true);
+      await new Web3(window.web3.currentProvider)
+      window.web3 = new Web3(window.web3.currentProvider)
+      const accountResponse = await window.web3.eth.getAccounts();
+      const instance = accountResponse[0];
+      const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI || '{}'), address);
 
-            try {
-                const approve = await claimContract.methods.putForSale(id).send({ from: instance })
-                console.log("approve", approve)
-                if (approve) {
+      try {
+        const approve = await claimContract.methods.putForSale(id).send({ from: instance })
+        console.log("approve", approve)
+        if (approve) {
 
-                    const newpost = {
-                        "item_id": item_id,
-                    }
+          const newpost = {
+            "item_id": item_id,
+          }
 
-                    const config = {
-                        headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-                    };
+          const config = {
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+          };
 
-                    axios
-                        .post(`${process.env.REACT_APP_BACKEND_URL}/item/listnft`, newpost, config)
-                        .then((res) => {
-                            console.log(res, "789")
-                            setMedia(res?.data?.filepath)
-                            setMediaFile(res?.data?.file)
-                        })
+          axios
+            .post(`${process.env.REACT_APP_BACKEND_URL}/item/listnft`, newpost, config)
+            .then((res) => {
+              console.log(res, "789")
+              // setMedia(res?.data?.filepath)
+              // setMediaFile(res?.data?.file)
+            })
 
 
-                }
-            } catch (error: any) {
-                console.log(error);
-                if (error.code === 4001) {
-                    toast.warning(error.message)
-                }
-                setSpinner(false)
-            }
-        } catch (err: any) {
-            console.log(err);
-            if (err.code === 4001) {
-                toast.error("User Reject The Request");
-                setSpinner(false)
-            }
         }
+      } catch (error: any) {
+        console.log(error);
+        if (error.code === 4001) {
+          toast.warning(error.message)
+        }
+        setSpinner(false)
+      }
+    } catch (err: any) {
+      console.log(err);
+      if (err.code === 4001) {
+        toast.error("User Reject The Request");
+        setSpinner(false)
+      }
     }
+  }
 
 
-    return (
-        <div
-            className={`nc-PageUploadItem ${className}`}
-            data-nc-id="PageUploadItem"
-        >
-            <Helmet>
-                <title>Create Item || NFT React Template</title>
-            </Helmet>
-            <div className="container">
-                <div className="my-12 sm:lg:my-16 lg:my-24 max-w-4xl mx-auto space-y-8 sm:space-y-10">
-                    {/* HEADING */}
-                    <div className="max-w-2xl">
-                        <h2 className="text-3xl sm:text-4xl font-semibold">
-                            List Nft Item
-                        </h2>
-                        <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
-                            You can set preferred display name, create your profile URL and
-                            manage other personal settings.
-                        </span>
-                    </div>
-                    <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
-                    <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
-                        {/* <div>
+  return (
+    <div
+      className={`nc-PageUploadItem ${className}`}
+      data-nc-id="PageUploadItem"
+    >
+      <Helmet>
+        <title>Create Item || NFT React Template</title>
+      </Helmet>
+      <div className="container">
+        <div className="my-12 sm:lg:my-16 lg:my-24 max-w-4xl mx-auto space-y-8 sm:space-y-10">
+          {/* HEADING */}
+          <div className="max-w-2xl">
+            <h2 className="text-3xl sm:text-4xl font-semibold">
+              List Nft Item
+            </h2>
+            <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
+              You can set preferred display name, create your profile URL and
+              manage other personal settings.
+            </span>
+          </div>
+          <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
+          <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
+            {/* <div>
             <h3 className="text-lg sm:text-2xl font-semibold">
               Image, Video, Audio, or 3D Model
             </h3>
@@ -333,14 +334,54 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             </>}
           </div> */}
 
-                        {/* ---- */}
-                        <FormItem label="Item Price">
-                            <Input defaultValue="NFT name" id="price" type="text" name="price" onChange={formik.handleChange} value={formik.values.price} placeholder="Please enter item Price" />
-                            <div className="form-error">{formik.errors.price}</div>
-                        </FormItem>
+            {/* ---- */}
+            <FormItem label="Item Price">
+              <Input defaultValue="NFT name" id="price" type="text" name="price" onChange={formik.handleChange} value={formik.values.price} placeholder="Please enter item Price" />
+              <div className="form-error">{formik.errors.price}</div>
+            </FormItem>
 
-                        {/* ---- */}
-                        {/* <FormItem
+            <FormItem label="Sale Type">
+
+              <Form.Check
+                className="mb-4 mb-md-0"
+                type="radio"
+                label="Offer"
+                id="rememberMe"
+                name="saletype"
+                value="offer"
+                onChange={formik.handleChange}
+                // defaultChecked={formik.values.enableAuction === "true"}
+                // {data?.data?.data?.docs?.[0]?.enableAuction ? checked : null}  
+               //checked={aution ? true boolean : null}
+              />
+             
+            </FormItem>
+
+            {formik.values.saletype === "offer" ? (
+                                            <>
+                                                <div className="col-12">
+                                                    <div className='row'>
+                                                        <h5 style={{ float: "left", margin: "10px", marginLeft: '0px' }}>Start and end date</h5>
+                                                    </div>
+
+                                                    <div className='row'>
+                                                        <div className='col-12'>
+                                                          <>
+                                                          {console.log(value, "test")}
+                                                            <div>
+                                                                <DateTimeRangePicker onChange={onChange} value={value} />
+                                                            </div>
+                                                          </>
+                                                            
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </>
+                                        ) : null}
+
+            {/* ---- */}
+            {/* <FormItem
                             label="External link"
                             desc="Ciscrypt will include a link to this URL on this item's detail page, so that users can click to learn more about it. You are welcome to link to your own webpage with more details."
                         >
@@ -355,7 +396,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
 
                         {/* ---- */}
-                        {/* <FormItem
+            {/* <FormItem
                             label="Description"
                             desc={
                                 <div>
@@ -370,9 +411,9 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                             <div className="form-error">{formik.errors.description}</div>
                         </FormItem>
 
-                        <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div> */} 
+                        <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div> */}
 
-                        {/* <div>
+            {/* <div>
             <Label>Choose collection</Label>
             <div className="text-neutral-500 dark:text-neutral-400 text-sm">
               Choose an exiting collection or create a new one
@@ -441,57 +482,57 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
             </RadioGroup>
           </div> */}
 
-                        {/* ---- */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
-                            {/* ---- */}
-                            {/* <FormItem label="Royalties">
+            {/* ---- */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
+              {/* ---- */}
+              {/* <FormItem label="Royalties">
               <Input placeholder="20%" />
             </FormItem> */}
-                            {/* ---- */}
-                            {/* <FormItem label="Size">
+              {/* ---- */}
+              {/* <FormItem label="Size">
               <Input placeholder="165Mb" />
             </FormItem> */}
-                            {/* ---- */}
-                            {/* <FormItem label="Propertie">
+              {/* ---- */}
+              {/* <FormItem label="Propertie">
               <Input placeholder="Propertie" />
             </FormItem> */}
-                        </div>
+            </div>
 
-                        {/* ---- */}
-                        {/* <MySwitch enabled /> */}
+            {/* ---- */}
+            {/* <MySwitch enabled /> */}
 
-                        {/* ---- */}
-                        {/* <MySwitch
+            {/* ---- */}
+            {/* <MySwitch
             label="Instant sale price"
             desc="Enter the price for which the item will be instantly sold"
           /> */}
 
-                        {/* ---- */}
-                        {/* <MySwitch
+            {/* ---- */}
+            {/* <MySwitch
             enabled
             label="Unlock once purchased"
             desc="Content will be unlocked after successful transaction"
           /> */}
 
-                        {/* ---- */}
-                        <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
-                            {loading ? <ButtonPrimary className="flex-1">
-                                <ClipLoader
-                                    color={color}
-                                    loading={loading}
-                                    cssOverride={override}
-                                    size={35}
-                                    aria-label="Loading Spinner"
-                                    data-testid="loader"
-                                />
-                            </ButtonPrimary> : <ButtonPrimary className="flex-1" onClick={formik.handleSubmit} type="submit">Update List Item</ButtonPrimary>}
-                            {/* <ButtonSecondary className="flex-1">Preview item</ButtonSecondary> */}
-                        </div>
-                    </div>
-                </div>
+            {/* ---- */}
+            <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
+              {loading ? <ButtonPrimary className="flex-1">
+                <ClipLoader
+                  color={color}
+                  loading={loading}
+                  cssOverride={override}
+                  size={35}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                />
+              </ButtonPrimary> : <ButtonPrimary className="flex-1" onClick={formik.handleSubmit} type="submit">Update List Item</ButtonPrimary>}
+              {/* <ButtonSecondary className="flex-1">Preview item</ButtonSecondary> */}
             </div>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default CreateListItem

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "shared/Avatar/Avatar";
 import NcImage from "shared/NcImage/NcImage";
@@ -8,6 +8,7 @@ import LikeButton from "./LikeButton";
 import Prices from "./Prices";
 import { ClockIcon } from "@heroicons/react/outline";
 import ItemTypeVideoIcon from "./ItemTypeVideoIcon";
+import axios from "axios";
 
 export interface CardNFTProps {
   className?: string;
@@ -15,6 +16,10 @@ export interface CardNFTProps {
 }
 
 const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
+
+  const [marketData, setmarketData] = useState<any[]>([])
+
+
   const renderAvatars = () => {
     return (
       <div className="flex -space-x-1 ">
@@ -38,16 +43,33 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
     );
   };
 
+  const getmarketPlace = () => {
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`, config).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  useEffect(() => {
+    getmarketPlace()
+  }, [])
+
   return (
     <div
-      className={`nc-CardNFT relative flex flex-col group !border-0 [ nc-box-has-hover nc-dark-box-bg-has-hover ] ${className}`}
+      className={`grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10  mt-8 lg:mt-10"`}
       data-nc-id="CardNFT"
     >
-      <div className="relative flex-shrink-0 ">
+      { marketData?.map((e, index) => (
+        <div key={index}>
+        <div className="relative flex-shrink-0 ">
         <div>
           <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
-            src={nftsImgs[Math.floor(Math.random() * nftsImgs.length)]}
+            src={`${process.env.REACT_APP_BACKEND_URL}/${e?.media}`}
             className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
           />
         </div>
@@ -71,13 +93,13 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
           </span>
         </div>
         <h2 className={`text-lg font-medium`}>
-          CloneF #{Math.floor(Math.random() * 1000) + 1000}
+          {e?.name} #{Math.floor(Math.random() * 1000) + 1000}
         </h2>
 
         <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
 
         <div className="flex justify-between items-end ">
-          <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
+          <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" priceValue={e?.price} />
           <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
             <ClockIcon className="w-4 h-4" />
             <span className="ml-1 mt-0.5">
@@ -87,7 +109,10 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         </div>
       </div>
 
-      <Link to={"/nft-detailt"} className="absolute inset-0"></Link>
+     
+        </div>
+      )) }
+       <Link to={"/nft-detailt"} className="absolute inset-0"></Link>
     </div>
   );
 };

@@ -272,9 +272,12 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                               </Link>
                              { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
                                 Mint
-                              </Link> :  <Link key="index6" to={`/createListItem/${e?._id}`} className="dropdown-item"  >
-                                LIST
-                              </Link> }
+                              </Link> : <>
+                              { e?.status === "active" ? <Link key="index6" to={`/createListItem/${e?._id}`} className="dropdown-item"  >
+                                DeLIST
+                              </Link> : <Link key="index6" to={``} className="dropdown-item"  >
+                                List
+                              </Link>  } </>  }
                               <Link key="index6" className="dropdown-item" to={`/item`}  >
                                 ITEM DETAILS
                               </Link>

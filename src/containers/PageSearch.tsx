@@ -82,9 +82,13 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
           <HeaderFilterSearchPage />
 
           {/* LOOP ITEMS */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-            {Array.from("11111111").map((_, index) => (
-              <CardNFT key={index} />
+          <div className="flex sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
+            {Array.from("1").map((_, index) => (
+              <>
+                {console.log(index, "index")}
+                <CardNFT />
+              </>
+
             ))}
           </div>
 
