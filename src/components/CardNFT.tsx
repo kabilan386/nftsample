@@ -66,6 +66,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
       { marketData?.map((e, index) => (
         <div key={index}>
         <div className="relative flex-shrink-0 ">
+        <Link to={`/nft-detailt/${e?._id}`}>
         <div>
           <NcImage
             containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
@@ -83,6 +84,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
           className="absolute top-3 right-3 z-10 !h-9"
         />
         <div className="absolute top-3 inset-x-3 flex"></div>
+      </Link>
       </div>
 
       <div className="p-4 py-5 space-y-3">
@@ -112,7 +114,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
      
         </div>
       )) }
-       <Link to={"/nft-detailt"} className="absolute inset-0"></Link>
+       
     </div>
   );
 };

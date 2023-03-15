@@ -35,7 +35,7 @@ export const pages: Page[] = [
   { path: "/home2", component: PageHome },
   { path: "/home3", component: PageHome3 },
   { path: "/home-header-2", component: PageHome },
-  { path: "/nft-detailt", component: NftDetailPage },
+  { path: "/nft-detailt/:id", component: NftDetailPage },
   { path: "/page-collection", component: PageCollection },
   { path: "/collection", component: Collection },
   { path: "/page-search", component: PageSearch },

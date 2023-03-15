@@ -34,7 +34,7 @@ const otherPageChildMenus: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/nft-detailt",
+    href: "/nft-detailt/:id",
     name: "NFT detailt",
   },
   {

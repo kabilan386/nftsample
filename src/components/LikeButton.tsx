@@ -3,13 +3,17 @@ import React, { useState } from "react";
 export interface LikeButtonProps {
   className?: string;
   liked?: boolean;
+  id?: string;
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({
   className,
+  id,
   liked = Math.random() > 0.6,
 }) => {
   const [isLiked, setIsLiked] = useState(liked);
+
+  console.log(id, "id")
 
   return (
     <button

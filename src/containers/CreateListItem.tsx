@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC, CSSProperties } from 'react'
+import React, { useState, useEffect, FC, CSSProperties, useRef, MutableRefObject } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -13,8 +13,10 @@ import { Helmet } from "react-helmet";
 import FormItem from "components/FormItem";
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
 import Form from 'react-bootstrap/Form';
-import { RadioGroup } from "@headlessui/react";
 
+import Select from 'react-select';
+import moment from "moment"
+import { RadioGroup } from "@headlessui/react";
 
 declare let window: any;
 
@@ -25,6 +27,10 @@ interface data {
 
 export interface PageUploadItemProps {
   className?: string;
+}
+
+interface timeOptions {
+  value: "string"
 }
 
 const override: CSSProperties = {
@@ -60,6 +66,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [address, setAddress] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [aution, setAuction] = useState<boolean>();
+  
   let [color, setColor] = useState("#ffffff");
 
   const [thumb, setThumb] = useState("")
@@ -68,6 +75,17 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [mediaFile, setMediaFile] = useState("")
   const [spinner, setSpinner] = useState(false)
   const [loading, setLoading] = useState();
+
+  const timeOptions = [
+    { value: '', label: '----' },
+    { value: '1D', label: '1 Day' },
+    { value: '3D', label: '3 Days' },
+    { value: '7D', label: '7 Days' },
+    { value: '1M', label: '1 Month' },
+    { value: '3M', label: '3 Month' },
+    { value: '6M', label: '6 Month' },
+
+]
 
   const id = location.state || {};
   console.log(idValue, "ids")
@@ -250,6 +268,103 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }
   }
 
+  const selectInputRef = useRef(null);
+  
+
+  const selectCata = useRef();
+    // const niceSelect = () => {
+    //     $(selectCata.current).niceSelect('update');
+    //     // $(selectCata.current).niceSelect();
+    // }
+
+    const colourStyles = {
+      control: (provided, state) => ({
+          ...provided,
+          background: '#1f0757',
+          borderColor: '#1f0757',
+          minHeight: '30px',
+          height: '50px',
+          boxShadow: state.isFocused ? null : null,
+          color: 'white'
+      }),
+      option: (styles, { isFocused, isSelected }) => ({
+          ...styles,
+          background: isFocused
+              ? 'white'
+              : isSelected
+                  ? 'white'
+                  : undefined,
+          zIndex: 100,
+          color: isSelected ? 'black' : undefined,
+          textTransform: 'capitalize',
+
+      }),
+      valueContainer: (provided, state) => ({
+          ...provided,
+          height: '30px',
+          padding: '0 6px',
+          background: '#1f0757',
+          color: 'white',
+          textTransform: 'capitalize',
+      }),
+
+      input: (provided, state) => ({
+          ...provided,
+          margin: '0px',
+          textTransform: 'uppercase',
+      }),
+      indicatorSeparator: state => ({
+          display: 'none',
+      }),
+      indicatorsContainer: (provided, state) => ({
+          ...provided,
+
+      }),
+      dropdownIndicator: (provided, state) => ({
+          ...provided,
+          transform: state.selectProps.menuIsOpen && 'rotate(180deg)',
+          borderColor: 'white',
+      }),
+      menu: (provided, state) => ({
+          ...provided,
+          background: '#1f0757'
+      }),
+      singleValue: (provided, { data }) => ({
+          ...provided,
+          color: 'white',
+          // specify a fallback color here for those values not accounted for in the styleMap
+      }),
+  };
+
+  const rangeSelect = (value) => {
+    if (value) {
+
+
+        // if (value.value === "1D") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 1);
+        //     console.log(new_date, new Date(new_date), "new_date")
+        //     onChangeBid([new Date(), new Date(new_date)])
+
+        // }
+        // } else if (value.value === "3D") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 3);
+        //     onChangeBid([new Date(), new Date(new_date)])
+        // } else if (value.value === "7D") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 7);
+        //     onChangeBid([new Date(), new Date(new_date)])
+        // } else if (value.value === "1M") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 1);
+        //     onChangeBid([new Date(), new Date(new_date)])
+        // } else if (value.value === "3M") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 3);
+        //     onChangeBid([new Date(), new Date(new_date)])
+        // } else if (value.value === "6M") {
+        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 6);
+        //     onChangeBid([new Date(), new Date(new_date)])
+        // }
+    }
+}
+
 
   return (
     <div
@@ -342,22 +457,87 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
             <FormItem label="Sale Type">
 
-              <Form.Check
-                className="mb-4 mb-md-0"
-                type="radio"
-                label="Offer"
-                id="rememberMe"
-                name="saletype"
-                value="offer"
-                onChange={formik.handleChange}
+            <div className='row'>
+
+            <div className="col-3">
+                <Form.Check
+                  className="mb-4 mb-md-0"
+                  type="radio"
+                  label="Offer"
+                  id="rememberMe"
+                  name="saletype"
+                  value="offer"
+                  onChange={formik.handleChange}
                 // defaultChecked={formik.values.enableAuction === "true"}
                 // {data?.data?.data?.docs?.[0]?.enableAuction ? checked : null}  
-               //checked={aution ? true boolean : null}
-              />
-             
+                //checked={aution ? true boolean : null}
+                />
+
+
+              </div>
+
+
+
+              <div className="col-3">
+                <Form.Check
+                  className="mb-4 mb-md-0"
+                  type="radio"
+                  label="Auction"
+                  id="rememberMe"
+                  value="bid"
+                  name="saletype"
+                  onChange={formik.handleChange}
+                //checked={data?.data?.data?.docs?.[0]?.enableBID ? true : null}
+                // defaultChecked={formik.values.enableAuction === "false"}
+                />
+              </div>
+
+            </div>
+
             </FormItem>
 
             {formik.values.saletype === "offer" ? (
+              <>
+                <div className="col-12">
+                  <div className='row'>
+                    <h5 style={{ float: "left", margin: "10px", marginLeft: '0px' }}>Start and end date</h5>
+                  </div>
+
+                  <div className='row'>
+                    <div className='col-12'>
+                      <>
+                        {console.log(value, "test")}
+                        <div>
+                          <DateTimeRangePicker onChange={onChange} value={value} />
+                        </div>
+                      </>
+
+                    </div>
+                  </div>
+
+                </div>
+              </>
+            ) : null}
+
+<br />
+                                        {formik?.values?.saletype === "bid" ? (
+                                            <div className="col-12 col-md-12">
+                                                <Form.Group >
+                                                    <Form.Label className="mb-2 fz-16">Select time </Form.Label>
+                                                    <Select
+                                                        ref={selectInputRef}
+                                                        options={timeOptions}
+                                                        value={timeOptions}
+                                                        styles={colourStyles}
+                                                        // defaultValue={{ label: "----", value: null }}
+                                                        onChange={selectedOption => {
+                                                            rangeSelect(selectedOption)
+                                                        }} />
+                                                    {/* <div className="form-error">{formik.errors.category}</div> */}
+                                                </Form.Group>
+                                            </div>) : null}
+
+                                        {formik?.values?.saletype === "bid" ? (
                                             <>
                                                 <div className="col-12">
                                                     <div className='row'>
@@ -366,13 +546,11 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
                                                     <div className='row'>
                                                         <div className='col-12'>
-                                                          <>
-                                                          {console.log(value, "test")}
                                                             <div>
-                                                                <DateTimeRangePicker onChange={onChange} value={value} />
+                                                                <DateTimeRangePicker onChange={(e) => {
+                                                                    onChangeBid(e)
+                                                                }} value={valueBid} />
                                                             </div>
-                                                          </>
-                                                            
                                                         </div>
                                                     </div>
 

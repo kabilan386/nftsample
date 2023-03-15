@@ -94,10 +94,10 @@ const CardLarge1: FC<CardLarge1Props> = ({
 
           {/* DESCRIPTION */}
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <ButtonPrimary href={"/nft-detailt"} className="flex-1">
+            <ButtonPrimary href={"/nft-detailt/:id"} className="flex-1">
               Place a bid
             </ButtonPrimary>
-            <ButtonSecondary href={"/nft-detailt"} className="flex-1">
+            <ButtonSecondary href={"/nft-detailt/:id"} className="flex-1">
               View item
             </ButtonSecondary>
           </div>

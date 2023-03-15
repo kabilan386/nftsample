@@ -13,10 +13,10 @@ export interface NftMoreDropdownProps {
 }
 
 const actionsDefault: NftMoreDropdownProps["actions"] = [
-  { id: "edit", name: "Change price", icon: "las la-dollar-sign" },
-  { id: "transferToken", name: "Transfer token", icon: "las la-sync" },
+  // { id: "edit", name: "Change price", icon: "las la-dollar-sign" },
+  // { id: "transferToken", name: "Transfer token", icon: "las la-sync" },
   { id: "report", name: "Report abuse", icon: "las la-flag" },
-  { id: "delete", name: "Delete item", icon: "las la-trash-alt" },
+  // { id: "delete", name: "Delete item", icon: "las la-trash-alt" },
 ];
 
 const NftMoreDropdown: FC<NftMoreDropdownProps> = ({

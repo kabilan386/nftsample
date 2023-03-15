@@ -46,7 +46,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
       .then((accounts: string[]) => {
         console.log("networkVersion",(window as any).ethereum.networkVersion);
         if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
-          WalletLogin({ address: accounts[0] }).then((res: any) => {
+          WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
             if (res.status === true) {
               console.log(res, "resData")
               // toast.success(`${res?.message}`)
@@ -65,9 +65,9 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
         showToastMessage(error.message);
       });
   }
-  ethereum.on('accountsChanged', (accounts: any) => {
-    connectWallet();
-  });
+  // ethereum.on('accountsChanged', (accounts: any) => {
+  //   connectWallet();
+  // });
 
   ethereum.on('chainChanged', (chainId: any) => {
     if(process.env.REACT_APP_CHAIN_ID === chainId){

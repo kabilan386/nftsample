@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Avatar from "shared/Avatar/Avatar";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
@@ -14,8 +14,10 @@ import TabDetail from "./TabDetail";
 import collectionPng from "images/nfts/collection.png";
 import ItemTypeVideoIcon from "components/ItemTypeVideoIcon";
 import LikeButton from "components/LikeButton";
+import { useParams } from "react-router-dom";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
+import axios from "axios";
 
 export interface NftDetailPageProps {
   className?: string;
@@ -26,7 +28,55 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   className = "",
   isPreviewMode,
 }) => {
+
+  const id = useParams()
+  const [getitemDetails, setGetDetails] = useState([])
+  const [itemName, setItemName] = useState('');
+  const [collectionName, setCollectionName] = useState('');
+  const [collectionImage, setCollectionimage] = useState('');
+  const [itemLink, setItemLink] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemImage, setItemImage] = useState('');
+  const [itemId, setItemId] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
+  const [itemContract, setItemContract] = useState("")
+  const [currentBid, setCurrentBid] = useState('');
+
+  const getItem = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
+      
+      setItemName(res?.data?.data?.docs?.[0]?.name)
+      setItemDescription(res?.data?.data?.docs?.[0]?.description)
+      setItemLink(res?.data?.data?.docs?.[0]?.external_link)
+      setItemImage(res?.data?.data?.docs?.[0]?.media)
+      setItemPrice(res?.data?.data?.docs?.[0]?.price)
+      setCurrentBid(res?.data?.data?.docs?.[0]?.endDateTime)
+      setItemContract(res?.data?.data?.docs?.[0]?.collection_id?.contract_address)
+      setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
+      setCollectionimage(res?.data?.data?.docs?.[0]?.collection_id?.image)
+      setItemId(res?.data?.data?.docs?.[0]?._id)
+      
+    })
+  }
+
+  console.log(collectionPng, "fixed")
+
+  console.log(itemId, "name")
+
+  useEffect(() => {
+
+    getItem()
+
+  }, [])
+    
+
+
+
+
+
   const renderSection1 = () => {
+
+
     return (
       <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
         {/* ---------- 1 ----------  */}
@@ -36,13 +86,13 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             <LikeSaveBtns />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-            BearX #3636
+            {itemName}
           </h2>
 
           {/* ---------- 4 ----------  */}
           <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
             <div className="flex items-center ">
-              <Avatar sizeClass="h-9 w-9" radius="rounded-full" />
+              <Avatar sizeClass="h-9 w-9" radius="rounded-full"/>
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Creator</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
@@ -54,14 +104,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             <div className="hidden sm:block h-6 border-l border-neutral-200 dark:border-neutral-700"></div>
             <div className="flex items-center">
               <Avatar
-                imgUrl={collectionPng}
+                imgUrl={`${process.env.REACT_APP_BACKEND_URL}${collectionImage}`}
                 sizeClass="h-9 w-9"
                 radius="rounded-full"
               />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Collection</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-                  <span>{"The Moon Ape"}</span>
+                  <span>{collectionName}</span>
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>
               </span>
@@ -71,7 +121,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
         {/* ---------- 6 ----------  */}
         <div className="py-9">
-          <TimeCountDown />
+          <TimeCountDown time={currentBid} />
         </div>
 
         {/* ---------- 7 ----------  */}
@@ -83,10 +133,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 Current Bid
               </span>
               <span className="text-3xl xl:text-4xl font-semibold text-green-500">
-                1.000 ETH
-              </span>
-              <span className="text-lg text-neutral-400 sm:ml-5">
-                ( ≈ $3,221.22)
+                {itemPrice}
               </span>
             </div>
 
@@ -195,10 +242,10 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
 
               {/* META FAVORITES */}
-              <LikeButton className="absolute right-3 top-3 " />
+              <LikeButton  className="absolute right-3 top-3" id={itemId} />
             </div>
 
-            <AccordionInfo />
+            <AccordionInfo details={itemDescription} contract={itemContract}/>
           </div>
 
           {/* SIDEBAR */}

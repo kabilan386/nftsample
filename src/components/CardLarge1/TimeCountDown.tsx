@@ -4,6 +4,10 @@ import React from "react";
 const TimeCountDown = () => {
   const timeLeft = useCountDownTime();
 
+  console.log(timeLeft, "timeLeft")
+
+
+
   return (
     <div className="space-y-5">
       <div className="text-neutral-500 dark:text-neutral-400 flex items-center space-x-2 ">
