@@ -41,6 +41,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemPrice, setItemPrice] = useState('');
   const [itemContract, setItemContract] = useState("")
   const [currentBid, setCurrentBid] = useState('');
+  const [placeBid, setPlaceBid] = useState();
 
   const getItem = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
@@ -55,6 +56,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
       setCollectionimage(res?.data?.data?.docs?.[0]?.collection_id?.image)
       setItemId(res?.data?.data?.docs?.[0]?._id)
+      setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
       
     })
   }
@@ -143,7 +145,40 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+           { placeBid !== true ?  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M7 12H14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+
+              <span className="ml-2.5">BUY NOW</span>
+            </ButtonPrimary> :  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -176,8 +211,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">Place a bid</span>
-            </ButtonPrimary>
-            <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary> }
+            { placeBid !== true ? <ButtonSecondary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M8.57007 15.27L15.11 8.72998"
@@ -210,7 +245,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5"> Make offer</span>
-            </ButtonSecondary>
+            </ButtonSecondary> : null }
           </div>
         </div>
 
@@ -235,7 +270,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             {/* HEADING */}
             <div className="relative">
               <NcImage
-                src={nftsLargeImgs[0]}
+                src={`${process.env.REACT_APP_BACKEND_URL}/${itemImage}`}
                 containerClassName="aspect-w-11 aspect-h-12 rounded-3xl overflow-hidden"
               />
               {/* META TYPE */}

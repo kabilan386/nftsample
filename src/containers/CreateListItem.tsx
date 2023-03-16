@@ -39,6 +39,24 @@ const override: CSSProperties = {
   borderColor: "white",
 };
 
+interface Option {
+  label: string;
+  value: string;
+}
+
+const timeOptions = [
+  { value: '', label: '----' },
+  { value: '1D', label: '1 Day' },
+  { value: '3D', label: '3 Days' },
+  { value: '7D', label: '7 Days' },
+  { value: '1M', label: '1 Month' },
+  { value: '3M', label: '3 Month' },
+  { value: '6M', label: '6 Month' },
+
+]
+
+
+
 
 
 const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
@@ -66,7 +84,9 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [address, setAddress] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [aution, setAuction] = useState<boolean>();
-  
+
+
+
   let [color, setColor] = useState("#ffffff");
 
   const [thumb, setThumb] = useState("")
@@ -76,19 +96,17 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [spinner, setSpinner] = useState(false)
   const [loading, setLoading] = useState();
 
-  const timeOptions = [
-    { value: '', label: '----' },
-    { value: '1D', label: '1 Day' },
-    { value: '3D', label: '3 Days' },
-    { value: '7D', label: '7 Days' },
-    { value: '1M', label: '1 Month' },
-    { value: '3M', label: '3 Month' },
-    { value: '6M', label: '6 Month' },
 
-]
 
   const id = location.state || {};
   console.log(idValue, "ids")
+
+  const customStyles = {
+    backgroundColor: '#f5f5f5',
+    border: 'none',
+    color: '#333',
+    padding: '8px',
+  };
 
 
 
@@ -104,17 +122,21 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     // }).test('FILE_Type', "Image file supported JPEG , PNG ,PNG, GIF, SVG, MP4, WEBM, MP3, WAV & OGG", (value) => {
     //     return !value || checkIfFilesAreCorrectType(value[0]);
     // }),
-    name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
-    description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
+    // name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
+    // description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
     link: yup.string().min(3, "Item Link must be atleast 3 letter"),
-    price: yup.string().required("Item price is required").test(
-      'Is positive?',
-      'Price must be greater than 0!',
-      (value) => parseFloat(value) > 0
-    ),
+    saletype: yup.string().required("Sale Type is Required"),
+    // price: yup.string().when("enableAuction", {
+    //   is: (val) => val && val.length > 0,
+    // then: yup.string().oneOf(
+    //   [yup.ref('password')],
+    //   'Passwords must match'
+    // )
+      
+    // }),
     enableAuction: yup.boolean(),
-    // enableBID: yup.string().test("console","console",(value)=> {
-    //     console.log("bid value",value)
+    // enableBID: yup.string().test("console", "console", (value) => {
+    //   console.log("bid value", value)
     // }),
     // category: yup.string().required("Category is required")
   });
@@ -268,102 +290,112 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }
   }
 
-  const selectInputRef = useRef(null);
-  
-
+  const selectInputRef = useRef<HTMLInputElement>(null)
+  const onClear = () => {
+    if (selectInputRef.current) {
+      selectInputRef.current.value = ""
+    }
+  };
   const selectCata = useRef();
-    // const niceSelect = () => {
-    //     $(selectCata.current).niceSelect('update');
-    //     // $(selectCata.current).niceSelect();
-    // }
+  // const niceSelect = () => {
+  //     $(selectCata.current).niceSelect('update');
+  //     // $(selectCata.current).niceSelect();
+  // }
 
-    const colourStyles = {
-      control: (provided, state) => ({
-          ...provided,
-          background: '#1f0757',
-          borderColor: '#1f0757',
-          minHeight: '30px',
-          height: '50px',
-          boxShadow: state.isFocused ? null : null,
-          color: 'white'
-      }),
-      option: (styles, { isFocused, isSelected }) => ({
-          ...styles,
-          background: isFocused
-              ? 'white'
-              : isSelected
-                  ? 'white'
-                  : undefined,
-          zIndex: 100,
-          color: isSelected ? 'black' : undefined,
-          textTransform: 'capitalize',
+  const colourStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity))',
+      borderColor: 'lightblue',
+      minHeight: '30px',
+      height: '50px',
+      boxShadow: state.isFocused ? null : null,
+      color: 'white'
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      background: isFocused
+        ? 'white'
+        : isSelected
+          ? 'white'
+          : undefined,
+      zIndex: 100,
+      color: isSelected ? 'black' : undefined,
+      textTransform: 'capitalize',
 
-      }),
-      valueContainer: (provided, state) => ({
-          ...provided,
-          height: '30px',
-          padding: '0 6px',
-          background: '#1f0757',
-          color: 'white',
-          textTransform: 'capitalize',
-      }),
+    }),
+    valueContainer: (provided, state) => ({
+      ...provided,
+      height: '30px',
+      padding: '0 6px',
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity));',
+      color: '#111',
+      textTransform: 'capitalize',
+    }),
 
-      input: (provided, state) => ({
-          ...provided,
-          margin: '0px',
-          textTransform: 'uppercase',
-      }),
-      indicatorSeparator: state => ({
-          display: 'none',
-      }),
-      indicatorsContainer: (provided, state) => ({
-          ...provided,
+    input: (provided, state) => ({
+      ...provided,
+      margin: '0px',
+      textTransform: 'uppercase',
+    }),
+    indicatorSeparator: state => ({
+      display: 'none',
+    }),
+    indicatorsContainer: (provided, state) => ({
+      ...provided,
 
-      }),
-      dropdownIndicator: (provided, state) => ({
-          ...provided,
-          transform: state.selectProps.menuIsOpen && 'rotate(180deg)',
-          borderColor: 'white',
-      }),
-      menu: (provided, state) => ({
-          ...provided,
-          background: '#1f0757'
-      }),
-      singleValue: (provided, { data }) => ({
-          ...provided,
-          color: 'white',
-          // specify a fallback color here for those values not accounted for in the styleMap
-      }),
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      transform: state.selectProps.menuIsOpen && 'rotate(180deg)',
+      borderColor: 'white',
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity));'
+    }),
+    singleValue: (provided, { data }) => ({
+      ...provided,
+      color: '#fff',
+      // specify a fallback color here for those values not accounted for in the styleMap
+    }),
   };
 
   const rangeSelect = (value) => {
     if (value) {
 
+      console.log(value, "new date")
 
-        // if (value.value === "1D") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 1);
-        //     console.log(new_date, new Date(new_date), "new_date")
-        //     onChangeBid([new Date(), new Date(new_date)])
+      if (value.value === "1D") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 1);
+        console.log(new_date, "new Date")
+        console.log(new_date.toDate(), "new_date")
 
-        // }
-        // } else if (value.value === "3D") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 3);
-        //     onChangeBid([new Date(), new Date(new_date)])
-        // } else if (value.value === "7D") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 7);
-        //     onChangeBid([new Date(), new Date(new_date)])
-        // } else if (value.value === "1M") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 1);
-        //     onChangeBid([new Date(), new Date(new_date)])
-        // } else if (value.value === "3M") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 3);
-        //     onChangeBid([new Date(), new Date(new_date)])
-        // } else if (value.value === "6M") {
-        //     var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 6);
-        //     onChangeBid([new Date(), new Date(new_date)])
-        // }
+
+        onChangeBid([new Date(), new_date.toDate()])
+
+
+
+      } else if (value.value === "3D") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 3);
+        onChangeBid([new Date(), new_date.toDate()])
+      } else if (value.value === "7D") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('days', 7);
+        onChangeBid([new Date(), new_date.toDate()])
+      } else if (value.value === "1M") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 1);
+        onChangeBid([new Date(), new_date.toDate()])
+      } else if (value.value === "3M") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 3);
+        onChangeBid([new Date(), new_date.toDate()])
+      } else if (value.value === "6M") {
+        var new_date = moment(new Date(), "DD-MM-YYYY").add('months', 6);
+        onChangeBid([new Date(), new_date.toDate()])
+      }
     }
-}
+  }
+
+  console.log(formik.errors, "errors")
 
 
   return (
@@ -450,49 +482,50 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           </div> */}
 
             {/* ---- */}
-            <FormItem label="Item Price">
-              <Input defaultValue="NFT name" id="price" type="text" name="price" onChange={formik.handleChange} value={formik.values.price} placeholder="Please enter item Price" />
-              <div className="form-error">{formik.errors.price}</div>
-            </FormItem>
+
 
             <FormItem label="Sale Type">
 
-            <div className='row'>
+              <div className='row'>
 
-            <div className="col-3">
-                <Form.Check
-                  className="mb-4 mb-md-0"
-                  type="radio"
-                  label="Offer"
-                  id="rememberMe"
-                  name="saletype"
-                  value="offer"
-                  onChange={formik.handleChange}
-                // defaultChecked={formik.values.enableAuction === "true"}
-                // {data?.data?.data?.docs?.[0]?.enableAuction ? checked : null}  
-                //checked={aution ? true boolean : null}
-                />
+                <div className="col-3">
+                  <Form.Check
+                    className="mb-4 mb-md-0"
+                    type="radio"
+                    label="Offer"
+                    id="rememberMe"
+                    name="saletype"
+                    value="offer"
+                    onChange={formik.handleChange}
+                  // defaultChecked={formik.values.enableAuction === "true"}
+                  // {data?.data?.data?.docs?.[0]?.enableAuction ? checked : null}  
+                  // checked={aution ? true boolean : null}
+                  />
 
+
+                </div>
+
+
+
+                <div className="col-3">
+                  <Form.Check
+                    className="mb-4 mb-md-0"
+                    type="radio"
+                    label="Auction"
+                    id="rememberMe"
+                    value="bid"
+                    name="saletype"
+                    onChange={formik.handleChange}
+                  // checked={data?.data?.data?.docs?.[0]?.enableBID ? true : false}
+                  // defaultChecked={!formik.values.enableAuction}
+                  />
+                </div>
+
+                
 
               </div>
 
-
-
-              <div className="col-3">
-                <Form.Check
-                  className="mb-4 mb-md-0"
-                  type="radio"
-                  label="Auction"
-                  id="rememberMe"
-                  value="bid"
-                  name="saletype"
-                  onChange={formik.handleChange}
-                //checked={data?.data?.data?.docs?.[0]?.enableBID ? true : null}
-                // defaultChecked={formik.values.enableAuction === "false"}
-                />
-              </div>
-
-            </div>
+              <div className="form-error" >{formik.errors.saletype}</div>
 
             </FormItem>
 
@@ -515,48 +548,55 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                     </div>
                   </div>
 
+                  {formik.values.saletype === "bid" ? null : <div style={{ margin: "20px 0" }}>
+                    <FormItem label="Item Price">
+                      <Input defaultValue="NFT name" id="price" type="text" name="price" onChange={formik.handleChange} value={formik.values.price} placeholder="Please enter item Price" />
+                      <div className="form-error">{formik.errors.price}</div>
+                    </FormItem>
+                  </div>}
+
                 </div>
               </>
             ) : null}
 
-<br />
-                                        {formik?.values?.saletype === "bid" ? (
-                                            <div className="col-12 col-md-12">
-                                                <Form.Group >
-                                                    <Form.Label className="mb-2 fz-16">Select time </Form.Label>
-                                                    <Select
-                                                        ref={selectInputRef}
-                                                        options={timeOptions}
-                                                        value={timeOptions}
-                                                        styles={colourStyles}
-                                                        // defaultValue={{ label: "----", value: null }}
-                                                        onChange={selectedOption => {
-                                                            rangeSelect(selectedOption)
-                                                        }} />
-                                                    {/* <div className="form-error">{formik.errors.category}</div> */}
-                                                </Form.Group>
-                                            </div>) : null}
+            <br />
+            {formik?.values?.saletype === "bid" ? (
+              <div className="col-12 col-md-12">
+                <Form.Group >
+                  <Form.Label className="mb-2 fz-16">Select time </Form.Label>
+                  <Select
+                    options={timeOptions}
+                    // value={timeOptions}
+                    styles={colourStyles}
+                    // defaultValue={{ label: "----", value: null }}
+                    onChange={selectedOption => {
+                      rangeSelect(selectedOption)
+                    }} />
+                  {/* <div className="form-error">{formik.errors.category}</div> */}
+                </Form.Group>
+              </div>) : null}
 
-                                        {formik?.values?.saletype === "bid" ? (
-                                            <>
-                                                <div className="col-12">
-                                                    <div className='row'>
-                                                        <h5 style={{ float: "left", margin: "10px", marginLeft: '0px' }}>Start and end date</h5>
-                                                    </div>
+            {formik?.values?.saletype === "bid" ? (
+              <>
+                <div className="col-12">
+                  <div className='row'>
+                    <h5 style={{ float: "left", margin: "10px", marginLeft: '0px' }}>Start and end date</h5>
+                  </div>
 
-                                                    <div className='row'>
-                                                        <div className='col-12'>
-                                                            <div>
-                                                                <DateTimeRangePicker onChange={(e) => {
-                                                                    onChangeBid(e)
-                                                                }} value={valueBid} />
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                  <div className='row'>
+                    <div className='col-12'>
+                      <div>
+                        <DateTimeRangePicker onChange={(e) => {
+                          onClear()
+                          onChangeBid(e)
+                        }} value={valueBid} />
+                      </div>
+                    </div>
+                  </div>
 
-                                                </div>
-                                            </>
-                                        ) : null}
+                </div>
+              </>
+            ) : null}
 
             {/* ---- */}
             {/* <FormItem

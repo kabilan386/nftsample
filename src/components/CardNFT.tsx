@@ -44,11 +44,8 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
   };
 
   const getmarketPlace = () => {
-    const config = {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-    };
 
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`, config).then(res => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
       setmarketData(res?.data?.data?.docs)
       console.log(marketData, "res")
     })
@@ -110,9 +107,8 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
           </div>
         </div>
       </div>
-
-     
         </div>
+        
       )) }
        
     </div>

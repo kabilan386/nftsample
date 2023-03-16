@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState } from "react";
+import React, { FC, Fragment, useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import NcImage from "shared/NcImage/NcImage";
@@ -17,6 +17,9 @@ import { Tab } from "@headlessui/react";
 import CardAuthorBox3 from "components/CardAuthorBox3/CardAuthorBox3";
 import ArchiveFilterListBox from "components/ArchiveFilterListBox";
 import SectionGridAuthorBox from "components/SectionGridAuthorBox/SectionGridAuthorBox";
+import axios from "axios";
+import Prices from "components/Prices";
+import ItemTypeImageIcon from "components/ItemTypeImageIcon";
 
 export interface AuthorPageProps {
   className?: string;
@@ -30,6 +33,27 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
     "Following",
     "Followers",
   ]);
+
+  const [item, setItem] = useState<any[]>([])
+
+  const getCollection = () => {
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=my&page=1&user=user&user_id=${sessionStorage.getItem("user_id")}`, config).then(res => {
+      setItem(res?.data?.data?.docs)
+      console.log(res, "res")
+    })
+  }
+
+  console.log(item)
+
+  useEffect(() => {
+
+    getCollection()
+
+  }, [])
 
   return (
     <div className={`nc-AuthorPage  ${className}`} data-nc-id="AuthorPage">
@@ -150,9 +174,9 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
+                  {/* {Array.from("11111111").map((_, index) => (
                     <CardNFT key={index} />
-                  ))}
+                  ))} */}
                 </div>
 
                 {/* PAGINATION */}
@@ -164,9 +188,103 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
-                    <CardNFT key={index} />
-                  ))}
+                {item?.map((e: any) => {
+              return (
+                <>
+
+                  <div
+
+                    data-nc-id="CardNFT"
+                  >
+                    <div className="relative flex-shrink-0 ">
+
+                      <div>
+                        <NcImage
+                          containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
+                          src={`${process.env.REACT_APP_BACKEND_URL}/${e?.media}`}
+                          className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
+                        />
+                      </div>
+
+
+
+
+
+                      {/* {Math.random() > 0.5 ? (
+                        <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                      ) : ( */}
+                        <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                      {/* )} */}
+                      <div className="absolute top-3 right-3 !w-9 !h-9">
+                        {/* <Dropdown>
+                          <Dropdown.Toggle className="rounded-pill shadow-sm" >
+                            <i className="fas fa-ellipsis-v"></i>
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu align="end" >
+
+                            <>
+                              <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
+                                EDIT
+                              </Link>
+                              <Link key="index3" className="dropdown-item" to="/delete">
+                                DELETE
+
+                              </Link>
+                             { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                                Mint
+                              </Link> : <>
+                              { e?.status === "active" ? <Link key="index6" to={``} className="dropdown-item"  >
+                                DeLIST
+                              </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
+                                List
+                              </Link>  } </>  }
+                              <Link key="index6" className="dropdown-item" to={`/item`}  >
+                                ITEM DETAILS
+                              </Link>
+                            </>
+
+                          </Dropdown.Menu>
+                        </Dropdown> */}
+                      </div>
+                      {/* <LikeButton
+          liked={isLiked}
+          className="absolute top-3 right-3 z-10 !h-9"
+        /> */}
+                      <div className="absolute top-3 inset-x-3 flex"></div>
+                    </div>
+
+                    <div className="p-4 py-5 space-y-3">
+                      <div className="flex justify-between">
+                        {/* {renderAvatars()} */}
+                        {/* <span className="text-neutral-700 dark:text-neutral-400 text-xs">
+                          01 in stock
+                        </span> */}
+                      </div>
+                      <h2 className={`text-lg font-medium`}>
+                        {e?.name} 
+                        {/* #{Math.floor(Math.random() * 1000) + 1000} */}
+                      </h2>
+
+                      <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
+
+                      <div className="flex justify-between items-end ">
+                        <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
+                        {/* <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+            <ClockIcon className="w-4 h-4" />
+            <span className="ml-1 mt-0.5">
+              {Math.floor(Math.random() * 20) + 1} hours left
+            </span>
+          </div> */}
+                      </div>
+                    </div>
+
+
+                  </div>
+
+                </>
+              )
+            })}
                 </div>
 
                 {/* PAGINATION */}
@@ -178,9 +296,9 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
+                  {/* {Array.from("1").map((_, index) => (
                     <CardNFT isLiked key={index} />
-                  ))}
+                  ))} */}
                 </div>
 
                 {/* PAGINATION */}
@@ -192,9 +310,9 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8 lg:mt-10">
-                  {Array.from("11111111").map((_, index) => (
+                  {/* {Array.from("1").map((_, index) => (
                     <CardAuthorBox3 following key={index} />
-                  ))}
+                  ))} */}
                 </div>
 
                 {/* PAGINATION */}
