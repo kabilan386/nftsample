@@ -9,6 +9,12 @@ import Prices from "./Prices";
 import { ClockIcon } from "@heroicons/react/outline";
 import ItemTypeVideoIcon from "./ItemTypeVideoIcon";
 import axios from "axios";
+import HeaderFilterSearchPage from "./HeaderFilterSearchPage";
+import Pagination from "shared/Pagination/Pagination";
+import ButtonPrimary from "shared/Button/ButtonPrimary";
+import BackgroundSection from "./BackgroundSection/BackgroundSection";
+import SectionSliderCollections from "./SectionSliderCollections";
+import SectionBecomeAnAuthor from "./SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 
 export interface CardNFTProps {
   className?: string;
@@ -18,6 +24,17 @@ export interface CardNFTProps {
 const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
 
   const [marketData, setmarketData] = useState<any[]>([])
+  const [filterData, setFilterData] = useState("")
+  const [filterSale, setFilterSale] = useState("")
+ 
+
+  const handleChange = (data, sale) => {
+    setFilterData(data)
+    setFilterSale(sale)
+  }
+
+  console.log(filterData, filterSale, "filter")
+
 
 
   const renderAvatars = () => {
@@ -43,20 +60,49 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
     );
   };
 
+  console.log(typeof(filterData
+    ), "true")
+
+
+
   const getmarketPlace = () => {
 
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
-      setmarketData(res?.data?.data?.docs)
-      console.log(marketData, "res")
-    })
+    if(filterData !== "" )  {
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=collection&collection_id=${filterData}`).then(res => {
+        setmarketData(res?.data?.data?.docs)
+        console.log(marketData, "res")
+      })
+
+    } else if(filterSale !== "") {
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=${filterSale[0]}`).then(res => {
+        setmarketData(res?.data?.data?.docs)
+        console.log(marketData, "res")
+      })
+    } else {
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
+        setmarketData(res?.data?.data?.docs)
+        console.log(marketData, "res")
+      })
+    }
   }
 
   useEffect(() => {
     getmarketPlace()
-  }, [])
+  }, [filterData, filterSale])
 
   return (
-    <div
+
+    <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
+    <main>
+      {/* FILTER */}
+      <HeaderFilterSearchPage data={handleChange} />
+
+      {/* LOOP ITEMS */}
+      <div className="flex sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
+        {Array.from("1").map((_, index) => (
+          <>
+            {console.log(index, "index")}
+            <div
       className={`grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10  mt-8 lg:mt-10"`}
       data-nc-id="CardNFT"
     >
@@ -112,6 +158,28 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
       )) }
        
     </div>
+          </>
+
+        ))}
+      </div>
+
+      {/* PAGINATION */}
+      <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+        <Pagination />
+        <ButtonPrimary loading>Show me more</ButtonPrimary>
+      </div>
+    </main>
+
+    {/* === SECTION 5 === */}
+    <div className="relative py-16 lg:py-28">
+      <BackgroundSection />
+      <SectionSliderCollections />
+    </div>
+
+    {/* SUBCRIBES */}
+    <SectionBecomeAnAuthor />
+  </div>
+    
   );
 };
 

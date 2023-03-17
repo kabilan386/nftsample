@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import ClipLoader from "react-spinners/ClipLoader";
-import * as yup from "yup";
+import * as Yup from "yup";
 import Web3 from "web3";
 import { useFormik, useFormikContext } from 'formik';
 import ButtonPrimary from "shared/Button/ButtonPrimary";
@@ -111,7 +111,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
 
 
-  const schema = yup.object().shape({
+  const schema = Yup.object().shape({
     // thumbfile: yup.mixed().test("fileSize", "The file is too large", (value) => {
     //     return !value || value[0].size <= 100000000
     // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
@@ -124,17 +124,22 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     // }),
     // name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
     // description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
-    link: yup.string().min(3, "Item Link must be atleast 3 letter"),
-    saletype: yup.string().required("Sale Type is Required"),
-    // price: yup.string().when("enableAuction", {
-    //   is: (val) => val && val.length > 0,
-    // then: yup.string().oneOf(
-    //   [yup.ref('password')],
-    //   'Passwords must match'
-    // )
-      
-    // }),
-    enableAuction: yup.boolean(),
+    link: Yup.string().min(3, "Item Link must be atleast 3 letter"),
+
+    saletype: Yup.string().required('Sale Type is Required').test("console", "console", (value) => {
+        console.log("bid value", value)
+      }),
+    price: Yup.number().when('saletype', {
+    is: (val) => val === "offer",
+    then: (schema) => schema.required("Price Value is Requires"),
+    otherwise: (schema) => schema.required("Price Value is Requires"),
+    
+  }).required("Item price is required").test(
+    'Is positive?',
+    'Price must be greater than 0!',
+    (value) => value > 0
+),
+    enableAuction: Yup.boolean()
     // enableBID: yup.string().test("console", "console", (value) => {
     //   console.log("bid value", value)
     // }),
@@ -213,6 +218,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
     },
   });
+
+  
 
   useEffect(() => {
 
@@ -397,6 +404,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
   console.log(formik.errors, "errors")
 
+  console.log(typeof (formik.values.saletype), "saletype")
+
 
   return (
     <div
@@ -521,7 +530,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   />
                 </div>
 
-                
+
 
               </div>
 

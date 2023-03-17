@@ -12,17 +12,17 @@ import { ChevronDownIcon } from "@heroicons/react/outline";
 // DEMO DATA
 const typeOfSales = [
   {
-    name: "Buy now",
+    name: "Buy now", value: "buy"
   },
   // {
   //   name: "On Auction",
   // },
-  {
-    name: "New",
-  },
-  {
-    name: "Has Offers",
-  },
+  // {
+  //   name: "New", value: ""
+  // },
+  // {
+  //   name: "Has Offers",
+  // },
 ];
 
 const fileTypes = [
@@ -46,7 +46,7 @@ const fileTypes = [
 // ];
 
 //
-const TabFilters = () => {
+const TabFilters = ({ data }) => {
   const [isOpenMoreFilter, setisOpenMoreFilter] = useState(false);
   //
   const [isVerifiedCreator, setIsVerifiedCreator] = useState(true);
@@ -55,6 +55,10 @@ const TabFilters = () => {
   const [saleTypeStates, setSaleTypeStates] = useState<string[]>([]);
   const [collectionData, setCollectionData] = useState<any[]>([]);
   const [sortOrderStates, setSortOrderStates] = useState<string>("");
+
+  useEffect(() => {
+    data(sortOrderStates, saleTypeStates)
+  }, [sortOrderStates, saleTypeStates])
 
   //
   const closeModalMoreFilter = () => setisOpenMoreFilter(false);
@@ -190,7 +194,7 @@ const TabFilters = () => {
                           label={item.name}
                           defaultChecked={saleTypeStates.includes(item.name)}
                           onChange={(checked) =>
-                            handleChangeSaleType(checked, item.name)
+                            handleChangeSaleType(checked, item.value)
                           }
                         />
                       </div>
@@ -221,6 +225,8 @@ const TabFilters = () => {
       </Popover>
     );
   };
+
+  console.log(sortOrderStates, saleTypeStates, "states")
 
   // OK
   const renderTabsSortOrder = () => {
