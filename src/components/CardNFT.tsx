@@ -124,6 +124,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         )}
         <LikeButton
           liked={isLiked}
+          id={e?._id}
           className="absolute top-3 right-3 z-10 !h-9"
         />
         <div className="absolute top-3 inset-x-3 flex"></div>
@@ -131,14 +132,15 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
       </div>
 
       <div className="p-4 py-5 space-y-3">
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           {renderAvatars()}
           <span className="text-neutral-700 dark:text-neutral-400 text-xs">
             {Math.floor(Math.random() * 90) + 10} in stock
           </span>
-        </div>
+        </div> */}
         <h2 className={`text-lg font-medium`}>
-          {e?.name} #{Math.floor(Math.random() * 1000) + 1000}
+        {e?.name}
+          {/*  #{Math.floor(Math.random() * 1000) + 1000} */}
         </h2>
 
         <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>

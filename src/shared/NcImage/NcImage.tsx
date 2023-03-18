@@ -59,7 +59,7 @@ const NcImage: FC<NcImageProps> = ({
 
   useEffect(() => {
     _checkInViewPort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [src]);
 
   const renderLoadingPlaceholder = () => {

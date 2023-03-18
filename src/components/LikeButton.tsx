@@ -1,9 +1,13 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { boolean } from "yup";
+import { toast } from "react-toastify"
 
 export interface LikeButtonProps {
   className?: string;
   liked?: boolean;
   id?: string;
+
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({
@@ -14,11 +18,41 @@ const LikeButton: React.FC<LikeButtonProps> = ({
   const [isLiked, setIsLiked] = useState(liked);
 
   console.log(id, "id")
+  console.log(isLiked, "liked")
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setIsLiked(!isLiked)
+
+    const newpost = {
+      item_id: id,
+      type: isLiked === true ? "increase" : "decrease" 
+    }
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.post(`${process.env.REACT_APP_BACKEND_URL}/item/addfavourites`, newpost, config).then((res) => {
+      console.log(res, "789")
+      
+      if (res.data.status == true) {
+        toast.success(res.data.message)
+        setIsLiked(isLiked)
+        //setTimeout(() => (window.location.href = `/page-search`), 1500);
+
+      } else {
+        toast.error(res.data.message)
+      }
+
+    })
+
+  }
 
   return (
     <button
       className={`bg-black/50 px-3.5 h-10 flex items-center justify-center rounded-full text-white ${className}`}
-      onClick={() => setIsLiked(!isLiked)}
+      onClick={(e) => handleSubmit(e)}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
         <path

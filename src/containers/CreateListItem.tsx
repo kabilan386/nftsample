@@ -101,13 +101,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const id = location.state || {};
   console.log(idValue, "ids")
 
-  const customStyles = {
-    backgroundColor: '#f5f5f5',
-    border: 'none',
-    color: '#333',
-    padding: '8px',
-  };
-
+ 
 
 
 
@@ -126,19 +120,17 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     // description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
     link: Yup.string().min(3, "Item Link must be atleast 3 letter"),
 
-    saletype: Yup.string().required('Sale Type is Required').test("console", "console", (value) => {
-        console.log("bid value", value)
-      }),
+    saletype: Yup.string().required('Sale Type is Required'),
     price: Yup.number().when('saletype', {
     is: (val) => val === "offer",
-    then: (schema) => schema.required("Price Value is Requires"),
+    then: (schema) => schema.required("Price Value is Required").test(
+      'Is positive?',
+      'Price must be greater than 0!',
+      (value) => value > 0
+  ),
     otherwise: (schema) => schema.required("Price Value is Requires"),
     
-  }).required("Item price is required").test(
-    'Is positive?',
-    'Price must be greater than 0!',
-    (value) => value > 0
-),
+  }),
     enableAuction: Yup.boolean()
     // enableBID: yup.string().test("console", "console", (value) => {
     //   console.log("bid value", value)
@@ -277,6 +269,15 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
               console.log(res, "789")
               // setMedia(res?.data?.filepath)
               // setMediaFile(res?.data?.file)
+              if (res.data.status == true) {
+                toast.success(res.data.message)
+               
+                setTimeout(() => (window.location.href = `/page-search`), 1500);
+    
+              } else {
+                toast.error(res.data.message)
+              }
+
             })
 
 
@@ -538,7 +539,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
             </FormItem>
 
-            {formik.values.saletype === "offer" ? (
+            {formik.values.saletype === "offer" && (
               <>
                 <div className="col-12">
                   <div className='row'>
@@ -557,16 +558,16 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                     </div>
                   </div>
 
-                  {formik.values.saletype === "bid" ? null : <div style={{ margin: "20px 0" }}>
+                 <div style={{ margin: "20px 0" }}>
                     <FormItem label="Item Price">
                       <Input defaultValue="NFT name" id="price" type="text" name="price" onChange={formik.handleChange} value={formik.values.price} placeholder="Please enter item Price" />
                       <div className="form-error">{formik.errors.price}</div>
                     </FormItem>
-                  </div>}
+                  </div>
 
                 </div>
               </>
-            ) : null}
+            )}
 
             <br />
             {formik?.values?.saletype === "bid" ? (
@@ -577,7 +578,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                     options={timeOptions}
                     // value={timeOptions}
                     styles={colourStyles}
-                    // defaultValue={{ label: "----", value: null }}
+                    defaultValue={{ label: "----", value: "" }}
                     onChange={selectedOption => {
                       rangeSelect(selectedOption)
                     }} />
