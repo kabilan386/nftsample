@@ -7,26 +7,28 @@ export interface LikeButtonProps {
   className?: string;
   liked?: boolean;
   id?: string;
+  likeCount?: number;
 
 }
 
 const LikeButton: React.FC<LikeButtonProps> = ({
   className,
+  likeCount,
   id,
   liked = Math.random() > 0.6,
 }) => {
   const [isLiked, setIsLiked] = useState(liked);
 
   console.log(id, "id")
-  console.log(isLiked, "liked")
+  console.log(isLiked, likeCount, "liked")
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setIsLiked(!isLiked)
+    //setIsLiked(!isLiked)
 
     const newpost = {
       item_id: id,
-      type: isLiked === true ? "increase" : "decrease" 
+      type: likeCount === 0 ? "increase" : "decrease" 
     }
 
     const config = {
@@ -38,8 +40,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({
       
       if (res.data.status == true) {
         toast.success(res.data.message)
-        setIsLiked(isLiked)
-        //setTimeout(() => (window.location.href = `/page-search`), 1500);
+        setIsLiked(true)
+        setTimeout(() => (window.location.href = `/nft-detailt/${id}`), 1500);
 
       } else {
         toast.error(res.data.message)
@@ -48,6 +50,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({
     })
 
   }
+
+  console.log(likeCount, )
 
   return (
     <button
@@ -58,13 +62,13 @@ const LikeButton: React.FC<LikeButtonProps> = ({
         <path
           d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z"
           stroke="currentColor"
-          fill={isLiked ? "#ef4444" : "none"}
+          fill={likeCount === 1 ? "#ef4444" : "none"}
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>
-      <span className="ml-2 text-sm">{isLiked ? 23 : 22}</span>
+      <span className="ml-2 text-sm">{likeCount}</span>
     </button>
   );
 };

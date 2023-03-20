@@ -298,6 +298,10 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }
   }
 
+  const DeList = () => {
+    
+  }
+
   const selectInputRef = useRef<HTMLInputElement>(null)
   const onClear = () => {
     if (selectInputRef.current) {

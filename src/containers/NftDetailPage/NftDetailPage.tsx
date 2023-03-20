@@ -38,6 +38,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemDescription, setItemDescription] = useState('');
   const [itemImage, setItemImage] = useState('');
   const [itemId, setItemId] = useState('');
+  const [itemCount, setItemCount] = useState();
   const [itemPrice, setItemPrice] = useState('');
   const [itemContract, setItemContract] = useState("")
   const [currentBid, setCurrentBid] = useState('');
@@ -56,6 +57,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
       setCollectionimage(res?.data?.data?.docs?.[0]?.collection_id?.image)
       setItemId(res?.data?.data?.docs?.[0]?._id)
+      setItemCount(res?.data?.data?.docs?.[0]?.like_count)
       setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
       
     })
@@ -277,7 +279,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
 
               {/* META FAVORITES */}
-              <LikeButton  className="absolute right-3 top-3" id={itemId} />
+              <LikeButton  className="absolute right-3 top-3" id={itemId} likeCount={itemCount}  />
             </div>
 
             <AccordionInfo details={itemDescription} contract={itemContract}/>

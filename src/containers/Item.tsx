@@ -106,6 +106,33 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   console.log(collectionData, "collection")
 
+  const DeList = (id: any) => {
+
+    const postData = {
+      "item_id": id 
+    }
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/delistNft`, postData, config)
+      .then((res) => {
+        console.log(res, "789")
+
+        if (res?.data?.status === true) {
+          toast.success(res?.data?.message)
+          window.location.reload(false)
+          setSpinner(false)
+        } else if (res?.data?.status === false) {
+          toast.error(res?.data?.message)
+          setSpinner(false)
+        }
+      })
+
+  }
+
 
   const marketClaim = async (id: any) => {
 
@@ -263,24 +290,24 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                           <Dropdown.Menu align="end" >
 
                             <>
-                              <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
+                            
+                             { e?.publishStatus !== true  ?   
+                             <>
+                             <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
                                 EDIT
                               </Link>
                               <Link key="index3" className="dropdown-item" to="/delete">
                                 DELETE
 
-                              </Link>
-                             { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                              </Link> <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
                                 Mint
-                              </Link> : <>
-                              { e?.status === "active" ? <Link key="index6" to={``} className="dropdown-item"  >
+                              </Link>
+                             </> : <>
+                              { e?.status === "active" ? <Link key="index6" to={``} onClick={() => DeList(e?._id)}  className="dropdown-item"  >
                                 DeLIST
                               </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
                                 List
                               </Link>  } </>  }
-                              <Link key="index6" className="dropdown-item" to={`/item`}  >
-                                ITEM DETAILS
-                              </Link>
                             </>
 
                           </Dropdown.Menu>

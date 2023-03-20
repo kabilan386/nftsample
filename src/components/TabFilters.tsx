@@ -56,9 +56,11 @@ const TabFilters = ({ data }) => {
   const [collectionData, setCollectionData] = useState<any[]>([]);
   const [sortOrderStates, setSortOrderStates] = useState<string>("");
 
+  console.log(rangePrices, "range")
+
   useEffect(() => {
-    data(sortOrderStates, saleTypeStates)
-  }, [sortOrderStates, saleTypeStates])
+    data(sortOrderStates, saleTypeStates, rangePrices)
+  }, [sortOrderStates, saleTypeStates, rangePrices])
 
   //
   const closeModalMoreFilter = () => setisOpenMoreFilter(false);
