@@ -34,6 +34,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemName, setItemName] = useState('');
   const [collectionName, setCollectionName] = useState('');
   const [collectionImage, setCollectionimage] = useState('');
+  const [currentOwner, setCurrentOwner] = useState('');
   const [itemLink, setItemLink] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [itemImage, setItemImage] = useState('');
@@ -59,13 +60,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setItemId(res?.data?.data?.docs?.[0]?._id)
       setItemCount(res?.data?.data?.docs?.[0]?.like_count)
       setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
+      setCurrentOwner(res?.data?.data?.docs?.[0]?.current_owner?._id)
       
     })
   }
 
   console.log(collectionPng, "fixed")
 
-  console.log(itemId, "name")
+  console.log(itemId, currentOwner, "name")
 
   useEffect(() => {
 
@@ -87,7 +89,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         <div className="pb-9 space-y-5">
           <div className="flex justify-between items-center">
             <Badge name="Virtual Worlds" color="green" />
-            <LikeSaveBtns />
+            <LikeSaveBtns id={itemId} owner={currentOwner} />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
             {itemName}

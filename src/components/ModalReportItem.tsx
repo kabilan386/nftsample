@@ -4,6 +4,7 @@ import Textarea from "shared/Textarea/Textarea";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcModal from "shared/NcModal/NcModal";
+import axios from "axios";
 
 export interface ProblemPlan {
   name: string;
@@ -13,6 +14,7 @@ export interface ProblemPlan {
 
 export interface ModalReportItemProps {
   show: boolean;
+  itemIDS: any;
   problemPlans?: ProblemPlan[];
   onCloseModalReportItem: () => void;
 }
@@ -27,11 +29,17 @@ const problemPlansDemo = [
 const ModalReportItem: FC<ModalReportItemProps> = ({
   problemPlans = problemPlansDemo,
   show,
+  itemIDS,
   onCloseModalReportItem,
 }) => {
   const textareaRef = useRef(null);
 
   const [problemSelected, setProblemSelected] = useState(problemPlans[0]);
+
+  console.log(itemIDS, "itemID")
+
+ 
+
 
   useEffect(() => {
     if (show) {
@@ -44,7 +52,23 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
     }
   }, [show]);
 
-  const handleClickSubmitForm = () => {};
+  const handleClickSubmitForm = () => {
+
+    const newPost = {
+      "item_id": itemIDS
+    }
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+     
+
+      axios
+        .post(`${process.env.REACT_APP_BACKEND_URL}/item/report`, newPost , config).then(res => console.log(res, "res"))
+ 
+
+  };
+
+  //console.log(textareaRef.current.value, "text")
 
   const renderCheckIcon = () => {
     return (
@@ -60,6 +84,8 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
       </svg>
     );
   };
+
+
 
   const renderContent = () => {
     return (
@@ -127,7 +153,7 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
           />
         </div>
         <div className="mt-4 space-x-3">
-          <ButtonPrimary onClick={handleClickSubmitForm} type="submit">
+          <ButtonPrimary onClick={handleClickSubmitForm} type="submit" >
             Submit
           </ButtonPrimary>
           <ButtonSecondary type="button" onClick={onCloseModalReportItem}>
