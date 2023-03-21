@@ -257,7 +257,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
           const newpost = {
             "item_id": item_id,
-          }
+          } 
 
           const config = {
             headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }

@@ -50,7 +50,7 @@ const TabFilters = ({ data }) => {
   const [isOpenMoreFilter, setisOpenMoreFilter] = useState(false);
   //
   const [isVerifiedCreator, setIsVerifiedCreator] = useState(true);
-  const [rangePrices, setRangePrices] = useState([0.01, 10]);
+  const [rangePrices, setRangePrices] = useState([0.00, 0]);
   const [fileTypesState, setfileTypesState] = useState<string[]>([]);
   const [saleTypeStates, setSaleTypeStates] = useState<string[]>([]);
   const [collectionData, setCollectionData] = useState<any[]>([]);

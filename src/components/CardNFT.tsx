@@ -26,7 +26,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
   const [marketData, setmarketData] = useState<any[]>([])
   const [filterData, setFilterData] = useState("")
   const [filterSale, setFilterSale] = useState("")
-  const [filterPrice, setFilterPrice] = useState("")
+  const [filterPrice, setFilterPrice] = useState(0)
 
 
   const handleChange = (data, sale, price) => {
@@ -65,9 +65,11 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
   console.log(typeof (filterData
   ), "true")
 
+  console.log(filterPrice[1], "true")
 
 
-  const getmarketPlace = () => {
+
+  const getmarketPlace = async () => {
 
     if (filterData !== "") {
       axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=collection&collection_id=${filterData}`).then(res => {
@@ -75,13 +77,13 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
         console.log(marketData, "res")
       })
 
-    // } else if (filterPrice !== "") {
-    //   axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=price&price_range=${filterPrice[1]}`).then(res => {
-    //     setmarketData(res?.data?.data?.docs)
-    //     console.log(marketData, "res")
-    //   })
-    } else if (filterSale !== "") {
-      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=${filterSale[0]}`).then(res => {
+    }  else if (filterSale !== "") {
+       axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=${filterSale[0]}`).then(res => {
+        setmarketData(res?.data?.data?.docs)
+        console.log(marketData, "res")
+      })
+    } else if ( (filterPrice[1] !== 0) || ( filterPrice[1]  !== undefined) ) {
+      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=price&price_range=10`).then(res => {
         setmarketData(res?.data?.data?.docs)
         console.log(marketData, "res")
       })
@@ -96,6 +98,8 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
   useEffect(() => {
     getmarketPlace()
   }, [filterData, filterSale, filterPrice])
+
+  
 
   return (
 
