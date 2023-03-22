@@ -5,6 +5,7 @@ import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcModal from "shared/NcModal/NcModal";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export interface ProblemPlan {
   name: string;
@@ -32,7 +33,7 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
   itemIDS,
   onCloseModalReportItem,
 }) => {
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [problemSelected, setProblemSelected] = useState(problemPlans[0]);
 
@@ -54,8 +55,17 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
 
   const handleClickSubmitForm = () => {
 
+    const val = sessionStorage.getItem("token")
+
+    if(!val) {
+      toast.error("Please Connect Wallet")
+      console.log(textareaRef.current!.value, "text");
+      return false;
+    }
+
     const newPost = {
-      "item_id": itemIDS
+      "item_id": itemIDS,
+      "message": textareaRef.current!.value
     }
     const config = {
       headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
@@ -63,12 +73,28 @@ const ModalReportItem: FC<ModalReportItemProps> = ({
      
 
       axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/item/report`, newPost , config).then(res => console.log(res, "res"))
+        .post(`${process.env.REACT_APP_BACKEND_URL}/item/report`, newPost , config).then(res => {
+          console.log(res, "789")
+          
+          if (res.data.status == true) {
+            
+            toast.success(res.data.message)
+            setTimeout(() => (window.location.href = `/nft-detailt/${itemIDS}`), 1500);
+
+          } else {
+            toast.error(res.data.message)
+            setTimeout(() => {
+            
+            }, 1000);
+
+          }
+  })
  
 
-  };
+}
+  
 
-  //console.log(textareaRef.current.value, "text")
+
 
   const renderCheckIcon = () => {
     return (
