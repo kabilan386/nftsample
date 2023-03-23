@@ -106,6 +106,33 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   console.log(collectionData, "collection")
 
+  const DeList = (id: any) => {
+
+    const postData = {
+      "item_id": id 
+    }
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/delistNft`, postData, config)
+      .then((res) => {
+        console.log(res, "789")
+
+        if (res?.data?.status === true) {
+          toast.success(res?.data?.message)
+          window.location.reload(false)
+          setSpinner(false)
+        } else if (res?.data?.status === false) {
+          toast.error(res?.data?.message)
+          setSpinner(false)
+        }
+      })
+
+  }
+
 
   const marketClaim = async (id: any) => {
 
@@ -142,6 +169,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
               if (res?.data?.status === true) {
                 toast.success(res?.data?.message)
+                window.location.reload(false)
                 setSpinner(false)
               } else if (res?.data?.status === false) {
                 toast.error(res?.data?.message)
@@ -192,10 +220,35 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               <Link to={"/page-upload-item"} state={{ id: id?.id }}>
                 Create Item
               </Link>
+
+
             </ButtonPrimary>
+
+            <div>
+                        <Dropdown>
+                          <Dropdown.Toggle className="rounded-pill shadow-sm" >
+                            <i className="fas fa-ellipsis-v iconColor"></i>
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu align="end" >
+
+                            <>
+                              <Link key="index2" className="dropdown-item" to={`/editcollection/${id?.id}`}>
+                                EDIT
+                              </Link>
+                            
+                            </>
+
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
+
+           
 
 
           </div>
+
+        
 
           {/* LOOP ITEMS */}
 
@@ -237,19 +290,24 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                           <Dropdown.Menu align="end" >
 
                             <>
-                              <Link key="index2" className="dropdown-item" to="/editItem">
+                            
+                             { e?.publishStatus !== true  ?   
+                             <>
+                             <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
                                 EDIT
                               </Link>
                               <Link key="index3" className="dropdown-item" to="/delete">
                                 DELETE
 
-                              </Link>
-                              <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                              </Link> <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
                                 Mint
                               </Link>
-                              <Link key="index6" className="dropdown-item" to={`/item`}  >
-                                ITEM DETAILS
-                              </Link>
+                             </> : <>
+                              { e?.status === "active" ? <Link key="index6" to={``} onClick={() => DeList(e?._id)}  className="dropdown-item"  >
+                                DeLIST
+                              </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
+                                List
+                              </Link>  } </>  }
                             </>
 
                           </Dropdown.Menu>

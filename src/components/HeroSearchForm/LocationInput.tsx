@@ -55,7 +55,7 @@ const LocationInput: FC<LocationInputProps> = ({
     return () => {
       document.removeEventListener("click", eventClickOutsideDiv);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [showPopover]);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import Label from "components/Label/Label";
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC, useState, useEffect } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
@@ -17,6 +17,7 @@ import { CollectionMediaUpload } from "../API/Collection_mediaupload";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ClipLoader from "react-spinners/ClipLoader";
+import { useParams } from "react-router-dom";
 
 
 import {
@@ -87,6 +88,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [royalties, setRoyalties] = useState("");
   const initialValues: MyFormValues = { collectionName: '' };
   let [color, setColor] = useState("#ffffff");
+  const id = useParams()
 
   const CollectionLogoUpload = (e: any) => {
     const formData = new FormData();
@@ -104,6 +106,21 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }
     return valid;
   }
+
+  const getCollection = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/detail?collection_id=${id?.id}`).then(res => {
+      setCollectionName(res?.data?.result?.name)
+      setLogoFile(res?.data?.result?.image)
+      setRoyalties(res?.data?.result?.royalties)
+      console.log(res, "res")
+    })
+  }
+
+  useEffect(() => {
+
+    getCollection()
+
+  }, [])
 
 
 
@@ -133,11 +150,11 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   });
   const formik = useFormik({
     initialValues: {
-      logo: null,
+      logo: logoFile,
       banner: null,
-      title: "",
+      title: collectionName,
       description: "",
-      royalties: 0
+      royalties: royalties
     },
     enableReinitialize: true,
     validationSchema: schema,
@@ -149,7 +166,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
         description: values.description,
         banner: bannerFile,
         image: logoFile,
-        royalties: values.royalties
+        royalties: values.royalties,
+        collection_id: id?.id
       }
 
       const config = {
@@ -157,7 +175,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       };
 
       axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/collection/add`, postData, config)
+        .put(`${process.env.REACT_APP_BACKEND_URL}/collection/update`, postData, config)
         .then((res) => {
           console.log(res, "789")
           setLogoFile(res?.data?.filepath)
@@ -218,6 +236,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }, 1000)
   }
 
+
+  console.log(logoFile, "logoFile")
+
+  console.log(inputImage, "inputImage")
   return (
     <div
       className={`nc-PageUploadItem ${className}`}
@@ -230,7 +252,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           {/* HEADING */}
           <div className="max-w-2xl">
             <h2 className="text-3xl sm:text-4xl font-semibold">
-              Create New Collection
+              Edit Collection
             </h2>
             <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
               You can set preferred display name, create your profile URL and
@@ -248,15 +270,25 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           >
             <Form onSubmit={formik.handleSubmit}>
               <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
-                <div>
+              <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
                     Logo image*
                   </h3>
                   <span className="text-neutral-500 dark:text-neutral-400 text-sm">
                     This image will also be used for navigation. 350 x 350 recommended.
                   </span>
-                  {inputImage ?
-                    <>
+                 
+                  { inputImage === "" ?   <>
+                      <div className="nft-card card shadow-sm">
+                        <div className="card-body">
+                          <div className="img-wrap">
+                            <img src={`${process.env.REACT_APP_BACKEND_URL}/${logoFile}`} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </> :   <>
                       <div className="nft-card card shadow-sm">
                         <div className="card-body">
                           <div className="img-wrap">
@@ -266,7 +298,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                       </div>
 
 
-                    </> :
+                    </>  }
                     <>
                       <div className="mt-5" style={{ width: "100%" }}>
                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
@@ -306,7 +338,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                           </div>
                         </div>
                       </div>
-                    </>}
+                    </>
                 </div>
                 {/* <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
@@ -371,7 +403,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 <FormItem label="Collection name">
                   <Input className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
                     placeholder="Collection Name"
-                    id="title" type="text" name='title' onChange={formik.handleChange} ></Input>
+                    id="title" type="text" name='title' onChange={formik.handleChange} value={formik.values.title}></Input>
                     <div className="form-error">{formik.errors.title}</div>
                 </FormItem>
 
@@ -389,7 +421,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 <div className="grid grid-cols-8 md:grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
                   {/* ---- */}
                   <FormItem label="Royalties">
-                    <Input placeholder="10%" />
+                    <Input placeholder="10%" value={formik.values.royalties} />
                     <div className="form-error">{formik.errors.royalties}</div>
                   </FormItem>
                 </div>

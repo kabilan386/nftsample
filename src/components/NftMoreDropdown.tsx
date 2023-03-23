@@ -4,25 +4,28 @@ import ModalDelete from "./ModalDelete";
 import ModalEdit from "./ModalEdit";
 import ModalReportItem from "./ModalReportItem";
 import ModalTransferToken from "./ModalTransferToken";
+import axios from "axios";
 
 export interface NftMoreDropdownProps {
   containerClassName?: string;
   iconClass?: string;
+  itemId?: any;
   dropdownPositon?: "up" | "down";
   actions?: { id: string; name: string; icon?: string; href?: string }[];
 }
 
 const actionsDefault: NftMoreDropdownProps["actions"] = [
-  { id: "edit", name: "Change price", icon: "las la-dollar-sign" },
-  { id: "transferToken", name: "Transfer token", icon: "las la-sync" },
+  // { id: "edit", name: "Change price", icon: "las la-dollar-sign" },
+  // { id: "transferToken", name: "Transfer token", icon: "las la-sync" },
   { id: "report", name: "Report abuse", icon: "las la-flag" },
-  { id: "delete", name: "Delete item", icon: "las la-trash-alt" },
+  // { id: "delete", name: "Delete item", icon: "las la-trash-alt" },
 ];
 
 const NftMoreDropdown: FC<NftMoreDropdownProps> = ({
   containerClassName = "py-1.5 px-3 flex rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer",
   iconClass = "w-4 h-4 sm:h-5 sm:w-5",
   dropdownPositon = "down",
+  itemId,
   actions = actionsDefault,
 }) => {
   const [isEditting, setIsEditting] = useState(false);
@@ -41,6 +44,9 @@ const NftMoreDropdown: FC<NftMoreDropdownProps> = ({
 
   const openModalTransferToken = () => setIsTransfering(true);
   const closeModalTransferToken = () => setIsTransfering(false);
+
+  
+
 
   const hanldeClickDropDown = (item: NcDropDownItem) => {
     if (item.href) {
@@ -83,15 +89,16 @@ const NftMoreDropdown: FC<NftMoreDropdownProps> = ({
       {renderMenu()}
       <ModalReportItem
         show={isReporting}
+        itemIDS={itemId}
         onCloseModalReportItem={closeModalReport}
       />
-      <ModalEdit show={isEditting} onCloseModalEdit={closeModalEdit} />
+      {/* <ModalEdit show={isEditting} onCloseModalEdit={closeModalEdit} />
 
       <ModalDelete show={isDeleting} onCloseModalDelete={closeModalDelete} />
       <ModalTransferToken
         show={isTransfering}
         onCloseModalTransferToken={closeModalTransferToken}
-      />
+      /> */}
     </div>
   );
 };

@@ -152,7 +152,6 @@ const CardNFTMusic: FC<CardNFTMusicProps> = ({
         </Link>
       </div>
 
-      <Link to={"/nft-detailt"} className="absolute inset-0 "></Link>
     </div>
   );
 };
