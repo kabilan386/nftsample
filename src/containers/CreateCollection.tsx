@@ -109,11 +109,11 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
 
   const schema = yup.object().shape({
-    // logo: yup.mixed().required("Logo image is required").test("fileSize", "The file is too large", (value) => {
-    //   return (!value || value[0].size <= 2000000)
-    // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
-    //   return !value || checkIfFilesAreCorrectType(value[0]);
-    // }),
+    logo: yup.mixed().required("Logo image is required").test("fileSize", "The file is too large", (value) => {
+      return (!value || value[0].size <= 2000000)
+    }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
+      return !value || checkIfFilesAreCorrectType(value[0]);
+    }),
     // banner: yup.mixed().required("Banner file is required").test("fileSize", "The file is too large", (value) => {
     //   return !value || value[0].size <= 2000000
     // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
@@ -293,10 +293,14 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                 <span>Upload a file</span>
                                 <input
                                   id="file-upload"
-                                  name="file-upload"
+                                  name="logo"
                                   type="file"
                                   className="sr-only"
-                                  onChange={e => ImagehandleChange(e)}
+                                  onChange={e => {
+                                    formik.setFieldValue("logo", e.target.files)
+                                    ImagehandleChange(e)
+                                }
+                                }
                                 />
                               </label>
                             </div>
@@ -307,6 +311,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                         </div>
                       </div>
                     </>}
+                    <div className="form-error">{formik.errors.logo}</div>
                 </div>
                 {/* <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
