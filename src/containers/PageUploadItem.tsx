@@ -35,6 +35,7 @@ const override: CSSProperties = {
 
 const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
+  const supportedFormates = ['image/jpeg', 'image/jpg', 'image/png'];
   const [collectionData, setCollectionData] = useState<any[]>([])
   const [inputImage, setInputImage] = useState('');
   const [inputImageformedia, setInputImageformedia] = useState('');
@@ -308,15 +309,15 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
   // console.log(categorystate?.[0]?.value, "789")
 
-  // const checkIfFilesAreCorrectType = (files: any) => {
-  //     let valid = true;
-  //     if (files) {
-  //         if (!supportedFormates.includes(files.type)) {
-  //             valid = false;
-  //         }
-  //     }
-  //     return valid;
-  // }
+  const checkIfFilesAreCorrectType = (files: any) => {
+      let valid = true;
+      if (files) {
+          if (!supportedFormates.includes(files.type)) {
+              valid = false;
+          }
+      }
+      return valid;
+  }
 
   // const checkIfFilesAreCorrectTypeThumb = (files: any) => {
   //     let valid = true;
@@ -335,14 +336,15 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
       //     return !value || checkIfFilesAreCorrectTypeThumb(value[0]);
       // }),
-      // mediafile: yup.mixed().required("Media file is required").test("fileSize", "The file is too large", (value) => {
-      //     return !value || value[0].size <= 100000000
-      // }).test('FILE_Type', "Image file supported JPEG , PNG ,PNG, GIF, SVG, MP4, WEBM, MP3, WAV & OGG", (value) => {
-      //     return !value || checkIfFilesAreCorrectType(value[0]);
-      // }),
+      mediafile: yup.mixed().required("Media file is required").test("fileSize", "The file is too large", (value) => {
+          return !value || value[0].size <= 100000000
+      }).test('FILE_Type', "Image file supported JPEG , PNG ,PNG, GIF, SVG, MP4, WEBM, MP3, WAV & OGG", (value) => {
+          return !value || checkIfFilesAreCorrectType(value[0]);
+      }),
       name: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
       description: yup.string().min(3, "Item description must be atleast 3 letter").required("Item description is required"),
       link: yup.string().min(3, "Item Link must be atleast 3 letter"),
+      // plan: yup.object().required('Please select a Collection'),
       // enableAuction: yup.boolean(),
       // enableBID: yup.boolean(),
   });
@@ -355,8 +357,9 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       link: "",
       price: 0,
       enableAuction: "false",
-      enableBID: "false",
-      datatimeForAuction: null
+      enableBID: "false", 
+      datatimeForAuction: null,
+     
     },
     enableReinitialize: true,
     validationSchema: schema,
@@ -432,7 +435,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
   }, [])
 
-  console.log(plan, "plan")
+  console.log(formik.errors, "plan")
 
 
 
@@ -501,10 +504,14 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                           <input
 
                             id="file-upload"
-                            name="file-upload"
+                            name='mediafile'
                             type="file"
                             className="sr-only"
-                            onChange={e => ImagehandleChangeFormedia(e)}
+                            onChange={e => {
+                              formik.setFieldValue("mediafile", e.target.files)
+                              ImagehandleChangeFormedia(e)
+                          }
+                          }
 
                           />
                         </label>
@@ -517,6 +524,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   </div>
                 </div>
               </>}
+              <div className="form-error">{formik.errors.mediafile}</div>
             </div>
 
             {/* ---- */}
@@ -563,7 +571,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
               <div className="text-neutral-500 dark:text-neutral-400 text-sm">
                 Choose an exiting collection or create a new one
               </div>
-              <RadioGroup value={plan} onChange={setPlan}>
+              <RadioGroup onChange={setPlan}>
                 <RadioGroup.Label className="sr-only">
                   Server size
                 </RadioGroup.Label>
@@ -574,6 +582,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                     
                       key={index}
                       value={plan}
+                     
+                     
                                
                       className={({ active, checked }) =>
                         `${active
@@ -615,16 +625,24 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                     }`}
                                 >
                                   {plan?.name}
+                                 
                                 </RadioGroup.Label>
                               </div>
                             </div>
                           </div>
+                          
                         </>
                       )}
+                      
                     </RadioGroup.Option>
+                   
                   ))}
                 </div>
               </RadioGroup>
+{/* 
+              {formik.errors.plan && formik.touched.plan && (
+        <div>{formik.errors.plan}</div>
+      )} */}
             </div>
 
             {/* ---- */}

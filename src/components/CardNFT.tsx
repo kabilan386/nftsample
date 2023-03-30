@@ -117,7 +117,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
                 className={`grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10  mt-8 lg:mt-10"`}
                 data-nc-id="CardNFT"
               >
-                {marketData?.map((e, index) => (
+                {marketData?.filter(elem => elem.status === "active").map((e, index) => (
                   <>
                     {console.log(typeof (e?.like_count), "liked")}
                     <div key={index}>
