@@ -8,13 +8,16 @@ import { Transition } from "@headlessui/react";
 
 export interface HeaderFilterSearchPageProps {
   className?: string;
+  data?: any
 }
 
 const HeaderFilterSearchPage: FC<HeaderFilterSearchPageProps> = ({
-  className = "mb-12",
+  className = "mb-12", data
 }) => {
   const [isOpen, setIsOpen] = React.useState(true);
   const [tabActive, setTabActive] = React.useState("All NFTs");
+
+
 
   return (
     <div className={`flex flex-col relative ${className}`}>
@@ -95,7 +98,7 @@ const HeaderFilterSearchPage: FC<HeaderFilterSearchPageProps> = ({
         leaveTo="opacity-0"
       >
         <div className="w-full border-b border-neutral-200/70 dark:border-neutral-700 my-8"></div>
-        <TabFilters />
+        <TabFilters data={data} />
       </Transition>
     </div>
   );

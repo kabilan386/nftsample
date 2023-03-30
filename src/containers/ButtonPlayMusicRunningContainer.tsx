@@ -46,7 +46,7 @@ const ButtonPlayMusicRunningContainer: FC<
     }
     dispatch(addNewIdListAudio(nftId));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [nftId]);
   //
 

@@ -5,7 +5,7 @@ import Pagination from "shared/Pagination/Pagination";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import SectionSliderCollections from "components/SectionSliderCollections";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
-import HeaderFilterSearchPage from "components/HeaderFilterSearchPage";
+
 import Input from "shared/Input/Input";
 import ButtonCircle from "shared/Button/ButtonCircle";
 import CardNFT from "components/CardNFT";
@@ -76,34 +76,7 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
         </header>
       </div>
 
-      <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
-        <main>
-          {/* FILTER */}
-          <HeaderFilterSearchPage />
-
-          {/* LOOP ITEMS */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-            {Array.from("11111111").map((_, index) => (
-              <CardNFT key={index} />
-            ))}
-          </div>
-
-          {/* PAGINATION */}
-          <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
-            <Pagination />
-            <ButtonPrimary loading>Show me more</ButtonPrimary>
-          </div>
-        </main>
-
-        {/* === SECTION 5 === */}
-        <div className="relative py-16 lg:py-28">
-          <BackgroundSection />
-          <SectionSliderCollections />
-        </div>
-
-        {/* SUBCRIBES */}
-        <SectionBecomeAnAuthor />
-      </div>
+     <CardNFT />
     </div>
   );
 };

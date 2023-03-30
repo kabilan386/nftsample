@@ -21,10 +21,13 @@ import Collection from "containers/Collection";
 import PageSearch from "containers/PageSearch";
 import PageUploadItem from "containers/PageUploadItem";
 import CreateCollection from "containers/CreateCollection";
+import EditCollection from "containers/EditCollection";
 import ItemList from "containers/Item"
+import EditItem from "containers/EditItem"
 import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
 import PageHome3 from "containers/PageHome/PageHome3";
+import CreateListItem from "containers/CreateListItem";
 
 export const pages: Page[] = [
   { path: "/", component: PageHome2 },
@@ -32,7 +35,7 @@ export const pages: Page[] = [
   { path: "/home2", component: PageHome },
   { path: "/home3", component: PageHome3 },
   { path: "/home-header-2", component: PageHome },
-  { path: "/nft-detailt", component: NftDetailPage },
+  { path: "/nft-detailt/:id", component: NftDetailPage },
   { path: "/page-collection", component: PageCollection },
   { path: "/collection", component: Collection },
   { path: "/page-search", component: PageSearch },
@@ -49,6 +52,9 @@ export const pages: Page[] = [
   { path: "/subscription", component: PageSubcription },
   { path: "/create-collection", component: CreateCollection },
   { path: "/collection/:id", component: ItemList },
+  { path: "/edititem/:id", component: EditItem },
+  { path: "/editcollection/:id", component: EditCollection },
+  { path: "/createListItem/:id", component: CreateListItem }
 ];
 
 const MyRoutes = () => {

@@ -30,7 +30,7 @@ const AudioForNft: FC<AudioForNftProps> = ({
       resetIsShowing();
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [currentMediaRunning]);
 
   useEffect(() => {
@@ -55,14 +55,14 @@ const AudioForNft: FC<AudioForNftProps> = ({
 
   return (
     <div
-      className={className}
-      title="Play"
-      dangerouslySetInnerHTML={{
-        __html: `<audio id=${nftId} loop  >
-                <source src=${src} type="audio/mp3" />
-                Your browser does not support the audio element.
-              </audio>`,
-      }}
+      // className={className}
+      // title="Play"
+      // dangerouslySetInnerHTML={{
+      //   __html: `<audio id=${nftId} loop  >
+      //           <source src=${src} type="audio/mp3" />
+      //           Your browser does not support the audio element.
+      //         </audio>`,
+      // }}
     ></div>
   );
 };

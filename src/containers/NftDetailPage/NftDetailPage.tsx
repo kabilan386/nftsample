@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Avatar from "shared/Avatar/Avatar";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
@@ -14,8 +14,10 @@ import TabDetail from "./TabDetail";
 import collectionPng from "images/nfts/collection.png";
 import ItemTypeVideoIcon from "components/ItemTypeVideoIcon";
 import LikeButton from "components/LikeButton";
+import { useParams } from "react-router-dom";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
+import axios from "axios";
 
 export interface NftDetailPageProps {
   className?: string;
@@ -26,23 +28,77 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   className = "",
   isPreviewMode,
 }) => {
+
+  const id = useParams()
+  const [getitemDetails, setGetDetails] = useState([])
+  const [itemName, setItemName] = useState('');
+  const [collectionName, setCollectionName] = useState('');
+  const [collectionImage, setCollectionimage] = useState('');
+  const [currentOwner, setCurrentOwner] = useState('');
+  const [itemLink, setItemLink] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemImage, setItemImage] = useState('');
+  const [itemId, setItemId] = useState('');
+  const [itemCount, setItemCount] = useState();
+  const [itemPrice, setItemPrice] = useState('');
+  const [itemContract, setItemContract] = useState("")
+  const [currentBid, setCurrentBid] = useState('');
+  const [placeBid, setPlaceBid] = useState();
+
+  const getItem = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
+      
+      setItemName(res?.data?.data?.docs?.[0]?.name)
+      setItemDescription(res?.data?.data?.docs?.[0]?.description)
+      setItemLink(res?.data?.data?.docs?.[0]?.external_link)
+      setItemImage(res?.data?.data?.docs?.[0]?.media)
+      setItemPrice(res?.data?.data?.docs?.[0]?.price)
+      setCurrentBid(res?.data?.data?.docs?.[0]?.endDateTime)
+      setItemContract(res?.data?.data?.docs?.[0]?.collection_id?.contract_address)
+      setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
+      setCollectionimage(res?.data?.data?.docs?.[0]?.collection_id?.image)
+      setItemId(res?.data?.data?.docs?.[0]?._id)
+      setItemCount(res?.data?.data?.docs?.[0]?.like_count)
+      setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
+      setCurrentOwner(res?.data?.data?.docs?.[0]?.current_owner?._id)
+      
+    })
+  }
+
+  console.log(collectionPng, "fixed")
+
+  console.log(itemId, currentOwner, "name")
+
+  useEffect(() => {
+
+    getItem()
+
+  }, [])
+    
+
+
+
+
+
   const renderSection1 = () => {
+
+
     return (
       <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
         {/* ---------- 1 ----------  */}
         <div className="pb-9 space-y-5">
           <div className="flex justify-between items-center">
             <Badge name="Virtual Worlds" color="green" />
-            <LikeSaveBtns />
+            <LikeSaveBtns id={itemId} owner={currentOwner} />
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
-            BearX #3636
+            {itemName}
           </h2>
 
           {/* ---------- 4 ----------  */}
           <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
             <div className="flex items-center ">
-              <Avatar sizeClass="h-9 w-9" radius="rounded-full" />
+              <Avatar sizeClass="h-9 w-9" radius="rounded-full"/>
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Creator</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
@@ -54,14 +110,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             <div className="hidden sm:block h-6 border-l border-neutral-200 dark:border-neutral-700"></div>
             <div className="flex items-center">
               <Avatar
-                imgUrl={collectionPng}
+                imgUrl={`${process.env.REACT_APP_BACKEND_URL}${collectionImage}`}
                 sizeClass="h-9 w-9"
                 radius="rounded-full"
               />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Collection</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-                  <span>{"The Moon Ape"}</span>
+                  <span>{collectionName}</span>
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>
               </span>
@@ -71,7 +127,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
         {/* ---------- 6 ----------  */}
         <div className="py-9">
-          <TimeCountDown />
+          <TimeCountDown time={currentBid} />
         </div>
 
         {/* ---------- 7 ----------  */}
@@ -83,10 +139,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 Current Bid
               </span>
               <span className="text-3xl xl:text-4xl font-semibold text-green-500">
-                1.000 ETH
-              </span>
-              <span className="text-lg text-neutral-400 sm:ml-5">
-                ( ≈ $3,221.22)
+                {itemPrice}
               </span>
             </div>
 
@@ -96,7 +149,40 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+           { placeBid !== true ?  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M7 12H14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+
+              <span className="ml-2.5">BUY NOW</span>
+            </ButtonPrimary> :  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -129,8 +215,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">Place a bid</span>
-            </ButtonPrimary>
-            <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary> }
+            { placeBid !== true ? <ButtonSecondary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M8.57007 15.27L15.11 8.72998"
@@ -163,7 +249,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5"> Make offer</span>
-            </ButtonSecondary>
+            </ButtonSecondary> : null }
           </div>
         </div>
 
@@ -188,17 +274,17 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             {/* HEADING */}
             <div className="relative">
               <NcImage
-                src={nftsLargeImgs[0]}
+                src={`${process.env.REACT_APP_BACKEND_URL}/${itemImage}`}
                 containerClassName="aspect-w-11 aspect-h-12 rounded-3xl overflow-hidden"
               />
               {/* META TYPE */}
               <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
 
               {/* META FAVORITES */}
-              <LikeButton className="absolute right-3 top-3 " />
+              <LikeButton  className="absolute right-3 top-3" id={itemId} likeCount={itemCount}  />
             </div>
 
-            <AccordionInfo />
+            <AccordionInfo details={itemDescription} contract={itemContract}/>
           </div>
 
           {/* SIDEBAR */}

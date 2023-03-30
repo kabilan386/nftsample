@@ -36,10 +36,14 @@ const override: CSSProperties = {
 const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
   const [collectionData, setCollectionData] = useState<any[]>([])
+  const [itemData, setItemData] = useState<any[]>([])
   const [inputImage, setInputImage] = useState('');
   const [inputImageformedia, setInputImageformedia] = useState('');
-  const [inputvideoformedia, setInputvideoformedia] = useState('');
+  const [itemImage, setItemImage] = useState('');
   const [inputmusicformedia, setInputmusicformedia] = useState('');
+  const [itemName, setItemName] = useState('');
+  const [itemLink, setItemLink] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
   const [categorystate, setCategorystate] = useState([]);
   const [formValues, setFormValues] = useState([])
   const [formValuesforLevel, setFormValuesforLevel] = useState([])
@@ -64,13 +68,17 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [choose, setChoose] = useState("")
   const [plan, setPlan] = useState(collectionData[0])
 
+  
+
   console.log(collectionId, "collectionId")
 
-  console.log(collectionData, "Data")
+  console.log(plan, "Data")
 
 
   const id = location.state || {};
   console.log(id, "ids")
+
+ 
 
   // let addFormFields = () => {
   //     setFormValues([...formValues, { type: "", name: "" }])
@@ -349,10 +357,10 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const formik = useFormik({
     initialValues: {
       thumbfile: null,
-      mediafile: null,
-      name: "",
-      description: "",
-      link: "",
+      mediafile: itemImage,
+      name: itemName,
+      description: itemDescription,
+      link: itemLink,
       price: 0,
       enableAuction: "false",
       enableBID: "false",
@@ -380,18 +388,20 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
         "attributes": formValues,
         "levels": formValuesforStats,
         "stats": formValuesforStats,
+        "item_id": collectionId?.id
       }
       setSpinner(true);
 
       axios
-        .post(`${process.env.REACT_APP_BACKEND_URL}/item/add`, postData, config)
+        .put(`${process.env.REACT_APP_BACKEND_URL}/item/update`, postData, config)
         .then((res) => {
           console.log(res, "789")
 
           if (res.data.status == true) {
             toast.success(res.data.message)
             setLoading(true);
-            setTimeout(() => (window.location.href = `/collection/${plan?._id}`), 1500);
+            console.log(plan?._id, "value")
+            setTimeout(() => (window.location.href = `/collection/${res?.data?.result?.collection_id}`), 2000);
 
           } else {
             toast.error(res.data.message)
@@ -414,21 +424,29 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
 
   const getCollection = () => {
-
-    const config = {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-    };
-
-
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list?page=1&&type=my`,  config ).then(res => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list?page=1&&type=my`).then(res => {
       setCollectionData(res?.data?.data?.docs)
       console.log(res, "res")
     })
   }
 
+  const getItem = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${collectionId?.id}`).then(res => {
+      
+      setItemName(res?.data?.data?.docs?.[0]?.name)
+      setItemDescription(res?.data?.data?.docs?.[0]?.description)
+      setItemLink(res?.data?.data?.docs?.[0]?.external_link)
+      setItemImage(res?.data?.data?.docs?.[0]?.media)
+      
+    })
+  }
+
+  console.log(itemData, "itemData")
+
   useEffect(() => {
 
     getCollection()
+    getItem()
 
   }, [])
 
@@ -449,7 +467,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           {/* HEADING */}
           <div className="max-w-2xl">
             <h2 className="text-3xl sm:text-4xl font-semibold">
-              Create New Item
+              Edit Item
             </h2>
             <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
               You can set preferred display name, create your profile URL and
@@ -466,15 +484,25 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
                 OGG, GLB, GLTF. Max size: 100 MB
               </span>
-              {inputImage ? <>
-                <div className="nft-card card shadow-sm">
+             
+              { inputImage !== "" ?  <>
+               <div className="nft-card card shadow-sm">
                   <div className="card-body">
                     <div className="img-wrap">
                       <img src={inputImage} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
                     </div>
                   </div>
                 </div>
-              </> : <>
+              </> :  <>
+               <div className="nft-card card shadow-sm">
+                  <div className="card-body">
+                    <div className="img-wrap">
+                      <img src={`${process.env.REACT_APP_BACKEND_URL}/${itemImage}`} alt="" style={{ width: "100%", height: "400px", borderRadius: "10px" }} />
+                    </div>
+                  </div>
+                </div>
+              </> }  
+              <>
                 <div className="mt-5 ">
                   <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl">
                     <div className="space-y-1 text-center">
@@ -516,7 +544,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                     </div>
                   </div>
                 </div>
-              </>}
+              </>
             </div>
 
             {/* ---- */}
@@ -558,7 +586,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
             <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
 
-            <div>
+            {/* <div>
               <Label>Choose collection</Label>
               <div className="text-neutral-500 dark:text-neutral-400 text-sm">
                 Choose an exiting collection or create a new one
@@ -625,7 +653,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   ))}
                 </div>
               </RadioGroup>
-            </div>
+            </div> */}
 
             {/* ---- */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">

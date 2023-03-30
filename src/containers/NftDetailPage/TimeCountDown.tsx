@@ -1,8 +1,65 @@
 import useCountDownTime from "hooks/useCountDownTime";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const TimeCountDown = () => {
-  const timeLeft = useCountDownTime();
+const TimeCountDown = ({ time }) => {
+
+  
+
+
+  const [date, setDate] = useState()
+  const [hours, setHours] = useState()
+  const [minute, setMinte] = useState()
+  const [seconds, setSeconds] = useState()
+
+
+
+  // console.log(new Date(time), "time")
+  // const day = new Date(time);
+  // console.log(day.getMonth(), "month")
+  // const timeLeft = useCountDownTime();
+
+  const calculateTimeLeft = () => {
+
+
+    // let year = new Date(time).getFullYear();
+    // let month = new Date(time).getMonth();
+    let difference = +new Date(time) - +new Date();
+
+    console.log(difference, "difference")
+
+    let timeLeft = {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+  
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+     setTimeLeft(calculateTimeLeft());
+     console.log(timeLeft, "timeLeft")
+     console.log("Hi")
+    }, 1000);
+    return () => clearTimeout(timer);
+  });
+
+  console.log(timeLeft.days, "days")
+
+
 
   return (
     <div className="space-y-5">

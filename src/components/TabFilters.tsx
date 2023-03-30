@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonThird from "shared/Button/ButtonThird";
@@ -6,22 +6,23 @@ import ButtonClose from "shared/ButtonClose/ButtonClose";
 import Checkbox from "shared/Checkbox/Checkbox";
 import Slider from "rc-slider";
 import Radio from "shared/Radio/Radio";
+import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/outline";
 
 // DEMO DATA
 const typeOfSales = [
   {
-    name: "Buy now",
+    name: "Buy now", value: "buy"
   },
-  {
-    name: "On Auction",
-  },
-  {
-    name: "New",
-  },
-  {
-    name: "Has Offers",
-  },
+  // {
+  //   name: "On Auction",
+  // },
+  // {
+  //   name: "New", value: ""
+  // },
+  // {
+  //   name: "Has Offers",
+  // },
 ];
 
 const fileTypes = [
@@ -36,23 +37,30 @@ const fileTypes = [
   },
 ];
 
-const sortOrderRadios = [
-  { name: "Recently listed", id: "Recently-listed" },
-  { name: "Ending soon", id: "Ending-soon" },
-  { name: "Price low - hight", id: "Price-low-hight" },
-  { name: "Price hight - low", id: "Price-hight-low" },
-  { name: "Most favorited", id: "Most-favorited" },
-];
+// const sortOrderRadios = [
+//   { name: "Recently listed", id: "Recently-listed" },
+//   { name: "Ending soon", id: "Ending-soon" },
+//   { name: "Price low - hight", id: "Price-low-hight" },
+//   { name: "Price hight - low", id: "Price-hight-low" },
+//   { name: "Most favorited", id: "Most-favorited" },
+// ];
 
 //
-const TabFilters = () => {
+const TabFilters = ({ data }) => {
   const [isOpenMoreFilter, setisOpenMoreFilter] = useState(false);
   //
   const [isVerifiedCreator, setIsVerifiedCreator] = useState(true);
-  const [rangePrices, setRangePrices] = useState([0.01, 10]);
+  const [rangePrices, setRangePrices] = useState([0.00, 0]);
   const [fileTypesState, setfileTypesState] = useState<string[]>([]);
   const [saleTypeStates, setSaleTypeStates] = useState<string[]>([]);
+  const [collectionData, setCollectionData] = useState<any[]>([]);
   const [sortOrderStates, setSortOrderStates] = useState<string>("");
+
+  console.log(rangePrices, "range")
+
+  useEffect(() => {
+    data(sortOrderStates, saleTypeStates, rangePrices)
+  }, [sortOrderStates, saleTypeStates, rangePrices])
 
   //
   const closeModalMoreFilter = () => setisOpenMoreFilter(false);
@@ -70,6 +78,20 @@ const TabFilters = () => {
       ? setSaleTypeStates([...saleTypeStates, name])
       : setSaleTypeStates(saleTypeStates.filter((i) => i !== name));
   };
+
+  const getCollection = () => {
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list`).then(res => {
+      setCollectionData(res?.data?.data?.docs)
+      console.log(res, "res")
+    })
+  }
+
+  useEffect(() => {
+
+    getCollection()
+
+  }, [])
 
   //
 
@@ -174,7 +196,7 @@ const TabFilters = () => {
                           label={item.name}
                           defaultChecked={saleTypeStates.includes(item.name)}
                           onChange={(checked) =>
-                            handleChangeSaleType(checked, item.name)
+                            handleChangeSaleType(checked, item.value)
                           }
                         />
                       </div>
@@ -205,6 +227,8 @@ const TabFilters = () => {
       </Popover>
     );
   };
+
+  console.log(sortOrderStates, saleTypeStates, "states")
 
   // OK
   const renderTabsSortOrder = () => {
@@ -266,9 +290,9 @@ const TabFilters = () => {
 
               <span className="ml-2">
                 {sortOrderStates
-                  ? sortOrderRadios.filter((i) => i.id === sortOrderStates)[0]
+                  ? collectionData.filter((i) => i._id === sortOrderStates)[0]
                       .name
-                  : "Sort order"}
+                  : "Collection"}
               </span>
               {!sortOrderStates.length ? (
                 <ChevronDownIcon className="w-4 h-4 ml-3" />
@@ -290,13 +314,13 @@ const TabFilters = () => {
               <Popover.Panel className="absolute z-40 w-screen max-w-sm px-4 mt-3 left-0 sm:px-0 lg:max-w-md">
                 <div className="overflow-hidden rounded-2xl shadow-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
                   <div className="relative flex flex-col px-5 py-6 space-y-5">
-                    {sortOrderRadios.map((item) => (
+                    {collectionData.map((item) => (
                       <Radio
-                        id={item.id}
-                        key={item.id}
+                        id={item._id}
+                        key={item._id}
                         name="radioNameSort"
                         label={item.name}
-                        defaultChecked={sortOrderStates === item.id}
+                        defaultChecked={sortOrderStates === item._id}
                         onChange={setSortOrderStates}
                       />
                     ))}
@@ -837,7 +861,7 @@ const TabFilters = () => {
                         <h3 className="text-xl font-medium">Sort Order</h3>
                         <div className="mt-6 relative ">
                           <div className="relative flex flex-col space-y-5">
-                            {sortOrderRadios.map((item) => (
+                            {collectionData.map((item) => (
                               <Radio
                                 id={item.id}
                                 key={item.id}
@@ -888,9 +912,9 @@ const TabFilters = () => {
       <div className="hidden lg:flex space-x-4">
         {renderTabsPriceRage()}
         {renderTabsTypeOfSales()}
-        {renderTabsFileTypes()}
+        {/* {renderTabsFileTypes()} */}
         {renderTabsSortOrder()}
-        {renderTabVerifiedCreator()}
+        {/* {renderTabVerifiedCreator()} */}
       </div>
 
       {/* FOR RESPONSIVE MOBILE */}

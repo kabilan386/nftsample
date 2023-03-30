@@ -221,3 +221,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .dropdown-toggle {
   border: none;
 }
+
+.iconColor {
+  color: rgba(var(--c-primary-600), var(--tw-bg-opacity));
+  font-size: 1.4rem;
+  margin: 5px 10px
+
+}
+
+.iconColor:hover {
+  background-color: none;
+}
