@@ -115,7 +115,7 @@ export const NAVIGATION_DEMO_2: NavItemType[] = [
   },
   {
     id: ncNanoId(),
-    href: "/page-upload-item",
-    name: "Help center",
+    href: "/activity",
+    name: "Activity",
   },
 ];

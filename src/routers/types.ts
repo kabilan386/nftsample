@@ -28,6 +28,7 @@ export interface LocationStates {
   "/edititem/:id"?: {};
   "/editcollection/:id"?: {};
   "/createListItem/:id"?: {};
+  "/activity"?: {};
 }
 
 export type PathName = keyof LocationStates;
