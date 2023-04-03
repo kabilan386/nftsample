@@ -28,6 +28,7 @@ import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
 import PageHome3 from "containers/PageHome/PageHome3";
 import CreateListItem from "containers/CreateListItem";
+import Activity from "containers/Activity";
 
 export const pages: Page[] = [
   { path: "/", component: PageHome2 },
@@ -54,7 +55,8 @@ export const pages: Page[] = [
   { path: "/collection/:id", component: ItemList },
   { path: "/edititem/:id", component: EditItem },
   { path: "/editcollection/:id", component: EditCollection },
-  { path: "/createListItem/:id", component: CreateListItem }
+  { path: "/createListItem/:id", component: CreateListItem },
+  { path: "/activity", component: Activity }
 ];
 
 const MyRoutes = () => {
