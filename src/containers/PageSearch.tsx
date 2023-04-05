@@ -27,7 +27,7 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
       />
       <div className="container">
         <header className="max-w-2xl mx-auto -mt-10 flex flex-col lg:-mt-7">
-          <form className="relative w-full " method="post">
+          {/* <form className="relative w-full " method="post">
             <label
               htmlFor="search-input"
               className="text-neutral-500 dark:text-neutral-300"
@@ -72,7 +72,7 @@ const PageSearch: FC<PageSearchProps> = ({ className = "" }) => {
                 </svg>
               </span>
             </label>
-          </form>
+          </form> */}
         </header>
       </div>
 
