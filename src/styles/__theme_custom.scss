@@ -244,3 +244,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .activity {
   margin: 50px 0;
 }
+
+.currentAddress {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}

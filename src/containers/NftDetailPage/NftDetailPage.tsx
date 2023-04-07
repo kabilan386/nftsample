@@ -43,6 +43,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemPrice, setItemPrice] = useState('');
   const [itemContract, setItemContract] = useState("")
   const [currentBid, setCurrentBid] = useState('');
+  const [currentAddress, setCurrentAddress] = useState('');
   const [placeBid, setPlaceBid] = useState();
 
   const getItem = () => {
@@ -61,6 +62,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setItemCount(res?.data?.data?.docs?.[0]?.like_count)
       setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
       setCurrentOwner(res?.data?.data?.docs?.[0]?.current_owner?._id)
+      setCurrentAddress(res?.data?.data?.docs?.[0]?.current_owner?.address)
+
       
     })
   }
@@ -100,9 +103,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             <div className="flex items-center ">
               <Avatar sizeClass="h-9 w-9" radius="rounded-full"/>
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
-                <span className="text-sm">Creator</span>
+                <span className="text-sm">Current Owner</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-                  <span>{personNames[1]}</span>
+                  <span className="currentAddress">{currentAddress}</span>
                   <VerifyIcon iconClass="w-4 h-4" />
                 </span>
               </span>
