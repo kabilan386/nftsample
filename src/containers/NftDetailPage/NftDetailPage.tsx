@@ -18,6 +18,19 @@ import { useParams } from "react-router-dom";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 import axios from "axios";
+import Web3 from "web3";
+
+
+import { toast } from "react-toastify";
+
+declare let window: any;
+
+declare namespace NodeJS {
+  interface ProcessEnv {
+    REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS: string;
+    // add more environment variables here
+  }
+}
 
 export interface NftDetailPageProps {
   className?: string;
@@ -45,10 +58,13 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [currentBid, setCurrentBid] = useState('');
   const [currentAddress, setCurrentAddress] = useState('');
   const [placeBid, setPlaceBid] = useState();
+  const [adminCommistion, setAdminCommistion] = useState("")
+  const [autherState, setAutherState] = useState("")
+  const [toAddress, setToAddress] = useState("")
 
   const getItem = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
-      
+
       setItemName(res?.data?.data?.docs?.[0]?.name)
       setItemDescription(res?.data?.data?.docs?.[0]?.description)
       setItemLink(res?.data?.data?.docs?.[0]?.external_link)
@@ -63,8 +79,11 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setPlaceBid(res?.data?.data?.docs?.[0]?.enableBID)
       setCurrentOwner(res?.data?.data?.docs?.[0]?.current_owner?._id)
       setCurrentAddress(res?.data?.data?.docs?.[0]?.current_owner?.address)
+      setToAddress(res?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id)
+      setAutherState(res?.data?.data?.docs[0]?.author_id?.metamask_info?.id)
 
-      
+
+
     })
   }
 
@@ -77,7 +96,122 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
     getItem()
 
   }, [])
-    
+
+  useEffect(() => {
+
+    getCommission()
+
+  }, [adminCommistion])
+
+
+
+  const getCommission = () => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/settings/getoptions?name=admin_commission`, config).then(res => {
+      setAdminCommistion(res?.data?.result?.value)
+      console.log(res, "res")
+    })
+  }
+
+  //settings/getoptions?name=admin_commission
+
+
+
+  const buyFunction = async (data) => {
+
+    if (!sessionStorage.getItem("token")) {
+      toast.error("Please login your account")
+      setTimeout(() => (window.location.href = "/login"), 1500);
+    }
+    else if (!active) {
+      toast.error("Please connect your wallet")
+      setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
+    } else {
+
+      let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
+      let price = data?.data?.data?.docs?.[0]?.price;
+
+      const params = {
+        from: window.ethereum.selectedAddress,
+        to: toAddress,
+        value: (price * Math.pow(10, 18)).toString(),
+        gasPrice: '20000000000'
+      };
+
+      window.web3 = new Web3(window.ethereum);
+      window.ethereum.enable();
+      let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
+      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABIs || '{}')
+
+      let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+      let platformcommision = adminCommistion != null ? adminCommistion : 0;
+      let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+      let platformprice = price * platformcommision / 100;
+      let royalties = price * royaltiesCommission / 100;
+      let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+      let balancePrice = price * ((100 - totalCommission) / 100);
+      let recipients: number[] = [];;
+      let amounts: number[] = [];
+      let plateformAddress = toAddress;
+      let royolties = toAddress;
+
+      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      if (address) {
+        const numAddress = parseInt(address, 10);
+        recipients.push(numAddress);
+      }
+      recipients.push(Number(autherState));
+      recipients.push(toAddress);
+
+      amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+      amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+      amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+      // setSpinner(true)
+      try {
+        await instance.methods.sendNFT(recipients, amounts).send(params).then(res => {
+          if (res.status) {
+            // item/purchase
+            const config = {
+              headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+            };
+
+
+            axios
+              .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId }, config)
+              .then((res) => {
+                console.log(res, "789")
+                if (res.data.status == true) {
+                  //  setLoading(false)
+                  toast.success(res.data.message)
+                  //  setTimeout(() => (window.location.href = "/collection"), 1500);
+
+                } else {
+                  toast.error(res.data.message)
+                  // setTimeout(() => {
+                  //   setLoading(false)
+                  // }, 1000);
+                }
+              })
+
+          }
+        });
+      } catch (error: any) {
+        if (error.code === 4001) {
+          toast.warning(error.message)
+        }
+        // setSpinner(false)
+      }
+    }
+
+
+  }
+
 
 
 
@@ -101,7 +235,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           {/* ---------- 4 ----------  */}
           <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 text-sm">
             <div className="flex items-center ">
-              <Avatar sizeClass="h-9 w-9" radius="rounded-full"/>
+              <Avatar sizeClass="h-9 w-9" radius="rounded-full" />
               <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="text-sm">Current Owner</span>
                 <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
@@ -152,7 +286,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-           { placeBid !== true ?  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+            {placeBid !== true ? <ButtonPrimary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -185,7 +319,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">BUY NOW</span>
-            </ButtonPrimary> :  <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary> : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -218,8 +352,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">Place a bid</span>
-            </ButtonPrimary> }
-            { placeBid !== true ? <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary>}
+            {placeBid !== true ? <ButtonSecondary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M8.57007 15.27L15.11 8.72998"
@@ -252,7 +386,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5"> Make offer</span>
-            </ButtonSecondary> : null }
+            </ButtonSecondary> : null}
           </div>
         </div>
 
@@ -284,10 +418,10 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
 
               {/* META FAVORITES */}
-              <LikeButton  className="absolute right-3 top-3" id={itemId} likeCount={itemCount}  />
+              <LikeButton className="absolute right-3 top-3" id={itemId} likeCount={itemCount} />
             </div>
 
-            <AccordionInfo details={itemDescription} contract={itemContract}/>
+            <AccordionInfo details={itemDescription} contract={itemContract} />
           </div>
 
           {/* SIDEBAR */}
