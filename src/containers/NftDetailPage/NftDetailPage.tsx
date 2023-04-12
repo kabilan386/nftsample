@@ -18,7 +18,12 @@ import { useParams } from "react-router-dom";
 import AccordionInfo from "./AccordionInfo";
 import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecomeAnAuthor";
 import axios from "axios";
+import { Form } from "react-bootstrap";
 import Web3 from "web3";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Modal from 'react-bootstrap/Modal';
 
 
 import { toast } from "react-toastify";
@@ -60,7 +65,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [placeBid, setPlaceBid] = useState();
   const [adminCommistion, setAdminCommistion] = useState("")
   const [autherState, setAutherState] = useState("")
-  const [toAddress, setToAddress] = useState("")
+  const [royaltiesVal, setRoyalities] = useState("")
+  const [toAddressVal, setToAddress] = useState("")
+  const [offerVal, setOfferValue] = useState("")
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const getItem = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
@@ -81,6 +93,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setCurrentAddress(res?.data?.data?.docs?.[0]?.current_owner?.address)
       setToAddress(res?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id)
       setAutherState(res?.data?.data?.docs[0]?.author_id?.metamask_info?.id)
+      setRoyalities(res?.data?.data?.docs?.[0]?.collection_id?.royalties)
 
 
 
@@ -121,21 +134,89 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
   //settings/getoptions?name=admin_commission
 
+  const AddOffer = () => {
+
+    if(sessionStorage.getItem("token") === null) {
+      toast.error("Please connect Wallet")
+      return false;
+    }
+ 
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
 
 
-  const buyFunction = async (data) => {
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/addoffer`, {
+        "item_id": itemId,
+        "price": offerVal
+    }, config)
+      .then((res) => {
+        console.log(res, "789")
+        if (res.data.status == true) {
+          
+          toast.success(res.data.message)
+          setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
+
+        } else {
+          toast.error(res.data.message)
+          // setTimeout(() => {
+          //   setLoading(false)
+          // }, 1000);
+        }
+
+      })
+
+  }
+
+
+  const removeOffer = () => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/removeoffer`, { "item_id": itemId }, config)
+      .then((res) => {
+        console.log(res, "789")
+        if (res.data.status == true) {
+          //  setLoading(false)
+          toast.success(res.data.message)
+          //  setTimeout(() => (window.location.href = "/collection"), 1500);
+
+        } else {
+          toast.error(res.data.message)
+          // setTimeout(() => {
+          //   setLoading(false)
+          // }, 1000);
+        }
+
+      })
+
+  }
+
+
+  console.log(currentOwner === sessionStorage.getItem("user_id"), "value")
+
+
+  const buyFunction = async () => {
 
     if (!sessionStorage.getItem("token")) {
       toast.error("Please login your account")
       setTimeout(() => (window.location.href = "/login"), 1500);
     }
-    else if (!active) {
-      toast.error("Please connect your wallet")
-      setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
-    } else {
+    // else if (!active) {
+    //   toast.error("Please connect your wallet")
+    //   setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
+    // }
+    else {
 
-      let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
-      let price = data?.data?.data?.docs?.[0]?.price;
+      console.log("HII There")
+
+      let toAddress = toAddressVal;
+      let price = Number(itemPrice);
 
       const params = {
         from: window.ethereum.selectedAddress,
@@ -150,8 +231,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABIs || '{}')
 
       let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
-      let platformcommision = adminCommistion != null ? adminCommistion : 0;
-      let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+      let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+      let royaltiesCommission = royaltiesVal ? Number(royaltiesVal) : 0;
       let platformprice = price * platformcommision / 100;
       let royalties = price * royaltiesCommission / 100;
       let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
@@ -167,7 +248,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         recipients.push(numAddress);
       }
       recipients.push(Number(autherState));
-      recipients.push(toAddress);
+      recipients.push(Number(toAddress));
 
       amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
       amounts.push(Math.floor(royalties * Math.pow(10, 18)));
@@ -211,6 +292,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
 
   }
+
+
 
 
 
@@ -286,7 +369,10 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            {placeBid !== true ? <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+            {placeBid !== true ? 
+            <>
+             { currentOwner === sessionStorage.getItem("user_id") ? null : 
+            <ButtonPrimary onClick={() => buyFunction()} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -319,7 +405,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">BUY NOW</span>
-            </ButtonPrimary> : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary> }
+            </> : <>  { currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -352,8 +439,10 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5">Place a bid</span>
-            </ButtonPrimary>}
-            {placeBid !== true ? <ButtonSecondary href={"/connect-wallet"} className="flex-1">
+            </ButtonPrimary> } </>  }
+            {placeBid !== true ? 
+            <>
+            { currentOwner === sessionStorage.getItem("user_id") ? null :  <ButtonSecondary onClick={handleShow} className="flex-1">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M8.57007 15.27L15.11 8.72998"
@@ -386,13 +475,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </svg>
 
               <span className="ml-2.5"> Make offer</span>
-            </ButtonSecondary> : null}
+            </ButtonSecondary> } 
+            </> : null}
           </div>
         </div>
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail />
+          <TabDetail itemId={itemId}/>
         </div>
       </div>
     );
@@ -444,6 +534,38 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           <SectionBecomeAnAuthor className="pt-24 lg:pt-32" />
         </div>
       )}
+
+      <>
+
+
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Make Offer</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div>
+              <p>Enter your Price IN (BNB)</p>
+              <Box
+                component="form"
+                sx={{
+                  '& > :not(style)': { m: 1, width: '35ch' },
+                }}
+                noValidate
+                autoComplete="off"
+              >
+
+                <TextField id="filled-basic" label="Enter Your Offer" variant="filled" onChange={(e) => setOfferValue(e.target.value) } />
+
+              </Box>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+          <Button variant="contained" onClick={() => AddOffer()}>Add Offer</Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+
+
     </div>
   );
 };
