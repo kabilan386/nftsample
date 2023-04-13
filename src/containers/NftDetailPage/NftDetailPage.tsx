@@ -200,6 +200,84 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
   console.log(currentOwner === sessionStorage.getItem("user_id"), "value")
 
+  const buyFunctionForauction = async (data, price) => {
+
+
+    if (!sessionStorage.getItem("token")) {
+        toast.error("Please connect your wallet")
+        setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
+    } else {
+        // setSpinner(true)
+        let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
+
+
+        const params = {
+            from: window.ethereum.selectedAddress,
+            to: toAddress,
+            value: Number((price * Math.pow(10, 18))).toString(),
+            gasPrice: '20000000000'
+        };
+        window.web3 = new Web3(window.ethereum);
+        window.ethereum.enable();
+        let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+        let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+        let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+        let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+        let platformprice = price * platformcommision / 100;
+        let royalties = price * royaltiesCommission / 100;
+        let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+        let balancePrice = price * ((100 - totalCommission) / 100);
+        let recipients: number[] = [];
+        let amounts: number[] = [];
+        const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+        if (address) {
+          const numAddress = parseInt(address, 10);
+          recipients.push(numAddress);
+        }
+        recipients.push(Number(autherState));
+        recipients.push(Number(toAddress));
+        amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+        amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+        amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+        try {
+            const sendHash = await instance.methods.sendNFT(recipients, amounts).send(params).then(res => {
+                if (res.status) {
+
+                  const config = {
+                    headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+                  };
+      
+      
+                  axios
+                    .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId,  "price": price }, config)
+                    .then((res) => {
+                      console.log(res, "789")
+                      if (res.data.status == true) {
+                        //  setLoading(false)
+                        toast.success(res.data.message)
+                        //  setTimeout(() => (window.location.href = "/collection"), 1500);
+      
+                      } else {
+                        toast.error(res.data.message)
+                        // setTimeout(() => {
+                        //   setLoading(false)
+                        // }, 1000);
+                      }
+                    })
+                  
+                }
+            });
+
+        } catch (error: any) {
+            if (error.code === 4001) {
+                toast.warning(error.message)
+            }
+            //setSpinner(false)
+        }
+    }
+}
+
 
   const buyFunction = async () => {
 
@@ -482,7 +560,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail itemId={itemId}/>
+          <TabDetail current={currentOwner}/>
         </div>
       </div>
     );

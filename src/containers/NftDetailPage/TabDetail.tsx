@@ -4,23 +4,56 @@ import { personNames } from "contains/fakeData";
 import Avatar from "shared/Avatar/Avatar";
 import VerifyIcon from "components/VerifyIcon";
 import axios from "axios";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const TabDetail = ({ itemId }) => {
+const TabDetail = ({ current }) => {
 
   const [offerData, setOfferData] = useState<any[]>([])
   const TABS = ["Bid Offer List", "Provenance", "Owner"];
 
-  console.log(itemId, "itemId")
+  const id = useParams();
 
-  const getOfferList = () => {
+  console.log(id, "params")
+
+  console.log(current, "current")
+
+  const acceptOffer = (ids): any => {
 
     const config = {
       headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
     };
 
 
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/actionoffer`, {  "offer_id": ids,
+      "item_id": `${id?.id}`,
+      "type": "accept" }, config)
+      .then((res) => {
+        console.log(res, "789")
+        if (res.data.status == true) {
+          //  setLoading(false)
+          toast.success(res.data.message)
+          //  setTimeout(() => (window.location.href = "/collection"), 1500);
 
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/offers?page=1&type=item&item_id=${itemId}`, config).then(res => {
+        } else {
+          toast.error(res.data.message)
+          // setTimeout(() => {
+          //   setLoading(false)
+          // }, 1000);
+        }
+      })
+
+  }
+
+
+
+  const getOfferList = () => {
+
+   
+
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/offers?page=1&type=item&item_id=${id?.id}`).then(res => {
       setOfferData(res?.data?.data?.docs)
       console.log(res, "offer")
     })
@@ -64,6 +97,12 @@ const TabDetail = ({ itemId }) => {
                 </span>
                 <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
               </span>
+
+              { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
+              <i className="fas fa-check-circle" onClick={() => acceptOffer(data?._id)}></i>
+              <i className="fas fa-trash"></i>
+              </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5">Buy now</button>}</> }
+           
             </div>
           </li>
         ))}

@@ -259,3 +259,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .OfferPrice {
   font-weight: 800;
 }
+
+.offerIcons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px;
+}
+
+.offerIcons i {
+  margin: 0 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
