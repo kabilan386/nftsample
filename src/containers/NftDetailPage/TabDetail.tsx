@@ -6,6 +6,7 @@ import VerifyIcon from "components/VerifyIcon";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { idText } from "typescript";
 
 const TabDetail = ({ current }) => {
 
@@ -34,7 +35,35 @@ const TabDetail = ({ current }) => {
         if (res.data.status == true) {
           //  setLoading(false)
           toast.success(res.data.message)
-          //  setTimeout(() => (window.location.href = "/collection"), 1500);
+          setTimeout(() => (window.location.href = `/nft-detailt/${id?.id}`), 1500);
+
+        } else {
+          toast.error(res.data.message)
+          // setTimeout(() => {
+          //   setLoading(false)
+          // }, 1000);
+        }
+      })
+
+  }
+
+  const removeOffer = (ids): any => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/removeoffer`, {  "offer_id": ids,
+      "item_id": `${id?.id}`,
+      "type": "cancel" }, config)
+      .then((res) => {
+        console.log(res, "789")
+        if (res.data.status == true) {
+          //  setLoading(false)
+          toast.success(res.data.message)
+          setTimeout(() => (window.location.href =  `/nft-detailt/${id?.id}`), 1500);
 
         } else {
           toast.error(res.data.message)
@@ -99,8 +128,8 @@ const TabDetail = ({ current }) => {
               </span>
 
               { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
-              <i className="fas fa-check-circle" onClick={() => acceptOffer(data?._id)}></i>
-              <i className="fas fa-trash"></i>
+              <i className="fas fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
+              <i className="fas fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
               </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5">Buy now</button>}</> }
            
             </div>
