@@ -27,15 +27,16 @@ import Modal from 'react-bootstrap/Modal';
 
 
 import { toast } from "react-toastify";
+import { string } from "yup";
 
 declare let window: any;
 
-declare namespace NodeJS {
-  interface ProcessEnv {
-    REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS: string;
-    // add more environment variables here
-  }
-}
+// declare namespace NodeJS {
+//   interface ProcessEnv {
+//     REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS: string;
+//     // add more environment variables here
+//   }
+// }
 
 export interface NftDetailPageProps {
   className?: string;
@@ -136,11 +137,11 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
   const AddOffer = () => {
 
-    if(sessionStorage.getItem("token") === null) {
+    if (sessionStorage.getItem("token") === null) {
       toast.error("Please connect Wallet")
       return false;
     }
- 
+
     const config = {
       headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
     };
@@ -150,11 +151,11 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       .post(`${process.env.REACT_APP_BACKEND_URL}/item/addoffer`, {
         "item_id": itemId,
         "price": offerVal
-    }, config)
+      }, config)
       .then((res) => {
         console.log(res, "789")
         if (res.data.status == true) {
-          
+
           toast.success(res.data.message)
           setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
 
@@ -170,113 +171,108 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   }
 
 
-  const removeOffer = () => {
 
-    const config = {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-    };
-
-
-    axios
-      .post(`${process.env.REACT_APP_BACKEND_URL}/item/removeoffer`, { "item_id": itemId }, config)
-      .then((res) => {
-        console.log(res, "789")
-        if (res.data.status == true) {
-          //  setLoading(false)
-          toast.success(res.data.message)
-          //  setTimeout(() => (window.location.href = "/collection"), 1500);
-
-        } else {
-          toast.error(res.data.message)
-          // setTimeout(() => {
-          //   setLoading(false)
-          // }, 1000);
-        }
-
-      })
-
-  }
 
 
   console.log(currentOwner === sessionStorage.getItem("user_id"), "value")
 
   const buyFunctionForauction = async (data, price) => {
 
+    console.log(data, price, currentAddress, 'error')
+
 
     if (!sessionStorage.getItem("token")) {
-        toast.error("Please connect your wallet")
-        setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
+      toast.error("Please connect your wallet")
+      setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
     } else {
-        // setSpinner(true)
-        let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
+
+      // setSpinner(true)
+      // let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
+
+      // console.log(toAddress, "toAddress")
+
+      const params = {
+        from: window.ethereum.selectedAddress,
+        to: currentAddress,
+        value: Number((price * Math.pow(10, 18))).toString(),
+        gasPrice: '20000000000'
+      };
+      window.web3 = new Web3(window.ethereum);
+      window.ethereum.enable();
+      let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
+      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+      let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+      let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+      let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+      let platformprice = price * platformcommision / 100;
+      let royalties = price * royaltiesCommission / 100;
+      let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+      let balancePrice = price * ((100 - totalCommission) / 100);
+      let recipients: string[] = [];
+      let amounts: number[] = [];
+
+      // const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      // console.log(address, "address")
+      // if (address) {
+      //   console.log("Address")
+
+      // }
+      console.log(currentAddress, currentAddress, "sample")
+      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      console.log(address, "address")
+      if (address) {
+        recipients.push(address);
+      }
+      console.log(currentAddress, currentAddress, "sample")
+      console.log("test")
+      recipients.push(currentAddress);
+      recipients.push(currentAddress);
+      amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+      amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+      amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+      console.log("test")
+      console.log(recipients, amounts, "test")
+
+      try {
+
+        instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
+          if (res.status) {
+            console.log("test")
+
+            const config = {
+              headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+            };
 
 
-        const params = {
-            from: window.ethereum.selectedAddress,
-            to: toAddress,
-            value: Number((price * Math.pow(10, 18))).toString(),
-            gasPrice: '20000000000'
-        };
-        window.web3 = new Web3(window.ethereum);
-        window.ethereum.enable();
-        let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
-        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
-        let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
-        let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
-        let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
-        let platformprice = price * platformcommision / 100;
-        let royalties = price * royaltiesCommission / 100;
-        let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
-        let balancePrice = price * ((100 - totalCommission) / 100);
-        let recipients: number[] = [];
-        let amounts: number[] = [];
-        const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
-        if (address) {
-          const numAddress = parseInt(address, 10);
-          recipients.push(numAddress);
-        }
-        recipients.push(Number(autherState));
-        recipients.push(Number(toAddress));
-        amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
-        amounts.push(Math.floor(royalties * Math.pow(10, 18)));
-        amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
-        try {
-            const sendHash = await instance.methods.sendNFT(recipients, amounts).send(params).then(res => {
-                if (res.status) {
+            axios
+              .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId, "price": price }, config)
+              .then((res) => {
+                console.log(res, "789")
+                if (res.data.status == true) {
+                  //  setLoading(false)
+                  toast.success(res.data.message)
+                  //  setTimeout(() => (window.location.href = "/collection"), 1500);
 
-                  const config = {
-                    headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-                  };
-      
-      
-                  axios
-                    .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId,  "price": price }, config)
-                    .then((res) => {
-                      console.log(res, "789")
-                      if (res.data.status == true) {
-                        //  setLoading(false)
-                        toast.success(res.data.message)
-                        //  setTimeout(() => (window.location.href = "/collection"), 1500);
-      
-                      } else {
-                        toast.error(res.data.message)
-                        // setTimeout(() => {
-                        //   setLoading(false)
-                        // }, 1000);
-                      }
-                    })
-                  
+                } else {
+                  toast.error(res.data.message)
+                  // setTimeout(() => {
+                  //   setLoading(false)
+                  // }, 1000);
                 }
-            });
+              })
 
-        } catch (error: any) {
-            if (error.code === 4001) {
-                toast.warning(error.message)
-            }
-            //setSpinner(false)
+          }
+        });
+
+      } catch (error: any) {
+        console.log(error, "error")
+        if (error.code === 4001) {
+          toast.warning(error.message)
         }
+        //setSpinner(false)
+      }
     }
-}
+  }
 
 
   const buyFunction = async () => {
@@ -293,12 +289,12 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
       console.log("HII There")
 
-      let toAddress = toAddressVal;
+      // let toAddress = currentAddress;
       let price = Number(itemPrice);
 
       const params = {
         from: window.ethereum.selectedAddress,
-        to: toAddress,
+        to: currentAddress,
         value: (price * Math.pow(10, 18)).toString(),
         gasPrice: '20000000000'
       };
@@ -306,8 +302,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
       let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
-      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABIs || '{}')
+      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
 
+      console.log("test")
       let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
       let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
       let royaltiesCommission = royaltiesVal ? Number(royaltiesVal) : 0;
@@ -315,25 +312,27 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       let royalties = price * royaltiesCommission / 100;
       let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
       let balancePrice = price * ((100 - totalCommission) / 100);
-      let recipients: number[] = [];;
+      let recipients: string[] = [];;
       let amounts: number[] = [];
-      let plateformAddress = toAddress;
-      let royolties = toAddress;
 
+
+      console.log(currentAddress, currentAddress, "sample")
       const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      console.log(address, "address")
       if (address) {
-        const numAddress = parseInt(address, 10);
-        recipients.push(numAddress);
+        recipients.push(address);
       }
-      recipients.push(Number(autherState));
-      recipients.push(Number(toAddress));
+      recipients.push(currentAddress);
+      recipients.push(currentAddress);
 
       amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
       amounts.push(Math.floor(royalties * Math.pow(10, 18)));
       amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
       // setSpinner(true)
+
+      console.log("test")
       try {
-        await instance.methods.sendNFT(recipients, amounts).send(params).then(res => {
+        instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
           if (res.status) {
             // item/purchase
             const config = {
@@ -361,6 +360,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           }
         });
       } catch (error: any) {
+        console.log(error, "error")
         if (error.code === 4001) {
           toast.warning(error.message)
         }
@@ -447,120 +447,120 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            {placeBid !== true ? 
-            <>
-             { currentOwner === sessionStorage.getItem("user_id") ? null : 
-            <ButtonPrimary onClick={() => buyFunction()} className="flex-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M7 12H14"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            {placeBid !== true ?
+              <>
+                {currentOwner === sessionStorage.getItem("user_id") ? null :
+                  <ButtonPrimary onClick={() => buyFunction()} className="flex-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M7 12H14"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
 
-              <span className="ml-2.5">BUY NOW</span>
-            </ButtonPrimary> }
-            </> : <>  { currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M7 12H14"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                    <span className="ml-2.5">BUY NOW</span>
+                  </ButtonPrimary>}
+              </> : <>  {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M2.5 12.4101V7.8401C2.5 6.6501 3.23 5.59006 4.34 5.17006L12.28 2.17006C13.52 1.70006 14.85 2.62009 14.85 3.95009V7.75008"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M22.5588 13.9702V16.0302C22.5588 16.5802 22.1188 17.0302 21.5588 17.0502H19.5988C18.5188 17.0502 17.5288 16.2602 17.4388 15.1802C17.3788 14.5502 17.6188 13.9602 18.0388 13.5502C18.4088 13.1702 18.9188 12.9502 19.4788 12.9502H21.5588C22.1188 12.9702 22.5588 13.4202 22.5588 13.9702Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M7 12H14"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
 
-              <span className="ml-2.5">Place a bid</span>
-            </ButtonPrimary> } </>  }
-            {placeBid !== true ? 
-            <>
-            { currentOwner === sessionStorage.getItem("user_id") ? null :  <ButtonSecondary onClick={handleShow} className="flex-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M8.57007 15.27L15.11 8.72998"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M8.98001 10.3699C9.65932 10.3699 10.21 9.81923 10.21 9.13992C10.21 8.46061 9.65932 7.90991 8.98001 7.90991C8.3007 7.90991 7.75 8.46061 7.75 9.13992C7.75 9.81923 8.3007 10.3699 8.98001 10.3699Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M15.52 16.0899C16.1993 16.0899 16.75 15.5392 16.75 14.8599C16.75 14.1806 16.1993 13.6299 15.52 13.6299C14.8407 13.6299 14.29 14.1806 14.29 14.8599C14.29 15.5392 14.8407 16.0899 15.52 16.0899Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                <span className="ml-2.5">Place a bid</span>
+              </ButtonPrimary>} </>}
+            {placeBid !== true ?
+              <>
+                {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonSecondary onClick={handleShow} className="flex-1">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M8.57007 15.27L15.11 8.72998"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.98001 10.3699C9.65932 10.3699 10.21 9.81923 10.21 9.13992C10.21 8.46061 9.65932 7.90991 8.98001 7.90991C8.3007 7.90991 7.75 8.46061 7.75 9.13992C7.75 9.81923 8.3007 10.3699 8.98001 10.3699Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M15.52 16.0899C16.1993 16.0899 16.75 15.5392 16.75 14.8599C16.75 14.1806 16.1993 13.6299 15.52 13.6299C14.8407 13.6299 14.29 14.1806 14.29 14.8599C14.29 15.5392 14.8407 16.0899 15.52 16.0899Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
 
-              <span className="ml-2.5"> Make offer</span>
-            </ButtonSecondary> } 
-            </> : null}
+                  <span className="ml-2.5"> Make offer</span>
+                </ButtonSecondary>}
+              </> : null}
           </div>
         </div>
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail current={currentOwner}/>
+          <TabDetail current={currentOwner} buyFunctionForauction={buyFunctionForauction} />
         </div>
       </div>
     );
@@ -632,13 +632,13 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 autoComplete="off"
               >
 
-                <TextField id="filled-basic" label="Enter Your Offer" variant="filled" onChange={(e) => setOfferValue(e.target.value) } />
+                <TextField id="filled-basic" label="Enter Your Offer" variant="filled" onChange={(e) => setOfferValue(e.target.value)} />
 
               </Box>
             </div>
           </Modal.Body>
           <Modal.Footer>
-          <Button variant="contained" onClick={() => AddOffer()}>Add Offer</Button>
+            <Button variant="contained" onClick={() => AddOffer()}>Add Offer</Button>
           </Modal.Footer>
         </Modal>
       </>

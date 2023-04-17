@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { idText } from "typescript";
 
-const TabDetail = ({ current }) => {
+const TabDetail = ({ current, buyFunctionForauction }) => {
 
   const [offerData, setOfferData] = useState<any[]>([])
   const TABS = ["Bid Offer List", "Provenance", "Owner"];
@@ -130,7 +130,7 @@ const TabDetail = ({ current }) => {
               { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
               <i className="fas fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
               <i className="fas fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
-              </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5">Buy now</button>}</> }
+              </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy now</button>}</> }
            
             </div>
           </li>
