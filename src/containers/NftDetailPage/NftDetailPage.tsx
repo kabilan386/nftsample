@@ -322,6 +322,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       if (address) {
         recipients.push(address);
       }
+      
       recipients.push(currentAddress);
       recipients.push(currentAddress);
 
