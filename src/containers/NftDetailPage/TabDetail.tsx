@@ -11,6 +11,7 @@ import { idText } from "typescript";
 const TabDetail = ({ current, buyFunctionForauction }) => {
 
   const [offerData, setOfferData] = useState<any[]>([])
+  const [histroyData, setHistroyData] = useState<any[]>([])
   const TABS = ["Bid Offer List", "Provenance", "Owner"];
 
   const id = useParams();
@@ -88,12 +89,22 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
     })
   }
 
+  const getHistroyList = () => {
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/history?item_id=${id?.id}&type=item`).then(res => {
+      setHistroyData(res?.data?.data?.docs)
+      console.log(res, "offer")
+    })
+  }
+
   useEffect(() => {
 
     getOfferList()
+    getHistroyList()
 
   }, [])
 
+  console.log(histroyData, "histroy")
 
 
 
@@ -139,10 +150,12 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
     );
   };
 
+
+
   const renderTabProvenance = () => {
     return (
       <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
-        {[1, 1, 1, 1, 1].map((_, index) => (
+        {histroyData?.map((e, index) => (
           <li
             key={index}
             className={`relative py-4 ${
@@ -154,14 +167,14 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
               <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="flex items-center text-sm">
                   <span className="">
-                    {Math.random() > 0.5 ? "Listed by" : "Minted by"}
-                  </span>
+                   { e?.history_type } By
+                   </span>
 
                   <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1">
                     Martoutaa
                   </span>
                 </span>
-                <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
+                <span className="text-xs mt-1">{e?.created_date}</span>
               </span>
             </div>
 
@@ -179,7 +192,7 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
         <span className="ml-2.5 text-neutral-500 dark:text-neutral-400 flex flex-col">
           <span className="text-sm">Owner</span>
           <span className="text-neutral-900 dark:text-neutral-200 font-medium flex items-center">
-            <span>{personNames[1]}</span>
+            <span>{current}</span>
             <VerifyIcon iconClass="w-4 h-4" />
           </span>
         </span>

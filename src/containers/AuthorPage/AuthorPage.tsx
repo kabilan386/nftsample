@@ -29,9 +29,7 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
   let [categories] = useState([
     "Collectibles",
     "Created",
-    "Liked",
-    "Following",
-    "Followers",
+    
   ]);
 
   const [item, setItem] = useState<any[]>([])
@@ -134,11 +132,11 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 panelMenusClass="origin-top-right !-right-5 !w-40 sm:!w-52"
               />
 
-              <FollowButton
+              {/* <FollowButton
                 isFollowing={false}
                 fontSize="text-sm md:text-base font-medium"
                 sizeClass="px-4 py-1 md:py-2.5 h-8 md:!h-10 sm:px-6 lg:px-8"
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -166,9 +164,9 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                   </Tab>
                 ))}
               </Tab.List>
-              <div className="mt-5 lg:mt-0 flex items-end justify-end">
+              {/* <div className="mt-5 lg:mt-0 flex items-end justify-end">
                 <ArchiveFilterListBox />
-              </div>
+              </div> */}
             </div>
             <Tab.Panels>
               <Tab.Panel className="">
@@ -180,10 +178,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 </div>
 
                 {/* PAGINATION */}
-                <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+                {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
                   <ButtonPrimary loading>Show me more</ButtonPrimary>
-                </div>
+                </div> */}
               </Tab.Panel>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
@@ -330,10 +328,10 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                 </div>
 
                 {/* PAGINATION */}
-                <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+                {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
                   <ButtonPrimary loading>Show me more</ButtonPrimary>
-                </div>
+                </div> */}
               </Tab.Panel>
             </Tab.Panels>
           </Tab.Group>

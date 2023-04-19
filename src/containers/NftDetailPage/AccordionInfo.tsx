@@ -1,7 +1,7 @@
 import { Disclosure } from "@headlessui/react";
 import { ChevronUpIcon } from "@heroicons/react/solid";
 
-export default function AccordionInfo({ details, contract }) {
+export default function AccordionInfo({ details, contract, token_id }) {
 
 
   return (
@@ -48,7 +48,7 @@ export default function AccordionInfo({ details, contract }) {
               <br />
               <span>Token ID</span>
               <span className="text-base text-neutral-900 dark:text-neutral-100">
-                100300372864
+                {token_id}
               </span>
             </Disclosure.Panel>
           </>

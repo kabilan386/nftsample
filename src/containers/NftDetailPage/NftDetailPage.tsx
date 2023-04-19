@@ -69,6 +69,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [royaltiesVal, setRoyalities] = useState("")
   const [toAddressVal, setToAddress] = useState("")
   const [offerVal, setOfferValue] = useState("")
+  const [token_id, setToken_id] = useState("")
 
   const [show, setShow] = useState(false);
 
@@ -95,6 +96,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setToAddress(res?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id)
       setAutherState(res?.data?.data?.docs[0]?.author_id?.metamask_info?.id)
       setRoyalities(res?.data?.data?.docs?.[0]?.collection_id?.royalties)
+      setToken_id(res?.data?.data?.docs?.[0]?.token_id)
+
 
 
 
@@ -590,7 +593,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               <LikeButton className="absolute right-3 top-3" id={itemId} likeCount={itemCount} />
             </div>
 
-            <AccordionInfo details={itemDescription} contract={itemContract} />
+            <AccordionInfo details={itemDescription} contract={itemContract} token_id={token_id} />
           </div>
 
           {/* SIDEBAR */}
