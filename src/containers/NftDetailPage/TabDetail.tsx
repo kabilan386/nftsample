@@ -121,18 +121,19 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
           >
             <div className="flex items-center">
               <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
+
               <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="flex items-center text-sm">
                   <span className="">
-                       Offer of <span className="OfferPrice"> ${data?.item_id?.price}</span> by
-                      
+                       Offer <span className="OfferPrice "> ${data?.item_id?.price}</span> by
                   </span>
+
                   {/* <span className="">
                       {Math.random() > 0.5 ? "Listed by" : "Minted by"}
                     </span> */}
 
-                  <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1">
-                    {data?.sender?._id}
+                  <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
+                    {data?.sender?.address}
                   </span>
                 </span>
                 <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>

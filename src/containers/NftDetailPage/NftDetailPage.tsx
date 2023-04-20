@@ -70,11 +70,17 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [toAddressVal, setToAddress] = useState("")
   const [offerVal, setOfferValue] = useState("")
   const [token_id, setToken_id] = useState("")
+  const [item_Bid, setItemBid] = useState("")
 
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [showBid, setShowBid] = useState(false);
+
+  const handleCloseBid = () => setShowBid(false);
+  const handleShowBid = () => setShowBid(true);
 
   const getItem = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {
@@ -117,6 +123,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   useEffect(() => {
 
     getCommission()
+    getBid()
 
   }, [adminCommistion])
 
@@ -133,6 +140,20 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/settings/getoptions?name=admin_commission`, config).then(res => {
       setAdminCommistion(res?.data?.result?.value)
       console.log(res, "res")
+    })
+  }
+
+  const getBid = () => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/bids?type=item&item_id=${itemId}`, config).then(res => {
+      // setAdminCommistion(res?.data?.result?.value)
+      console.log(res, "bid")
     })
   }
 
@@ -161,6 +182,41 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
           toast.success(res.data.message)
           setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
+
+        } else {
+          toast.error(res.data.message)
+          // setTimeout(() => {
+          //   setLoading(false)
+          // }, 1000);
+        }
+
+      })
+
+  }
+
+  const AddBid = () => {
+
+    if (sessionStorage.getItem("token") === null) {
+      toast.error("Please connect Wallet")
+      return false;
+    }
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+    axios
+      .post(`${process.env.REACT_APP_BACKEND_URL}/item/make-bid`, {
+        "item_id": itemId,
+        "price": item_Bid
+      }, config)
+      .then((res) => {
+        console.log(res, "789")
+        if (res.data.status == true) {
+
+          toast.success(res.data.message)
+          // setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
 
         } else {
           toast.error(res.data.message)
@@ -488,7 +544,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
                     <span className="ml-2.5">BUY NOW</span>
                   </ButtonPrimary>}
-              </> : <>  {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary href={"/connect-wallet"} className="flex-1">
+              </> : <>  {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary onClick={handleShowBid} className="flex-1">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -646,6 +702,36 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           </Modal.Footer>
         </Modal>
       </>
+
+      <>
+
+
+<Modal show={showBid} onHide={handleCloseBid}>
+  <Modal.Header closeButton>
+    <Modal.Title>Make Bid</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div>
+      <p>Enter your Price IN (BNB)</p>
+      <Box
+        component="form"
+        sx={{
+          '& > :not(style)': { m: 1, width: '35ch' },
+        }}
+        noValidate
+        autoComplete="off"
+      >
+
+        <TextField id="filled-basic" label="Enter Your Bid Amount" variant="filled" onChange={(e) => setItemBid(e.target.value)} />
+
+      </Box>
+    </div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="contained" onClick={() => AddBid()}>Add Bid</Button>
+  </Modal.Footer>
+</Modal>
+</>
 
 
     </div>
