@@ -20,19 +20,83 @@ import SectionGridAuthorBox from "components/SectionGridAuthorBox/SectionGridAut
 import axios from "axios";
 import Prices from "components/Prices";
 import ItemTypeImageIcon from "components/ItemTypeImageIcon";
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import Table from 'react-bootstrap/Table';
 
 export interface AuthorPageProps {
   className?: string;
 }
 
+
+
+
+
+const columns = [
+  {
+    dataField: 'ID',
+    text: 'ID'
+  },
+  {
+    dataField: 'Item Name',
+    text: 'Item Name'
+  },
+  {
+    dataField: 'Price',
+    text: 'Price'
+  },
+  {
+    dataField: 'Create Date',
+    text: 'Create Date'
+  },
+  {
+    dataField: 'From',
+    text: 'From',
+    classes: "currentAddress"
+  },
+  {
+    dataField: 'To',
+    text: 'To',
+    classes: "currentAddress"
+  },
+  {
+    dataField: 'Status',
+    text: 'Status'
+  }
+];
+
+
+
+interface Props {
+
+  pagination: any;
+}
+
+
+
+
+
+
+
+
+
 const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
   let [categories] = useState([
     "Collectibles",
     "Created",
+    "Favourited",
+    "Offer"
     
   ]);
 
+  
+
   const [item, setItem] = useState<any[]>([])
+  const [offerData, setOfferData] = useState<any[]>([])
+  const [favourite, setFavourite] = useState<any[]>([])
+  
 
   const getCollection = () => {
     const config = {
@@ -45,13 +109,111 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
     })
   }
 
-  console.log(item)
+  const getFavourite = () => {
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=favouriteslist&page=1&user=user&user_id=${sessionStorage.getItem("user_id")}`, config).then(res => {
+      setFavourite(res?.data?.data?.docs)
+      console.log(res, "res")
+    })
+  }
+
+  
+
+  const getOffer = () => {
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/offers?page=1&user=user&user_id=${sessionStorage.getItem("user_id")}`, config).then(res => {
+      setOfferData(res?.data?.data?.docs)
+      console.log(res, "res")
+    })
+  }
+
+
+
+
+
+
+
+
+
+ 
+
+    
+
+
+
+// const columns = [
+//     {
+//         dataField: 'collection',
+//         text: 'Collection',
+//         sort: true
+//     },
+//     {
+//         dataField: 'price',
+//         text: 'Price'
+//     },
+//     {
+//         dataField: 'author',
+//         text: 'Item'
+//     },
+//     {
+//         dataField: 'event',
+//         text: 'Event'
+//     },
+//     {
+//         dataField: 'transaction_hash',
+//         text: 'Transaction hash',
+//         style: {
+//             overflow: "hidden",
+//             textOverflow: "ellipsis",
+
+//         }
+
+//     },
+//     {
+//         dataField: 'time',
+//         text: 'Create Date',
+//         sort: true
+//     }
+// ];
+
+const pagination = paginationFactory({
+    page: 1,
+    sizePerPage: 10,
+    paginationSize: 5,
+    disablePageTitle: true,
+    hideSizePerPage: true
+});
+
 
   useEffect(() => {
 
     getCollection()
+    getOffer()
+    getFavourite()
 
   }, [])
+
+  
+
+  const datas = offerData?.map((e, index) => ({
+    ID: index,
+    'Item Name': e?.item_id?.name,
+    'Price': e?.price,
+    'Create Date': e?.created_date, 
+    'From': e?.receiver?.address,
+    'To': e?.sender?.address,
+    'Status': e?.status
+    // add other properties if present in your data
+}));
+
+
+
 
   return (
     <div className={`nc-AuthorPage  ${className}`} data-nc-id="AuthorPage">
@@ -294,9 +456,103 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
-                  {/* {Array.from("1").map((_, index) => (
-                    <CardNFT isLiked key={index} />
-                  ))} */}
+                {favourite?.map((e: any) => {
+              return (
+                <>
+
+                  <div
+
+                    data-nc-id="CardNFT"
+                  >
+                    <div className="relative flex-shrink-0 ">
+
+                      <div>
+                        <NcImage
+                          containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
+                          src={`${process.env.REACT_APP_BACKEND_URL}/${e?.media}`}
+                          className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
+                        />
+                      </div>
+
+
+
+
+
+                      {/* {Math.random() > 0.5 ? (
+                        <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                      ) : ( */}
+                        <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                      {/* )} */}
+                      <div className="absolute top-3 right-3 !w-9 !h-9">
+                        {/* <Dropdown>
+                          <Dropdown.Toggle className="rounded-pill shadow-sm" >
+                            <i className="fas fa-ellipsis-v"></i>
+                          </Dropdown.Toggle>
+
+                          <Dropdown.Menu align="end" >
+
+                            <>
+                              <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
+                                EDIT
+                              </Link>
+                              <Link key="index3" className="dropdown-item" to="/delete">
+                                DELETE
+
+                              </Link>
+                             { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
+                                Mint
+                              </Link> : <>
+                              { e?.status === "active" ? <Link key="index6" to={``} className="dropdown-item"  >
+                                DeLIST
+                              </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
+                                List
+                              </Link>  } </>  }
+                              <Link key="index6" className="dropdown-item" to={`/item`}  >
+                                ITEM DETAILS
+                              </Link>
+                            </>
+
+                          </Dropdown.Menu>
+                        </Dropdown> */}
+                      </div>
+                      {/* <LikeButton
+          liked={isLiked}
+          className="absolute top-3 right-3 z-10 !h-9"
+        /> */}
+                      <div className="absolute top-3 inset-x-3 flex"></div>
+                    </div>
+
+                    <div className="p-4 py-5 space-y-3">
+                      <div className="flex justify-between">
+                        {/* {renderAvatars()} */}
+                        {/* <span className="text-neutral-700 dark:text-neutral-400 text-xs">
+                          01 in stock
+                        </span> */}
+                      </div>
+                      <h2 className={`text-lg font-medium`}>
+                        {e?.name} 
+                        {/* #{Math.floor(Math.random() * 1000) + 1000} */}
+                      </h2>
+
+                      <div className="w-2d4 w-full border-b border-neutral-100 dark:border-neutral-700"></div>
+
+                      <div className="flex justify-between items-end ">
+                        <Prices labelTextClassName="bg-white dark:bg-neutral-900 dark:group-hover:bg-neutral-800 group-hover:bg-neutral-50" />
+                        {/* <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
+            <ClockIcon className="w-4 h-4" />
+            <span className="ml-1 mt-0.5">
+              {Math.floor(Math.random() * 20) + 1} hours left
+            </span>
+          </div> */}
+                      </div>
+                    </div>
+
+
+                  </div>
+
+                </>
+              )
+            })}
                 </div>
 
                 {/* PAGINATION */}
@@ -304,6 +560,50 @@ const AuthorPage: FC<AuthorPageProps> = ({ className = "" }) => {
                   <Pagination />
                   <ButtonPrimary loading>Show me more</ButtonPrimary>
                 </div>
+              </Tab.Panel>
+              <Tab.Panel className="">
+                {/* LOOP ITEMS */}
+
+                <div className='activity'>
+
+        
+        <div className="explore-items-2-wrapper">
+                <div className="container-fluid">
+                    <div className="g-4 g-xl-5" >
+                       
+
+                        <div className='col-lg-12'>
+                            <div className="activity-wrapper">
+                                <div className="container">
+                                    {/* Activity Table */}
+                                    <div className="activity-table">
+
+                                    <div>
+            <p className='text'>Activity</p>
+        </div>
+                                        
+                                      
+                                            <>
+                                                <BootstrapTable
+                                                    keyField="id"
+                                                    data={datas}
+                                                    columns={columns}
+                                                    pagination={pagination}
+                                                    bootstrap4
+                                                />
+
+                                            </>
+                                         
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+               
               </Tab.Panel>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}

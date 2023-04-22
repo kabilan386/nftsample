@@ -123,7 +123,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   useEffect(() => {
 
     getCommission()
-    getBid()
+   //  getBid()
 
   }, [adminCommistion])
 
@@ -143,19 +143,19 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
     })
   }
 
-  const getBid = () => {
+  // const getBid = () => {
 
-    const config = {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-    };
+  //   const config = {
+  //     headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+  //   };
 
 
 
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/bids?type=item&item_id=${itemId}`, config).then(res => {
-      // setAdminCommistion(res?.data?.result?.value)
-      console.log(res, "bid")
-    })
-  }
+  //   axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/bids?type=item&item_id=${itemId}`, config).then(res => {
+  //     // setAdminCommistion(res?.data?.result?.value)
+  //     console.log(res, "bid")
+  //   })
+  // }
 
   //settings/getoptions?name=admin_commission
 
