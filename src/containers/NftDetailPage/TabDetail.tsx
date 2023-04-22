@@ -8,11 +8,12 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { idText } from "typescript";
 
-const TabDetail = ({ current, buyFunctionForauction }) => {
+const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
 
   const [offerData, setOfferData] = useState<any[]>([])
   const [histroyData, setHistroyData] = useState<any[]>([])
-  const TABS = ["Bid Offer List", "Provenance", "Owner"];
+  const [bidData, setBidData] = useState<any[]>([])
+  const TABS = [bid !== true ? "Bid Offer List" : "Bid List", "Provenance", "Owner"];
 
   const id = useParams();
 
@@ -76,6 +77,8 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
 
   }
 
+  console.log(bidTimer > Date.now(), "bidTimer")
+  
 
 
   const getOfferList = () => {
@@ -97,10 +100,26 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
     })
   }
 
+  
+  const getBid = () => {
+
+    const config = {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+    };
+
+
+
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/bids?type=item&item_id=${id?.id}`, config).then(res => {
+      setBidData(res?.data?.data?.docs)
+      console.log(res, "bid")
+    })
+  }
+
   useEffect(() => {
 
     getOfferList()
     getHistroyList()
+    getBid()
 
   }, [])
 
@@ -125,7 +144,7 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
               <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                 <span className="flex items-center text-sm">
                   <span className="">
-                       Offer <span className="OfferPrice "> ${data?.item_id?.price}</span> by
+                       Offer <span className="OfferPrice "> ${data?.item_id.price}</span> by
                   </span>
 
                   {/* <span className="">
@@ -144,12 +163,60 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
               <i className="fas fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
               </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy now</button>}</> }
            
+
+             
             </div>
           </li>
         ))}
       </ul>
     );
   };
+
+  const highestBid = bidData && bidData?.length > 0 ? bidData?.reduce((prevBid, currentBid) => {
+    return prevBid?.price > currentBid?.price ? prevBid : currentBid;
+  }) : null;
+
+  const renderBidHistory = () => {
+    return (
+      <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
+        {bidData?.map((data: any ,index) => (
+          <li
+            key={index}
+            className={`relative py-4 ${
+              index % 2 === 1 ? "bg-neutradl-100" : ""
+            }`}
+          >
+            <div className="flex items-center">
+              <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
+
+              <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
+                <span className="flex items-center text-sm">
+                  <span className=""> 
+                       Bid By <span className="OfferPrice "> ${data?.price}</span> by
+                  </span>
+
+                  {/* <span className="">
+                      {Math.random() > 0.5 ? "Listed by" : "Minted by"}
+                    </span> */}
+
+                  <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
+                    {data?.sender?.address}
+                  </span>
+                </span>
+                <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
+              </span>
+
+              {bidTimer > Date.now() && data?.price === highestBid?.price ? (
+  <button className="btn btn-danger mx-5">Buy Now</button>
+) : null}
+           
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
 
 
 
@@ -201,11 +268,14 @@ const TabDetail = ({ current, buyFunctionForauction }) => {
     );
   };
 
+  console.log(bid, )
+
   const renderTabItem = (item: string) => {
     switch (item) {
       case "Bid Offer List":
-        return renderTabBidHistory();
-
+        return  renderTabBidHistory();
+        case "Bid List":
+        return  renderBidHistory();
       case "Provenance":
         return renderTabProvenance();
 

@@ -71,6 +71,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [offerVal, setOfferValue] = useState("")
   const [token_id, setToken_id] = useState("")
   const [item_Bid, setItemBid] = useState("")
+  const [enable_Bid, setEnableBid] = useState("")
+  const [bidTime, setTimeBid] = useState("")
+
 
   const [show, setShow] = useState(false);
 
@@ -103,6 +106,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setAutherState(res?.data?.data?.docs[0]?.author_id?.metamask_info?.id)
       setRoyalities(res?.data?.data?.docs?.[0]?.collection_id?.royalties)
       setToken_id(res?.data?.data?.docs?.[0]?.token_id)
+      setEnableBid(res?.data?.data?.docs?.[0]?.enableBID)
+      setTimeBid(res?.data?.data?.docs?.[0]?.endDateTimeBID)
 
 
 
@@ -143,19 +148,6 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
     })
   }
 
-  // const getBid = () => {
-
-  //   const config = {
-  //     headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-  //   };
-
-
-
-  //   axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/bids?type=item&item_id=${itemId}`, config).then(res => {
-  //     // setAdminCommistion(res?.data?.result?.value)
-  //     console.log(res, "bid")
-  //   })
-  // }
 
   //settings/getoptions?name=admin_commission
 
@@ -620,7 +612,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail current={currentOwner} buyFunctionForauction={buyFunctionForauction} />
+          <TabDetail current={currentOwner} buyFunctionForauction={buyFunctionForauction} bid={enable_Bid} bidTimer={bidTime} />
         </div>
       </div>
     );
