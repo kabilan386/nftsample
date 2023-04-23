@@ -176,47 +176,51 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
     return prevBid?.price > currentBid?.price ? prevBid : currentBid;
   }) : null;
 
+ 
   const renderBidHistory = () => {
+    const highestBidPrice = highestBid?.price;
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  
+    console.log(highestBidPrice, "high")
     return (
       <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
-        {bidData?.map((data: any ,index) => (
-          <li
-            key={index}
-            className={`relative py-4 ${
-              index % 2 === 1 ? "bg-neutradl-100" : ""
-            }`}
-          >
-            <div className="flex items-center">
-              <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
-
-              <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
-                <span className="flex items-center text-sm">
-                  <span className=""> 
-                       Bid By <span className="OfferPrice "> ${data?.price}</span> by
+        {bidData?.map((data: any, index) => {
+          const isCurrentHighestBid = data?.price === highestBidPrice;
+          const isBidAllowed = bidTimer < formattedDate 
+  
+          return (
+            <li
+              key={index}
+              className={`relative py-4 ${index % 2 === 1 ? "bg-neutradl-100" : ""}`}
+            >
+              <div className="flex items-center">
+                <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
+  
+                <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
+                  <span className="flex items-center text-sm">
+                    <span className="">
+                      Bid By <span className="OfferPrice "> ${data?.price}</span> by
+                    </span>
+  
+                    <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
+                      {data?.sender?.address}
+                    </span>
                   </span>
-
-                  {/* <span className="">
-                      {Math.random() > 0.5 ? "Listed by" : "Minted by"}
-                    </span> */}
-
-                  <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
-                    {data?.sender?.address}
-                  </span>
+                  <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
                 </span>
-                <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
-              </span>
-
-              {bidTimer > Date.now() && data?.price === highestBid?.price ? (
-  <button className="btn btn-danger mx-5">Buy Now</button>
-) : null}
-           
-            </div>
-          </li>
-        ))}
+  
+                {isBidAllowed && isCurrentHighestBid && (
+  <button className="btn btn-primary mx-5">Buy Now</button>
+)}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     );
   };
-
+  
 
 
 
