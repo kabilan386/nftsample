@@ -211,7 +211,7 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
                 </span>
   
                 {isBidAllowed && isCurrentHighestBid && (
-  <button className="btn btn-primary mx-5">Buy Now</button>
+  <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy Now</button>
 )}
               </div>
             </li>
@@ -243,7 +243,7 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
                    </span>
 
                   <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1">
-                    Martoutaa
+                    {e?.to_id?.address}
                   </span>
                 </span>
                 <span className="text-xs mt-1">{e?.created_date}</span>

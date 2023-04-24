@@ -302,7 +302,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 if (res.data.status == true) {
                   //  setLoading(false)
                   toast.success(res.data.message)
-                  //  setTimeout(() => (window.location.href = "/collection"), 1500);
+                    setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
                   toast.error(res.data.message)
