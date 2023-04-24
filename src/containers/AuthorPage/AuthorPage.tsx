@@ -13,6 +13,8 @@ import SectionBecomeAnAuthor from "components/SectionBecomeAnAuthor/SectionBecom
 import SocialsList from "shared/SocialsList/SocialsList";
 import FollowButton from "components/FollowButton";
 import VerifyIcon from "components/VerifyIcon";
+import Dropdown from 'react-bootstrap/Dropdown';
+import { Link } from "react-router-dom";
 import { Tab } from "@headlessui/react";
 import CardAuthorBox3 from "components/CardAuthorBox3/CardAuthorBox3";
 import ArchiveFilterListBox from "components/ArchiveFilterListBox";
@@ -367,7 +369,7 @@ const pagination = paginationFactory({
                         <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
                       {/* )} */}
                       <div className="absolute top-3 right-3 !w-9 !h-9">
-                        {/* <Dropdown>
+                        <Dropdown>
                           <Dropdown.Toggle className="rounded-pill shadow-sm" >
                             <i className="fas fa-ellipsis-v"></i>
                           </Dropdown.Toggle>
@@ -375,28 +377,14 @@ const pagination = paginationFactory({
                           <Dropdown.Menu align="end" >
 
                             <>
-                              <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
-                                EDIT
+                            <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
+                                List NFT
                               </Link>
-                              <Link key="index3" className="dropdown-item" to="/delete">
-                                DELETE
 
-                              </Link>
-                             { e?.publishStatus !== true  ?  <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
-                                Mint
-                              </Link> : <>
-                              { e?.status === "active" ? <Link key="index6" to={``} className="dropdown-item"  >
-                                DeLIST
-                              </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
-                                List
-                              </Link>  } </>  }
-                              <Link key="index6" className="dropdown-item" to={`/item`}  >
-                                ITEM DETAILS
-                              </Link>
                             </>
 
                           </Dropdown.Menu>
-                        </Dropdown> */}
+                        </Dropdown>
                       </div>
                       {/* <LikeButton
           liked={isLiked}

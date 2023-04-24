@@ -211,7 +211,7 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
                 </span>
   
                 {isBidAllowed && isCurrentHighestBid && (
-  <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy Now</button>
+    <>{ data?.sender?.address === sessionStorage?.getItem("address") ?   <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy Now</button> : null }</>
 )}
               </div>
             </li>

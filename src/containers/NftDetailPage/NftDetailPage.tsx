@@ -208,7 +208,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         if (res.data.status == true) {
 
           toast.success(res.data.message)
-          // setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
+          setTimeout(() => (window.location.href = `/nft-detailt/${itemId}`), 1500);
 
         } else {
           toast.error(res.data.message)
@@ -302,7 +302,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 if (res.data.status == true) {
                   //  setLoading(false)
                   toast.success(res.data.message)
-                    setTimeout(() => (window.location.href = "/page-search"), 1500);
+                  setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
                   toast.error(res.data.message)
@@ -477,7 +477,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
         {/* ---------- 6 ----------  */}
         <div className="py-9">
-          <TimeCountDown time={currentBid} />
+          <TimeCountDown time={currentBid} enableBid={enable_Bid} bidTime={bidTime} />
         </div>
 
         {/* ---------- 7 ----------  */}

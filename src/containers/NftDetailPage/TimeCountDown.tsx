@@ -1,7 +1,7 @@
 import useCountDownTime from "hooks/useCountDownTime";
 import React, { useEffect, useState } from "react";
 
-const TimeCountDown = ({ time }) => {
+const TimeCountDown = ({ time, enableBid, bidTime }) => {
 
   
 
@@ -18,12 +18,16 @@ const TimeCountDown = ({ time }) => {
   // console.log(day.getMonth(), "month")
   // const timeLeft = useCountDownTime();
 
+  console.log(enableBid, bidTime, "BidTime")
+
   const calculateTimeLeft = () => {
 
 
     // let year = new Date(time).getFullYear();
     // let month = new Date(time).getMonth();
-    let difference = +new Date(time) - +new Date();
+    let difference = +new Date(enableBid === true ? bidTime : time) - +new Date();
+
+    console.log(difference, "difference")
 
     console.log(difference, "difference")
 
