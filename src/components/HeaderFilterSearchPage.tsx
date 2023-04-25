@@ -26,7 +26,7 @@ const HeaderFilterSearchPage: FC<HeaderFilterSearchPageProps> = ({
           className="sm:space-x-2"
           containerClassName="relative flex w-full overflow-x-auto text-sm md:text-base hiddenScrollbar"
         >
-          {["All NFTs", "Arts", "Musics", "Sports", "Photography"].map(
+          {/* {["All NFTs", "Arts", "Musics", "Sports", "Photography"].map(
             (item, index) => (
               <NavItem
                 key={index}
@@ -36,7 +36,7 @@ const HeaderFilterSearchPage: FC<HeaderFilterSearchPageProps> = ({
                 {item}
               </NavItem>
             )
-          )}
+          )} */}
         </Nav>
         <span className="block flex-shrink-0 text-right">
           <ButtonPrimary

@@ -330,7 +330,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
     if (!sessionStorage.getItem("token")) {
       toast.error("Please login your account")
-      setTimeout(() => (window.location.href = "/login"), 1500);
+     // setTimeout(() => (window.location.href = "/login"), 1500);
     }
     // else if (!active) {
     //   toast.error("Please connect your wallet")

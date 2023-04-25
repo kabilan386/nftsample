@@ -55,12 +55,12 @@ const MainNav2: FC<MainNav2Props> = () => {
             <Navigation />
             <div className="hidden sm:block h-10 border-l border-neutral-300 dark:border-neutral-6000"></div>
             <SwitchDarkMode />
-            <ButtonPrimary
+          { sessionStorage.getItem("token") ?   <ButtonPrimary
               href={"/page-upload-item"}
               sizeClass="px-4 py-2 sm:px-5"
             >
               Create
-            </ButtonPrimary>
+            </ButtonPrimary> : null }
             <ButtonSecondary
               href={"/connect-wallet"}
               sizeClass="px-4 py-2 sm:px-5"

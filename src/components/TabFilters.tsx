@@ -55,6 +55,7 @@ const TabFilters = ({ data }) => {
   const [saleTypeStates, setSaleTypeStates] = useState<string[]>([]);
   const [collectionData, setCollectionData] = useState<any[]>([]);
   const [sortOrderStates, setSortOrderStates] = useState<string>("");
+  const [isOpen, setIsOpen] = React.useState(true);
 
   console.log(rangePrices, "range")
 
@@ -915,7 +916,10 @@ const TabFilters = ({ data }) => {
         {/* {renderTabsFileTypes()} */}
         {renderTabsSortOrder()}
         {/* {renderTabVerifiedCreator()} */}
+
+      
       </div>
+      
 
       {/* FOR RESPONSIVE MOBILE */}
       <div className="flex overflow-x-auto lg:hidden space-x-4">
