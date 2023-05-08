@@ -83,7 +83,15 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [showBid, setShowBid] = useState(false);
 
   const handleCloseBid = () => setShowBid(false);
-  const handleShowBid = () => setShowBid(true);
+  const handleShowBid = () => {
+
+    if(sessionStorage.getItem("token") === null) {
+      toast.error("please connect wallet")
+      return false
+    }
+
+    setShowBid(true)
+  };
 
   const getItem = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?type=view&item_id=${id?.id}`).then(res => {

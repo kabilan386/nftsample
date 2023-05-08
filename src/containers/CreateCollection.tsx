@@ -2,6 +2,7 @@ import Label from "components/Label/Label";
 import React, { CSSProperties, FC, useState } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
+import Select from 'react-select';
 import Textarea from "shared/Textarea/Textarea";
 import { Helmet } from "react-helmet";
 import FormItem from "components/FormItem";
@@ -17,8 +18,6 @@ import { CollectionMediaUpload } from "../API/Collection_mediaupload";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ClipLoader from "react-spinners/ClipLoader";
-
-
 import {
   Formik,
   FormikHelpers,
@@ -28,6 +27,16 @@ import {
   FieldProps,
 } from 'formik';
 import { CircleLoader } from "react-spinners";
+
+
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
+];
+
+
+
 
 interface MyFormValues {
   collectionName: string;
@@ -84,6 +93,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [collectionName, setCollectionName] = useState("");
   const [spinner, setSpinner] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+
   const [royalties, setRoyalties] = useState("");
   const initialValues: MyFormValues = { collectionName: '' };
   let [color, setColor] = useState("#ffffff");
@@ -299,8 +310,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                   onChange={e => {
                                     formik.setFieldValue("logo", e.target.files)
                                     ImagehandleChange(e)
-                                }
-                                }
+                                  }
+                                  }
                                 />
                               </label>
                             </div>
@@ -311,7 +322,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                         </div>
                       </div>
                     </>}
-                    <div className="form-error">{formik.errors.logo}</div>
+                  <div className="form-error">{formik.errors.logo}</div>
                 </div>
                 {/* <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
@@ -377,8 +388,16 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   <Input className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
                     placeholder="Collection Name"
                     id="title" type="text" name='title' onChange={formik.handleChange} ></Input>
-                    <div className="form-error">{formik.errors.title}</div>
+                  <div className="form-error">{formik.errors.title}</div>
                 </FormItem>
+
+               <FormItem label="Select Chain">
+               <Select
+                  defaultValue={selectedOption}
+                  onChange={(selected: any) => setSelectedOption(selected)}
+                  options={options}
+                />
+               </FormItem>
 
 
 

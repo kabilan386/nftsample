@@ -12,6 +12,7 @@ import fortmaticImg from "images/fortmatic.webp";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { WalletLogin } from '../API/Login_api';
+import { convertTypeAcquisitionFromJson } from "typescript";
 export interface PageConnectWalletProps {
   className?: string;
 }
@@ -36,35 +37,93 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
   };
   
   //Does the User have an Ethereum wallet/account?
-  async function connectWallet(): Promise<void> {
-    //to get around type checking
-    
-    (window as any).ethereum
-      .request({
+
+  async function connectWallet(network: string): Promise<void> {
+    try {
+      // Check if MetaMask is installed
+      if (!(window as any).ethereum) {
+        showToastMessage("MetaMask is not installed");
+        return;
+      }
+  
+      // Request access to user accounts
+      const accounts: string[] = await (window as any).ethereum.request({
         method: "eth_requestAccounts",
-      })
-      .then((accounts: string[]) => {
-        console.log("networkVersion",(window as any).ethereum.networkVersion);
-        if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
-          WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
-            if (res.status === true) {
-              console.log(res, "resData")
-              // toast.success(`${res?.message}`)
-              sessionStorage.setItem('address', accounts[0]);
-              sessionStorage.setItem("token", res?.token)
-              sessionStorage.setItem("user_id", res.user_id)
-              sessionStorage.setItem('Connected', "true");
-              setAccount(accounts[0]);
-              navigate("/")
-            }
-          })
-        }
-        
-      })
-      .catch((error: any) => {
-        showToastMessage(error.message);
       });
+  
+      const networkVersion = await (window as any).ethereum.networkVersion;
+  
+      // Check if the selected network matches the desired network
+      console.log(process.env.REACT_APP_CHAIN_ID_DECIMAL, "bnb")
+      let chainId;
+      switch (network) {
+        case "TBNB":
+          chainId = process.env.REACT_APP_CHAIN_ID_DECIMAL;
+          break;
+        case "ETH":
+          chainId = process.env.REACT_APP_ETH_CHAIN_ID_DECIMAL;
+          break;
+        case "Matic":
+          chainId = process.env.REACT_APP_MATIC_CHAIN_ID_DECIMAL;
+          break;
+        default:
+          showToastMessage("Invalid network selection");
+          return;
+      }
+
+      console.log(networkVersion, chainId, "chainId")
+  
+      if (networkVersion !== chainId) {
+        showToastMessage("Please switch to the desired network");
+        return;
+      }
+  
+      // Perform wallet login
+      const res = await WalletLogin({ address: accounts[0].toLowerCase() });
+      if (res.status === true) {
+        console.log(res, "resData");
+        // toast.success(`${res?.message}`)
+        sessionStorage.setItem("address", accounts[0]);
+        sessionStorage.setItem("token", res?.token);
+        sessionStorage.setItem("user_id", res.user_id);
+        sessionStorage.setItem("Connected", "true");
+        setAccount(accounts[0]);
+        navigate("/");
+      }
+    } catch (error: any) {
+      showToastMessage(error.message);
+    }
   }
+  
+  // async function connectWallet(): Promise<void> {
+  //   //to get around type checking
+    
+  //   (window as any).ethereum
+  //     .request({
+  //       method: "eth_requestAccounts",
+  //     })
+  //     .then((accounts: string[]) => {
+  //       console.log("networkVersion",(window as any).ethereum.networkVersion);
+  //       if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
+  //         WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
+  //           if (res.status === true) {
+  //             console.log(res, "resData")
+  //             // toast.success(`${res?.message}`)
+  //             sessionStorage.setItem('address', accounts[0]);
+  //             sessionStorage.setItem("token", res?.token)
+  //             sessionStorage.setItem("user_id", res.user_id)
+  //             sessionStorage.setItem('Connected', "true");
+  //             setAccount(accounts[0]);
+  //             navigate("/")
+  //           }
+  //         })
+  //       }
+        
+  //     })
+  //     .catch((error: any) => {
+  //       showToastMessage(error.message);
+  //     });
+  // }
   // ethereum.on('accountsChanged', (accounts: any) => {
   //   connectWallet();
   // });
@@ -134,7 +193,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
               {plans.map((plan) => (
                 <div
                   key={plan.name}
-                  onClick={() => connectWallet()}
+                  onClick={() => connectWallet("TBNB")}
                   typeof="button"
                   tabIndex={0}
                   className="relative rounded-xl hover:shadow-lg hover:bg-neutral-50 border 

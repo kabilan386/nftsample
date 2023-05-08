@@ -1,17 +1,38 @@
 import { Popover, Transition } from "@headlessui/react";
 import { avatarImgs } from "contains/fakeData";
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "shared/Avatar/Avatar";
+import axios from "axios";
 import AvatarImage from "../../../src/man.png"
 
 export default function AvatarDropdown() {
+
+  const [chainData, setChainData] = useState<any[]>([])
+
+
   const disConnect = ()=>{
     sessionStorage.removeItem("address");
     sessionStorage.removeItem("token")
     sessionStorage.removeItem("user_id")
     sessionStorage.removeItem("Connected");
 }
+
+const getCollection = () => {
+
+  axios.get(`${process.env.REACT_APP_BACKEND_URL}/chain/chainGet`).then(res => {
+    setChainData(res?.data?.data?.docs)
+    console.log(res, "res")
+  })
+}
+
+useEffect(() => {
+
+  getCollection()
+
+}, [])
+
+
   return (
     <div className="AvatarDropdown">
       <Popover className="relative">
@@ -81,6 +102,7 @@ export default function AvatarDropdown() {
                         <p className="text-sm font-medium ">{"My Profile"}</p>
                       </div>
                     </Link>
+                    
                     <Link
                       to={"/collection"}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
@@ -120,8 +142,9 @@ export default function AvatarDropdown() {
                         <p className="text-sm font-medium ">{"Collection"}</p>
                       </div>
                     </Link>
+                    
                     {/* ------------------ 2 --------------------- */}
-                    {/* <Link
+                    <Link
                       to={""}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                     >
@@ -157,9 +180,9 @@ export default function AvatarDropdown() {
                         </svg>
                       </div>
                       <div className="ml-4">
-                        <p className="text-sm font-medium ">{"My Items"}</p>
+                        <p className="text-sm font-medium ">{"Switch Chain"}</p>
                       </div>
-                    </Link> */}
+                    </Link>
                     
                     {/* ------------------ 2 --------------------- */}
                     {/* <Link

@@ -119,7 +119,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
               >
                 {marketData?.filter(elem => elem.status === "active").map((e, index) => (
                   <>
-                    {console.log(typeof (e?.like_count), "liked")}
+                    {console.log( e?.like_count, "liked")}
                     <div key={index}>
                       <div className="relative flex-shrink-0 ">
                         <Link to={`/nft-detailt/${e?._id}`}>
