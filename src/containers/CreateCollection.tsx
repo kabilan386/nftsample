@@ -1,5 +1,6 @@
+
 import Label from "components/Label/Label";
-import React, { CSSProperties, FC, useState } from "react";
+import React, { CSSProperties, FC, useState, useEffect } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
@@ -8,6 +9,7 @@ import FormItem from "components/FormItem";
 import { RadioGroup } from "@headlessui/react";
 import { nftsImgs } from "contains/fakeData";
 import { useFormik, useFormikContext } from 'formik';
+import Select from "react-select";
 import * as yup from "yup";
 import axios from "axios";
 import MySwitch from "components/MySwitch";
@@ -17,13 +19,12 @@ import { CollectionMediaUpload } from "../API/Collection_mediaupload";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ClipLoader from "react-spinners/ClipLoader";
-
+import Form from 'react-bootstrap/Form';
 
 import {
   Formik,
   FormikHelpers,
   FormikProps,
-  Form,
   Field,
   FieldProps,
 } from 'formik';
@@ -32,6 +33,13 @@ import { CircleLoader } from "react-spinners";
 interface MyFormValues {
   collectionName: string;
 }
+
+
+interface timeOptions {
+  value: "string"
+}
+
+
 
 export interface PageUploadItemProps {
   className?: string;
@@ -64,6 +72,12 @@ const plans = [
   },
 ];
 
+interface ChainData {
+  _id: string;
+  chainSymbol: string;
+  // Add other properties as needed
+}
+
 const override: CSSProperties = {
   display: "block",
   margin: "0 auto",
@@ -80,6 +94,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [logoFile, setLogoFile] = useState("");
   const [bannerFile, setBannerFile] = useState("");
   const [inputImage, setInputImage] = useState('');
+  const [chainData, setChainData] = useState<ChainData[]>([]);
   const [bannerImage, setBannerImage] = useState('');
   const [collectionName, setCollectionName] = useState("");
   const [spinner, setSpinner] = useState(false);
@@ -87,6 +102,75 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const [royalties, setRoyalties] = useState("");
   const initialValues: MyFormValues = { collectionName: '' };
   let [color, setColor] = useState("#ffffff");
+  const [chooseChain, setChooseChain] = useState("")
+
+  useEffect(() => {
+
+    getChainDetails();
+
+  }, [])
+
+
+  const colourStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity))',
+      borderColor: 'lightblue',
+      minHeight: '30px',
+      height: '50px',
+      boxShadow: state.isFocused ? null : null,
+      color: 'white'
+    }),
+    option: (styles, { isFocused, isSelected }) => ({
+      ...styles,
+      background: isFocused
+        ? 'white'
+        : isSelected
+          ? 'white'
+          : undefined,
+      zIndex: 100,
+      color: isSelected ? 'black' : undefined,
+      textTransform: 'capitalize',
+
+    }),
+    valueContainer: (provided, state) => ({
+      ...provided,
+      height: '30px',
+      padding: '0 6px',
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity));',
+      color: '#111',
+      textTransform: 'capitalize',
+    }),
+
+    input: (provided, state) => ({
+      ...provided,
+      margin: '0px',
+      textTransform: 'uppercase',
+    }),
+    indicatorSeparator: state => ({
+      display: 'none',
+    }),
+    indicatorsContainer: (provided, state) => ({
+      ...provided,
+
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      transform: state.selectProps.menuIsOpen && 'rotate(180deg)',
+      borderColor: 'white',
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      background: 'rgba(var(--c-primary-600), var(--tw-bg-opacity));'
+    }),
+    singleValue: (provided, { data }) => ({
+      ...provided,
+      color: '#fff',
+      // specify a fallback color here for those values not accounted for in the styleMap
+    }),
+  };
+
+
 
   const CollectionLogoUpload = (e: any) => {
     const formData = new FormData();
@@ -94,6 +178,24 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     console.log("formData", formData)
     // CollectionMediaUpload()
   }
+
+  // const timeOptions = [
+  //   { value: '', label: 'Select Chain' },
+  //   { value: '1D', label: 'BNB' },
+  //   { value: '3D', label: 'ys' },
+  //   { value: '7D', label: '7 Days' },
+  //   { value: '1M', label: '1 Month' },
+  //   { value: '3M', label: '3 Month' },
+  //   { value: '6M', label: '6 Month' },
+
+  // ]
+
+  const timeOptions = chainData?.map((values: ChainData) => ({
+    value: values?._id,
+    label: values.chainSymbol,
+  }));
+
+
 
   const checkIfFilesAreCorrectType = (files: any) => {
     let valid = true;
@@ -103,6 +205,15 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       }
     }
     return valid;
+  }
+
+  const getChainDetails = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/chain/chainGet`).then(res => {
+
+      setChainData(res?.data?.data)
+
+
+    })
   }
 
 
@@ -120,6 +231,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     //   return !value || checkIfFilesAreCorrectType(value[0]);
     // }),
     title: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
+    chain: yup.string().required("Chain is Required"),
     royalties: yup.string().required("Royalties is required").test(
       'Is positive?',
       'Royalties must be greater than 0!',
@@ -136,6 +248,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       logo: null,
       banner: null,
       title: "",
+      chain: "",
       description: "",
       royalties: 0
     },
@@ -147,6 +260,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
       let postData = {
         name: values.title,
         description: values.description,
+        chain: values.chain,
         banner: bannerFile,
         image: logoFile,
         royalties: values.royalties
@@ -164,7 +278,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           if (res.data.status == true) {
             setLoading(false)
             toast.success(res.data.message)
-            setTimeout(() => (window.location.href = "/collection"), 1500);
+            // setTimeout(() => (window.location.href = "/collection"), 1500);
 
           } else {
             toast.error(res.data.message)
@@ -217,6 +331,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
         })
     }, 1000)
   }
+
+  console.log(formik.errors, formik.values.chain, "errors")
 
   return (
     <div
@@ -299,8 +415,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                                   onChange={e => {
                                     formik.setFieldValue("logo", e.target.files)
                                     ImagehandleChange(e)
-                                }
-                                }
+                                  }
+                                  }
                                 />
                               </label>
                             </div>
@@ -311,7 +427,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                         </div>
                       </div>
                     </>}
-                    <div className="form-error">{formik.errors.logo}</div>
+                  <div className="form-error">{formik.errors.logo}</div>
                 </div>
                 {/* <div>
                   <h3 className="text-lg sm:text-2xl font-semibold">
@@ -377,8 +493,28 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                   <Input className="block w-full border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50 bg-white dark:border-neutral-700 dark:focus:ring-primary-6000 dark:focus:ring-opacity-25 dark:bg-neutral-900 disabled:bg-neutral-200 dark:disabled:bg-neutral-800 rounded-2xl text-sm font-normal h-11 px-4 py-3"
                     placeholder="Collection Name"
                     id="title" type="text" name='title' onChange={formik.handleChange} ></Input>
-                    <div className="form-error">{formik.errors.title}</div>
+                  <div className="form-error">{formik.errors.title}</div>
                 </FormItem>
+
+                <div className="col-12 col-md-12">
+                  <Form.Group>
+                    <Form.Label className="mb-2 fz-16">Select Chain</Form.Label>
+                    <Select
+                      options={timeOptions}
+                      styles={colourStyles}
+                      name="chain" // Set the name attribute to match the field name from the validation schema
+                      defaultValue={{ label: "Choose Chain", value: "" }}
+                      onChange={selectedOption => {
+                        formik.setFieldValue("chain", selectedOption?.value ?? ""); 
+                      }}
+                      onBlur={formik.handleBlur("chain")}
+                    />
+                    {formik.touched.chain && formik.errors.chain && (
+                      <div className="form-error">{formik.errors.chain}</div>
+                    )}
+                  </Form.Group>
+
+                </div>
 
 
 

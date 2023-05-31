@@ -65,11 +65,16 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
   const [specData, setSpecData] = useState<any[]>([])
   const [spinner, setSpinner] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [chainName, setChainName] = useState<any>({});
+  const [chainNetwork, setChainNetwork] = useState<any>("")
+
 
   const id = useParams();
 
 
   console.log(id, "idCollection")
+
+  console.log(chainName, "chain")
 
 
 
@@ -109,7 +114,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
   const DeList = (id: any) => {
 
     const postData = {
-      "item_id": id 
+      "item_id": id
     }
 
     const config = {
@@ -134,14 +139,210 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
   }
 
 
-  const marketClaim = async (id: any) => {
+  const marketClaim = async (id: any, chainID: any) => {
 
     try {
+
+      console.log(chainID, "chainId")
+
+      const requestData = {
+        id: chainID
+      };
+
+
+
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData).then(res => {
+        setChainName(res?.data?.data);
+      });
+
+
+      if (window.ethereum) {
+        const networkId = await window.ethereum.request({ method: 'net_version' });
+        console.log(networkId, "network");
+        setChainNetwork(networkId)
+      }
+
+      // const networks = await window.ethereum.request({ method: 'wallet_getNetworks' });
+      // const ethNetwork = networks.find((network: any) => network.chainId === '97'); 
+
+      // console.log(ethNetwork, "eth")
+      // Ethereum mainnet chain ID
+
+
+
+      // Check if the selected chain ID is BNB
+
+      console.log(chainName?.chainID === "80001", "chain")
+
+      let networkSwitched = true;
+      try {
+      if (chainName?.chainID === '97') {
+        if (window.ethereum) {
+          if (window.ethereum.chainId !== '0x61') {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x61',
+                    chainName: 'Binance Smart Chain Testnet',
+                    nativeCurrency: {
+                      name: 'BNB',
+                      symbol: 'BNB',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                    blockExplorerUrls: ['https://testnet.bscscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                return false;
+              }
+              throw err;
+            }
+          } else {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '0x61' }]
+              }); console.log("Hii There")
+
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                return false;
+              }
+              throw err;
+            }
+          }
+          const networkId = await window.ethereum.request({ method: 'net_version' });
+          console.log(typeof networkId, "network");
+          setChainNetwork(networkId);
+        }
+      } else if (chainName?.chainID === '80001') {
+        console.log(window.ethereum.chainId !== '80001', "wallet");
+        if (window.ethereum) {
+          if (window.ethereum.chainId !== '80001') {
+            try {
+              console.log("Hi Matic");
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x13881',
+                    chainName: 'Mumbai Testnet',
+                    nativeCurrency: {
+                      name: 'MATIC',
+                      symbol: 'MATIC',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                    blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                return false;
+              }
+              throw err;
+            }
+          } else {
+            try {
+              console.log("Hi Matic Two");
+              await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: '80001' }]
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                return false;
+              }
+              throw err;
+            }
+          }
+        }
+      } else if (chainName?.chainID === '5') {
+
+        console.log("Hi There Three")
+
+        try {
+          await window.ethereum
+            .request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: '0x5' }]
+            })
+            .then(() => { })
+            .catch(err => {
+              if (err.code === 4001) {
+                toast.warning(err.message);
+                console.log(err.message, "message");
+                return false;
+                throw new Error("User rejected the request to switch Ethereum");
+                
+              }
+            });
+
+          console.log("Hi There");
+
+          console.log("Hii There")
+
+        } catch (switchError: any) {
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x5',
+                    chainName: 'Goerli',
+                    nativeCurrency: {
+                      name: 'ETH',
+                      symbol: 'ETH',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
+                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                  },
+                ],
+              });
+            } catch (addError) {
+              // handle "add" error
+            }
+          }
+
+          if (switchError.code === 4001) {
+            console.log("error value")
+            return false;
+          }
+          // handle other "switch" errors
+        }
+
+      
+
+      }
+
+
+
+
+
 
       await new Web3(window.web3.currentProvider);
       window.web3 = new Web3(window.web3.currentProvider);
       console.log("HI There")
       const accountResponse = await window.web3.eth.getAccounts();
+
+
 
       const instance = accountResponse[0];
       console.log(instance, "instance")
@@ -150,7 +351,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
       console.log(claimContract, "claim")
       console.log(id, "mintID")
-      try {
+     
         const approve = await claimContract.methods.mint(1).send({ from: instance })
         if (approve) {
 
@@ -181,6 +382,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       } catch (error: any) {
         if (error?.code === 4001) {
           toast.warning(error.message)
+          return false;
         }
         setSpinner(false)
       }
@@ -189,6 +391,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
       if (err?.code === 4001) {
         toast.error("User Reject The Request");
         setSpinner(false)
+        return false;
+
       }
     }
 
@@ -225,30 +429,30 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             </ButtonPrimary>
 
             <div>
-                        <Dropdown>
-                          <Dropdown.Toggle className="rounded-pill shadow-sm" >
-                            <i className="fa fa-ellipsis-v iconColor"></i>
-                          </Dropdown.Toggle>
+              <Dropdown>
+                <Dropdown.Toggle className="rounded-pill shadow-sm" >
+                  <i className="fa fa-ellipsis-v iconColor"></i>
+                </Dropdown.Toggle>
 
-                          <Dropdown.Menu align="end" >
+                <Dropdown.Menu align="end" >
 
-                            <>
-                              <Link key="index2" className="dropdown-item" to={`/editcollection/${id?.id}`}>
-                                EDIT
-                              </Link>
-                            
-                            </>
+                  <>
+                    <Link key="index2" className="dropdown-item" to={`/editcollection/${id?.id}`}>
+                      EDIT
+                    </Link>
 
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
+                  </>
 
-           
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+
+
 
 
           </div>
 
-        
+
 
           {/* LOOP ITEMS */}
 
@@ -279,7 +483,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                       {/* {Math.random() > 0.5 ? (
                         <ItemTypeVideoIcon className="absolute top-3 left-3 !w-9 !h-9" />
                       ) : ( */}
-                        <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
+                      <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
                       {/* )} */}
                       <div className="absolute top-3 right-3 !w-9 !h-9">
                         <Dropdown>
@@ -290,24 +494,24 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                           <Dropdown.Menu align="end" >
 
                             <>
-                            
-                             { e?.publishStatus !== true  ?   
-                             <>
-                             <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
-                                EDIT
-                              </Link>
-                              <Link key="index3" className="dropdown-item" to="/delete">
-                                DELETE
 
-                              </Link> <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id)} to={""} >
-                                Mint
-                              </Link>
-                             </> : <>
-                              { e?.status === "active" ? <Link key="index6" to={``} onClick={() => DeList(e?._id)}  className="dropdown-item"  >
-                                DeLIST
-                              </Link> : <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
-                                List
-                              </Link>  } </>  }
+                              {e?.publishStatus !== true ?
+                                <>
+                                  <Link key="index2" className="dropdown-item" to={`/edititem/${e?._id}`} state={{ id: id?.id }}>
+                                    EDIT
+                                  </Link>
+                                  <Link key="index3" className="dropdown-item" to="/delete">
+                                    DELETE
+
+                                  </Link> <Link key="index6" className="dropdown-item" onClick={() => marketClaim(e?._id, e?.collection_id?.chain)} to={""} >
+                                    Mint
+                                  </Link>
+                                </> : <>
+                                  {e?.status === "active" ? <Link key="index6" to={``} onClick={() => DeList(e?._id)} className="dropdown-item"  >
+                                    DeLIST
+                                  </Link> : <Link key="index6" to={`/createListItem/${e?._id}`} className="dropdown-item"  >
+                                    List
+                                  </Link>} </>}
                             </>
 
                           </Dropdown.Menu>
@@ -328,7 +532,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                         </span> */}
                       </div>
                       <h2 className={`text-lg font-medium`}>
-                        {e?.name} 
+                        {e?.name}
                         {/* #{Math.floor(Math.random() * 1000) + 1000} */}
                       </h2>
 
