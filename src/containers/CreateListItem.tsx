@@ -243,6 +243,13 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const listNFT = async (id: any, item_id: any) => {
 
     try {
+
+      
+
+      
+
+
+
       setSpinner(true);
       await new Web3(window.web3.currentProvider)
       window.web3 = new Web3(window.web3.currentProvider)

@@ -139,46 +139,47 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
   }
 
 
+  
+
   const marketClaim = async (id: any, chainID: any) => {
-
     try {
-
-      console.log(chainID, "chainId")
-
+      console.log(chainID, "chainId");
+  
       const requestData = {
         id: chainID
       };
-
-
-
-      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData).then(res => {
-        setChainName(res?.data?.data);
-      });
-
-
+  
+      const chainData = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData)
+      
+      setChainName(chainData?.data?.data || null)
+  
       if (window.ethereum) {
         const networkId = await window.ethereum.request({ method: 'net_version' });
         console.log(networkId, "network");
-        setChainNetwork(networkId)
+        setChainNetwork(networkId);
       }
-
-      // const networks = await window.ethereum.request({ method: 'wallet_getNetworks' });
-      // const ethNetwork = networks.find((network: any) => network.chainId === '97'); 
-
-      // console.log(ethNetwork, "eth")
-      // Ethereum mainnet chain ID
-
-
-
-      // Check if the selected chain ID is BNB
-
-      console.log(chainName?.chainID === "80001", "chain")
-
+  
+      console.log(chainName?.chainID === "80001", "chain");
       let networkSwitched = true;
-      try {
-      if (chainName?.chainID === '97') {
-        if (window.ethereum) {
-          if (window.ethereum.chainId !== '0x61') {
+
+      console.log(chainData, chainName, window.ethereum.chainId, "Testing" )
+  
+      if (chainData && chainData?.data?.data?.chainID === '97') {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x61' }]
+          });
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
             try {
               await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
@@ -200,34 +201,31 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
-                return false;
-              }
-              throw err;
-            }
-          } else {
-            try {
-              await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '0x61' }]
-              }); console.log("Hii There")
-
-            } catch (err: any) {
-              if (err.code === 4001) {
-                console.log("User rejected the request to switch or add Ethereum");
-                networkSwitched = false;
-                return false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
               }
               throw err;
             }
           }
-          const networkId = await window.ethereum.request({ method: 'net_version' });
-          console.log(typeof networkId, "network");
-          setChainNetwork(networkId);
+          throw err;
         }
-      } else if (chainName?.chainID === '80001') {
-        console.log(window.ethereum.chainId !== '80001', "wallet");
-        if (window.ethereum) {
-          if (window.ethereum.chainId !== '80001') {
+      } else if ( chainData && chainData?.data?.data?.chainID === '80001') {
+
+        try {
+          console.log("Hi Matic Two");
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x13881' }]
+          })
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
             try {
               console.log("Hi Matic");
               await window.ethereum.request({
@@ -250,55 +248,34 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
-                return false;
-              }
-              throw err;
-            }
-          } else {
-            try {
-              console.log("Hi Matic Two");
-              await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: '80001' }]
-              });
-            } catch (err: any) {
-              if (err.code === 4001) {
-                console.log("User rejected the request to switch or add Ethereum");
-                networkSwitched = false;
-                return false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
               }
               throw err;
             }
           }
+          throw err;
         }
-      } else if (chainName?.chainID === '5') {
-
-        console.log("Hi There Three")
-
+        console.log(window.ethereum.chainId !== '80001', "wallet");
+       
+      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+        console.log("Hi There Three");
+  
         try {
-          await window.ethereum
-            .request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: '0x5' }]
-            })
-            .then(() => { })
-            .catch(err => {
-              if (err.code === 4001) {
-                toast.warning(err.message);
-                console.log(err.message, "message");
-                return false;
-                throw new Error("User rejected the request to switch Ethereum");
-                
-              }
-            });
-
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x5' }]
+          });
           console.log("Hi There");
-
-          console.log("Hii There")
-
-        } catch (switchError: any) {
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
           // This error code indicates that the chain has not been added to MetaMask.
-          if (switchError.code === 4902) {
+          if (err.code === 4902) {
             try {
               await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
@@ -320,83 +297,54 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               // handle "add" error
             }
           }
-
-          if (switchError.code === 4001) {
-            console.log("error value")
-            return false;
-          }
-          // handle other "switch" errors
+          throw err;
         }
-
-      
-
       }
-
-
-
-
-
-
+  
       await new Web3(window.web3.currentProvider);
       window.web3 = new Web3(window.web3.currentProvider);
-      console.log("HI There")
+      console.log("HI There");
       const accountResponse = await window.web3.eth.getAccounts();
-
-
-
       const instance = accountResponse[0];
-      console.log(instance, "instance")
-
+      console.log(instance, "instance");
+  
       const claimContract = await new window.web3.eth.Contract(JSON.parse(process.env.REACT_APP_MINT_ABI || '{}'), specData);
-
-      console.log(claimContract, "claim")
-      console.log(id, "mintID")
-     
-        const approve = await claimContract.methods.mint(1).send({ from: instance })
-        if (approve) {
-
-          const postData = {
-            "item_id": id,
-            "token_id": approve?.events?.Transfer?.returnValues?.tokenId
-          }
-          const config = {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
-          };
-
-          axios
-            .post(`${process.env.REACT_APP_BACKEND_URL}/item/publish`, postData, config)
-            .then((res) => {
-              console.log(res, "789")
-
-              if (res?.data?.status === true) {
-                toast.success(res?.data?.message)
-                window.location.reload(false)
-                setSpinner(false)
-              } else if (res?.data?.status === false) {
-                toast.error(res?.data?.message)
-                setSpinner(false)
-              }
-            })
-          setSpinner(false)
+      console.log(claimContract, "claim");
+      console.log(id, "mintID");
+  
+      const approve = await claimContract.methods.mint(1).send({ from: instance });
+      if (approve) {
+        const postData = {
+          "item_id": id,
+          "token_id": approve?.events?.Transfer?.returnValues?.tokenId
         }
-      } catch (error: any) {
-        if (error?.code === 4001) {
-          toast.warning(error.message)
-          return false;
-        }
-        setSpinner(false)
+        const config = {
+          headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+        };
+  
+        axios
+          .post(`${process.env.REACT_APP_BACKEND_URL}/item/publish`, postData, config)
+          .then((res) => {
+            console.log(res, "789");
+            if (res?.data?.status === true) {
+              toast.success(res?.data?.message);
+              window.location.reload(false);
+              setSpinner(false);
+            } else if (res?.data?.status === false) {
+              toast.error(res?.data?.message);
+              setSpinner(false);
+            }
+          })
+        setSpinner(false);
       }
     } catch (err: any) {
-
       if (err?.code === 4001) {
-        toast.error("User Reject The Request");
-        setSpinner(false)
-        return false;
-
+        toast.error("User rejected the request");
+        throw new Error("User rejected the request to switch Ethereum");
       }
     }
-
   }
+  
 
 
 

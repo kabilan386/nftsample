@@ -230,7 +230,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     // }).test('FILE_Type', "Image file supported jpeg , jpg & png only", (value) => {
     //   return !value || checkIfFilesAreCorrectType(value[0]);
     // }),
-    title: yup.string().min(3, "Item name must be atleast 3 letter").required("Item name is required"),
+    title: yup.string().min(3, "Collection name must be atleast 3 letter").required("Collection name is required"),
     chain: yup.string().required("Chain is Required"),
     royalties: yup.string().required("Royalties is required").test(
       'Is positive?',
