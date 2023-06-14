@@ -62,6 +62,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemPrice, setItemPrice] = useState('');
   const [itemContract, setItemContract] = useState("")
   const [currentBid, setCurrentBid] = useState('');
+  const [chainName, setChainName] = useState<any>({});
+  const [chainNetwork, setChainNetwork] = useState<any>("")
+  const [chainId, setChainId] = useState<any>("")
   const [currentAddress, setCurrentAddress] = useState('');
   const [placeBid, setPlaceBid] = useState();
   const [adminCommistion, setAdminCommistion] = useState("")
@@ -96,6 +99,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setCurrentBid(res?.data?.data?.docs?.[0]?.endDateTime)
       setItemContract(res?.data?.data?.docs?.[0]?.collection_id?.contract_address)
       setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
+      setChainId(res?.data?.data?.docs?.[0]?.collection_id?.chain)
       setCollectionimage(res?.data?.data?.docs?.[0]?.collection_id?.image)
       setItemId(res?.data?.data?.docs?.[0]?._id)
       setItemCount(res?.data?.data?.docs?.[0]?.like_count)
@@ -229,6 +233,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
   const buyFunctionForauction = async (data, price) => {
 
+    console.log("Hii There")
+
     console.log(data, price, currentAddress, 'error')
 
 
@@ -241,6 +247,167 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       // let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
 
       // console.log(toAddress, "toAddress")
+
+      const requestData = {
+        id: chainId
+      };
+  
+      const chainData = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData)
+      
+      setChainName(chainData?.data?.data || null)
+  
+     
+  
+      console.log(chainName?.chainID === "80001", "chain");
+      let networkSwitched = true;
+
+      console.log(chainData, chainName, window.ethereum.chainId, "Testing" )
+
+      if (window.ethereum) {
+        const networkId = await window.ethereum.request({ method: 'net_version' });
+        console.log(networkId, "network");
+        setChainNetwork(networkId);
+      }
+  
+      if (chainData && chainData?.data?.data?.chainID === '97') {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x61' }]
+          });
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x61',
+                    chainName: 'Binance Smart Chain Testnet',
+                    nativeCurrency: {
+                      name: 'BNB',
+                      symbol: 'BNB',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                    blockExplorerUrls: ['https://testnet.bscscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
+              }
+              throw err;
+            }
+          }
+          throw err;
+        }
+      } else if ( chainData && chainData?.data?.data?.chainID === '80001') {
+
+        try {
+
+          console.log("Hi Matic Two");
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x13881' }]
+          })
+          
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
+            try {
+              console.log("Hi Matic");
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x13881',
+                    chainName: 'Mumbai Testnet',
+                    nativeCurrency: {
+                      name: 'MATIC',
+                      symbol: 'MATIC',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                    blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
+              }
+              throw err;
+            }
+          }
+          throw err;
+        }
+        console.log(window.ethereum.chainId !== '80001', "wallet");
+       
+      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+        console.log("Hi There Three");
+  
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x5' }]
+          });
+          console.log("Hi There");
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (err.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x5',
+                    chainName: 'Goerli',
+                    nativeCurrency: {
+                      name: 'ETH',
+                      symbol: 'ETH',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
+                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                  },
+                ],
+              });
+            } catch (addError) {
+              // handle "add" error
+            }
+          }
+          throw err;
+        }
+      }
+
 
       const params = {
         from: window.ethereum.selectedAddress,
@@ -284,7 +451,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       console.log("test")
       console.log(recipients, amounts, "test")
 
-      try {
+ 
 
         instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
           if (res.status) {
@@ -313,15 +480,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               })
 
           }
-        });
+        }).catch((err: any) => {  if(err.code === 4001) { toast.warning(err.message)}});
 
-      } catch (error: any) {
-        console.log(error, "error")
-        if (error.code === 4001) {
-          toast.warning(error.message)
-        }
-        //setSpinner(false)
-      }
+   
     }
   }
 
@@ -339,6 +500,166 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
     else {
 
       console.log("HII There")
+
+      const requestData = {
+        id: chainId
+      };
+  
+      const chainData = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData)
+      
+      setChainName(chainData?.data?.data || null)
+  
+     
+  
+      console.log(chainName?.chainID === "80001", "chain");
+      let networkSwitched = true;
+
+      console.log(chainData, chainName, window.ethereum.chainId, "Testing" )
+
+      if (window.ethereum) {
+        const networkId = await window.ethereum.request({ method: 'net_version' });
+        console.log(networkId, "network");
+        setChainNetwork(networkId);
+      }
+  
+      if (chainData && chainData?.data?.data?.chainID === '97') {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x61' }]
+          });
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x61',
+                    chainName: 'Binance Smart Chain Testnet',
+                    nativeCurrency: {
+                      name: 'BNB',
+                      symbol: 'BNB',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                    blockExplorerUrls: ['https://testnet.bscscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
+              }
+              throw err;
+            }
+          }
+          throw err;
+        }
+      } else if ( chainData && chainData?.data?.data?.chainID === '80001') {
+
+        try {
+
+          console.log("Hi Matic Two");
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x13881' }]
+          })
+          
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            networkSwitched = false;
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+
+          if(err.code === 4902) {
+            try {
+              console.log("Hi Matic");
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x13881',
+                    chainName: 'Mumbai Testnet',
+                    nativeCurrency: {
+                      name: 'MATIC',
+                      symbol: 'MATIC',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
+                    blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+                  },
+                ],
+              });
+            } catch (err: any) {
+              if (err.code === 4001) {
+                console.log("User rejected the request to switch or add Ethereum");
+                networkSwitched = false;
+                toast.warning(err.message)
+                throw new Error("User rejected the request to switch or add Ethereum");
+              }
+              throw err;
+            }
+          }
+          throw err;
+        }
+        console.log(window.ethereum.chainId !== '80001', "wallet");
+       
+      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+        console.log("Hi There Three");
+  
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x5' }]
+          });
+          console.log("Hi There");
+          console.log("Hii There");
+        } catch (err: any) {
+          if (err.code === 4001) {
+            console.log("User rejected the request to switch or add Ethereum");
+            toast.warning(err.message)
+            throw new Error("User rejected the request to switch or add Ethereum");
+          }
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (err.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x5',
+                    chainName: 'Goerli',
+                    nativeCurrency: {
+                      name: 'ETH',
+                      symbol: 'ETH',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
+                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                  },
+                ],
+              });
+            } catch (addError) {
+              // handle "add" error
+            }
+          }
+          throw err;
+        }
+      }
 
       // let toAddress = currentAddress;
       let price = Number(itemPrice);
@@ -383,7 +704,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       // setSpinner(true)
 
       console.log("test")
-      try {
+   
         instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
           if (res.status) {
             // item/purchase
@@ -410,14 +731,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               })
 
           }
-        });
-      } catch (error: any) {
-        console.log(error, "error")
-        if (error.code === 4001) {
-          toast.warning(error.message)
-        }
-        // setSpinner(false)
-      }
+        }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+      
     }
 
 

@@ -22,7 +22,7 @@ import PageSearch from "containers/PageSearch";
 import PageUploadItem from "containers/PageUploadItem";
 import CreateCollection from "containers/CreateCollection";
 import EditCollection from "containers/EditCollection";
-import ItemList from "containers/Item"
+import Item from "containers/Item"
 import EditItem from "containers/EditItem"
 import PageConnectWallet from "containers/PageConnectWallet";
 import PageHome2 from "containers/PageHome/PageHome2";
@@ -52,7 +52,7 @@ export const pages: Page[] = [
   { path: "/login", component: PageLogin },
   { path: "/subscription", component: PageSubcription },
   { path: "/create-collection", component: CreateCollection },
-  { path: "/collection/:id", component: ItemList },
+  { path: "/collection/:id", component: Item },
   { path: "/edititem/:id", component: EditItem },
   { path: "/editcollection/:id", component: EditCollection },
   { path: "/createListItem/:id", component: CreateListItem },

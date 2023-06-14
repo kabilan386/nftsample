@@ -457,7 +457,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                                 </> : <>
                                   {e?.status === "active" ? <Link key="index6" to={``} onClick={() => DeList(e?._id)} className="dropdown-item"  >
                                     DeLIST
-                                  </Link> : <Link key="index6" to={`/createListItem/${e?._id}`} className="dropdown-item"  >
+                                  </Link> : <Link key="index6" to={`/createListItem/${e?._id}`} state={{ foo: e?.collection_id?.chain}} className="dropdown-item"  >
                                     List
                                   </Link>} </>}
                             </>

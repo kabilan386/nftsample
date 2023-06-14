@@ -10,6 +10,8 @@ import { idText } from "typescript";
 
 const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
 
+  
+
   const [offerData, setOfferData] = useState<any[]>([])
   const [histroyData, setHistroyData] = useState<any[]>([])
   const [bidData, setBidData] = useState<any[]>([])

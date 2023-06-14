@@ -17,7 +17,7 @@ import { CollectionMediaUpload } from "../API/Collection_mediaupload";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ClipLoader from "react-spinners/ClipLoader";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 
 import {
@@ -89,6 +89,9 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
   const initialValues: MyFormValues = { collectionName: '' };
   let [color, setColor] = useState("#ffffff");
   const id = useParams()
+  const location = useLocation();
+
+  
 
   const CollectionLogoUpload = (e: any) => {
     const formData = new FormData();
@@ -106,6 +109,8 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
     }
     return valid;
   }
+
+  
 
   const getCollection = () => {
     axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/detail?collection_id=${id?.id}`).then(res => {
