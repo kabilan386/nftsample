@@ -205,7 +205,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
           if (res?.data?.status === true) {
             toast.success(res?.data?.message)
             listNFT(itemToken, idValue?.id, foo)
-            // setTimeout(() => (window.location.href = `/author/${userId}`), 1500);
+           // setTimeout(() => (window.location.href = `/author/${userId}`), 1500);
           } else if (res?.data?.status === false) {
             toast.error(res?.data?.message)
           }

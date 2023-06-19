@@ -417,8 +417,76 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       };
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
-      let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
-      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+      if(chainData && chainData?.data?.data?.chainID === '5') {
+        let contractAddress = process.env.REACT_APP_SEPHOLIA_MULTI_SEND_CONTRACT_ADDRESS;
+
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+      let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+      let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+      let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+      let platformprice = price * platformcommision / 100;
+      let royalties = price * royaltiesCommission / 100;
+      let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+      let balancePrice = price * ((100 - totalCommission) / 100);
+      let recipients: string[] = [];
+      let amounts: number[] = [];
+
+      // const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      // console.log(address, "address")
+      // if (address) {
+      //   console.log("Address")
+
+      // }
+      console.log(currentAddress, currentAddress, "sample")
+      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      console.log(address, "address")
+      if (address) {
+        recipients.push(address);
+      }
+      console.log(currentAddress, currentAddress, "sample")
+      console.log("test")
+      recipients.push(currentAddress);
+      recipients.push(currentAddress);
+      amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+      amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+      amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+      console.log("test")
+      console.log(recipients, amounts, "test")
+
+ 
+
+        instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
+          if (res.status) {
+            console.log("test")
+
+            const config = {
+              headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+            };
+
+
+            axios
+              .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId, "price": price }, config)
+              .then((res) => {
+                console.log(res, "789")
+                if (res.data.status == true) {
+                  //  setLoading(false)
+                  toast.success(res.data.message)
+                  //setTimeout(() => (window.location.href = "/page-search"), 1500);
+
+                } else {
+                  toast.error(res.data.message)
+                  // setTimeout(() => {
+                  //   setLoading(false)
+                  // }, 1000);
+                }
+              })
+
+          }
+        }).catch((err: any) => {  if(err.code === 4001) { toast.warning(err.message)}});
+      } else if(chainData && chainData?.data?.data?.chainID === '97') {
+        let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
+
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
       let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
       let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
       let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
@@ -481,6 +549,74 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
           }
         }).catch((err: any) => {  if(err.code === 4001) { toast.warning(err.message)}});
+      } else if(chainData && chainData?.data?.data?.chainID === '80001') {
+        let contractAddress = process.env.REACT_APP_MATIC_MULTI_SEND_CONTRACT_ADDRESS;
+
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+      let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+      let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+      let royaltiesCommission = data?.data?.data?.docs?.[0]?.collection_id?.royalties ? data?.data?.data?.docs?.[0]?.collection_id?.royalties : 0;
+      let platformprice = price * platformcommision / 100;
+      let royalties = price * royaltiesCommission / 100;
+      let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+      let balancePrice = price * ((100 - totalCommission) / 100);
+      let recipients: string[] = [];
+      let amounts: number[] = [];
+
+      // const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      // console.log(address, "address")
+      // if (address) {
+      //   console.log("Address")
+
+      // }
+      console.log(currentAddress, currentAddress, "sample")
+      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      console.log(address, "address")
+      if (address) {
+        recipients.push(address);
+      }
+      console.log(currentAddress, currentAddress, "sample")
+      console.log("test")
+      recipients.push(currentAddress);
+      recipients.push(currentAddress);
+      amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+      amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+      amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+      console.log("test")
+      console.log(recipients, amounts, "test")
+
+ 
+
+        instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
+          if (res.status) {
+            console.log("test")
+
+            const config = {
+              headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+            };
+
+
+            axios
+              .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId, "price": price }, config)
+              .then((res) => {
+                console.log(res, "789")
+                if (res.data.status == true) {
+                  //  setLoading(false)
+                  toast.success(res.data.message)
+                  setTimeout(() => (window.location.href = "/page-search"), 1500);
+
+                } else {
+                  toast.error(res.data.message)
+                  // setTimeout(() => {
+                  //   setLoading(false)
+                  // }, 1000);
+                }
+              })
+
+          }
+        }).catch((err: any) => {  if(err.code === 4001) { toast.warning(err.message)}});
+      }
+      
 
    
     }
@@ -491,7 +627,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
     if (!sessionStorage.getItem("token")) {
       toast.error("Please login your account")
-     // setTimeout(() => (window.location.href = "/login"), 1500);
+      setTimeout(() => (window.location.href = "/login"), 1500);
     }
     // else if (!active) {
     //   toast.error("Please connect your wallet")
@@ -673,8 +809,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
-      let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
-      let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+      if(chainData && chainData?.data?.data?.chainID === '5') {
+        let contractAddress = process.env.REACT_APP_SEPHOLIA_MULTI_SEND_CONTRACT_ADDRESS;
+          let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
 
       console.log("test")
       let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
@@ -720,7 +857,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 if (res.data.status == true) {
                   //  setLoading(false)
                   toast.success(res.data.message)
-                  //  setTimeout(() => (window.location.href = "/collection"), 1500);
+                  setTimeout(() => (window.location.href = "/collection"), 1500);
 
                 } else {
                   toast.error(res.data.message)
@@ -732,6 +869,130 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
           }
         }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+      } else if(chainData && chainData?.data?.data?.chainID === '97') {
+        let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
+
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+
+        console.log("test")
+        let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+        let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+        let royaltiesCommission = royaltiesVal ? Number(royaltiesVal) : 0;
+        let platformprice = price * platformcommision / 100;
+        let royalties = price * royaltiesCommission / 100;
+        let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+        let balancePrice = price * ((100 - totalCommission) / 100);
+        let recipients: string[] = [];;
+        let amounts: number[] = [];
+  
+  
+        console.log(currentAddress, currentAddress, "sample")
+        const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+        console.log(address, "address")
+        if (address) {
+          recipients.push(address);
+        }
+        
+        recipients.push(currentAddress);
+        recipients.push(currentAddress);
+  
+        amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+        amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+        amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+        // setSpinner(true)
+  
+        console.log("test")
+     
+          instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
+            if (res.status) {
+              // item/purchase
+              const config = {
+                headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+              };
+  
+  
+              axios
+                .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId }, config)
+                .then((res) => {
+                  console.log(res, "789")
+                  if (res.data.status == true) {
+                    //  setLoading(false)
+                    toast.success(res.data.message)
+                      setTimeout(() => (window.location.href = "/collection"), 1500);
+  
+                  } else {
+                    toast.error(res.data.message)
+                    // setTimeout(() => {
+                    //   setLoading(false)
+                    // }, 1000);
+                  }
+                })
+  
+            }
+          }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+      } else if(chainData && chainData?.data?.data?.chainID === '80001') {
+        let contractAddress = process.env.REACT_APP_MATIC_MULTI_SEND_CONTRACT_ADDRESS;
+
+        let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
+
+        console.log("test")
+        let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
+        let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
+        let royaltiesCommission = royaltiesVal ? Number(royaltiesVal) : 0;
+        let platformprice = price * platformcommision / 100;
+        let royalties = price * royaltiesCommission / 100;
+        let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
+        let balancePrice = price * ((100 - totalCommission) / 100);
+        let recipients: string[] = [];;
+        let amounts: number[] = [];
+  
+  
+        console.log(currentAddress, currentAddress, "sample")
+        const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+        console.log(address, "address")
+        if (address) {
+          recipients.push(address);
+        }
+        
+        recipients.push(currentAddress);
+        recipients.push(currentAddress);
+  
+        amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
+        amounts.push(Math.floor(royalties * Math.pow(10, 18)));
+        amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
+        // setSpinner(true)
+  
+        console.log("test")
+     
+          instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
+            if (res.status) {
+              // item/purchase
+              const config = {
+                headers: { Authorization: `Bearer ${sessionStorage.getItem("token")}` }
+              };
+  
+  
+              axios
+                .post(`${process.env.REACT_APP_BACKEND_URL}/item/purchase`, { "item_id": itemId }, config)
+                .then((res) => {
+                  console.log(res, "789")
+                  if (res.data.status == true) {
+                    // setLoading(false)
+                    toast.success(res.data.message)
+                    setTimeout(() => (window.location.href = "/collection"), 1500);
+  
+                  } else {
+                    toast.error(res.data.message)
+                    // setTimeout(() => {
+                    //   setLoading(false)
+                    // }, 1000);
+                  }
+                })
+  
+            }
+          }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+      }
+    
       
     }
 

@@ -278,7 +278,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
           if (res.data.status == true) {
             setLoading(false)
             toast.success(res.data.message)
-            // setTimeout(() => (window.location.href = "/collection"), 1500);
+            setTimeout(() => (window.location.href = "/collection"), 1500);
 
           } else {
             toast.error(res.data.message)
