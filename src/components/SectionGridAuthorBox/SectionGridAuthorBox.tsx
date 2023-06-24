@@ -4,11 +4,12 @@ import CardAuthorBox3 from "components/CardAuthorBox3/CardAuthorBox3";
 import CardAuthorBox4 from "components/CardAuthorBox4/CardAuthorBox4";
 import Heading from "components/Heading/Heading";
 import NavItem2 from "components/NavItem2";
-import React, { FC } from "react";
+import React, { FC, useState, useEffect } from "react";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import Nav from "shared/Nav/Nav";
 import SortOrderFilter from "./SortOrderFilter";
+import axios from "axios";
 
 export interface SectionGridAuthorBoxProps {
   className?: string;
@@ -27,31 +28,36 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
 }) => {
   const [tabActive, setTabActive] = React.useState("Popular");
 
-  const renderCard = (index: number) => {
-    switch (boxCard) {
-      case "box1":
-        return (
-          <CardAuthorBox
-            index={index < 3 ? index + 1 : undefined}
-            key={index}
-          />
-        );
-      case "box2":
-        return <CardAuthorBox2 key={index} />;
-      case "box3":
-        return <CardAuthorBox3 key={index} />;
-      case "box4":
-        return (
-          <CardAuthorBox4
-            authorIndex={index < 3 ? index + 1 : undefined}
-            key={index}
-          />
-        );
 
-      default:
-        return null;
-    }
-  };
+  const [marketData, setMarketData] = useState<any[]>([])
+
+
+
+  const getData = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/collection/list`).then(res => {
+      setMarketData(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  console.log(marketData, "data")
+
+  useEffect(() => {
+     getData()
+  }, [])
+
+  // const renderCard = (index: number) => {
+  //   switch (boxCard) {
+      
+  //     case "box4":
+  //       return (
+         
+  //       );
+
+  //     default:
+  //       return null;
+  //   }
+  // };
 
   const renderHeading1 = () => {
     return (
@@ -88,9 +94,9 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
           isCenter
           desc=""
         >
-          Top List Creators.
+          Top List Collections.
         </Heading>
-        <Nav
+        {/* <Nav
           className="p-1 bg-white dark:bg-neutral-800 rounded-full shadow-lg"
           containerClassName="mb-12 lg:mb-14 relative flex justify-center w-full text-sm md:text-base"
         >
@@ -139,7 +145,7 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
               </div>
             </NavItem2>
           ))}
-        </Nav>
+        </Nav> */}
       </div>
     );
   };
@@ -151,12 +157,19 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
     >
       {sectionStyle === "style1" ? renderHeading1() : renderHeading2()}
       <div className={`grid gap-4 md:gap-7 ${gridClassName}`}>
-        {data.map((_, index) => renderCard(index))}
+        {marketData?.map((data, index) => (
+           <CardAuthorBox4
+           authorIndex={index < 3 ? index + 1 : undefined}
+           key={index}
+           data={data}
+         />
+        )
+        )}
       </div>
-      <div className="mt-16 flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-5">
+      {/* <div className="mt-16 flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-5">
         <ButtonSecondary>Show me more </ButtonSecondary>
         <ButtonPrimary>Become a author</ButtonPrimary>
-      </div>
+      </div> */}
     </div>
   );
 };

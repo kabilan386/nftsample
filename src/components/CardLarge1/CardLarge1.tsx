@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import NextPrev from "shared/NextPrev/NextPrev";
 import NcImage from "shared/NcImage/NcImage";
@@ -11,12 +11,14 @@ import { nftsLargeImgs } from "contains/fakeData";
 import TimeCountDown from "./TimeCountDown";
 import collectionPng from "images/nfts/collection.png";
 import VerifyIcon from "components/VerifyIcon";
+import axios from "axios";
 
 export interface CardLarge1Props {
   className?: string;
   onClickNext?: () => void;
   onClickPrev?: () => void;
   isShowing?: boolean;
+  data: any;
   featuredImgUrl?: string;
 }
 
@@ -25,8 +27,11 @@ const CardLarge1: FC<CardLarge1Props> = ({
   isShowing = true,
   onClickNext = () => {},
   onClickPrev = () => {},
+  data,
   featuredImgUrl = nftsLargeImgs[0],
 }) => {
+  console.log(data, "data");
+
   const randomTitle = [
     "Walking On Air ",
     "Amazing Nature",
@@ -34,6 +39,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
     "Lovely NFT",
     "Wolf Face #1",
   ];
+
   return (
     <div
       className={`nc-CardLarge1 nc-CardLarge1--hasAnimation relative flex flex-col-reverse lg:flex-row justify-end ${className}`}
@@ -43,7 +49,9 @@ const CardLarge1: FC<CardLarge1Props> = ({
           {/* TITLE */}
           <h2 className="text-2xl lg:text-3xl 2xl:text-5xl font-semibold ">
             <Link to={"/nft-detailt"} title="Walking On Air">
-              {randomTitle[Math.floor(Math.random() * randomTitle.length)]}
+              {/* // {randomTitle[Math.floor(Math.random() * randomTitle.length)]} */}
+
+              {data?.name}
             </Link>
           </h2>
 
@@ -56,18 +64,23 @@ const CardLarge1: FC<CardLarge1Props> = ({
               <div className="ml-3">
                 <div className="text-xs dark:text-neutral-400">Creator</div>
                 <div className="text-sm font-semibold flex items-center">
-                  <span>Jane Cooper</span>
+                  <span className="currentAddress">{data?.current_owner?.address}</span>
                   <VerifyIcon />
                 </div>
               </div>
             </div>
             <div className="flex items-center">
               <div className="flex-shrink-0 h-10 w-10">
-                <Avatar sizeClass="w-10 h-10" imgUrl={collectionPng} />
+              <Avatar
+                imgUrl={`${process.env.REACT_APP_BACKEND_URL}${data?.collection_id?.image}`}
+                sizeClass="w-10 h-10" 
+                radius="rounded-full"
+              />
+                
               </div>
               <div className="ml-3">
                 <div className="text-xs dark:text-neutral-400">Collection</div>
-                <div className="text-sm font-semibold ">Marscapes</div>
+                <div className="text-sm font-semibold ">{data?.collection_id?.name}</div>
               </div>
             </div>
           </div>
@@ -79,27 +92,28 @@ const CardLarge1: FC<CardLarge1Props> = ({
                 Current Bid
               </span>
               <span className="text-3xl xl:text-4xl font-semibold text-green-500">
-                1.000 ETH
+                {data?.price}
               </span>
-              <span className="text-lg text-neutral-400 sm:ml-3.5">
+              {/* <span className="text-lg text-neutral-400 sm:ml-3.5">
                 (≈ $3,221.22)
-              </span>
+              </span> */}
             </div>
           </div>
 
           {/* AUTION TIME */}
-          <TimeCountDown />
+          <TimeCountDown time={data?.endDateTime} enableBid={data?.enableBID} bidTime={data?.endDateTimeBID} />
 
           <div className="w h-[1px] bg-neutral-100 dark:bg-neutral-700"></div>
 
           {/* DESCRIPTION */}
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <ButtonPrimary href={"/nft-detailt/:id"} className="flex-1">
-              Place a bid
-            </ButtonPrimary>
-            <ButtonSecondary href={"/nft-detailt/:id"} className="flex-1">
-              View item
-            </ButtonSecondary>
+            <Link to={`/nft-detailt/${data?._id}`}>
+              <ButtonPrimary className="flex-1">Place a bid</ButtonPrimary>
+            </Link>
+
+            <Link to={`/nft-detailt/${data?._id}`}>
+              <ButtonSecondary className="flex-1">View item</ButtonSecondary>
+            </Link>
           </div>
         </div>
         <div className="p-4 sm:pt-8 sm:px-10 ">
@@ -115,18 +129,17 @@ const CardLarge1: FC<CardLarge1Props> = ({
         <div className="nc-CardLarge1__right ">
           <Link to={"/nft-detailt"}>
             <NcImage
-              containerClassName="aspect-w-1 aspect-h-1 relative"
-              className="absolute inset-0 object-cover rounded-3xl sm:rounded-[40px] border-4 sm:border-[14px] border-white dark:border-neutral-800"
-              src={featuredImgUrl}
-              alt={"title"}
+              containerClassName="flex aspect-w-11 aspect-h-12 w-full h-0 rounded-3xl overflow-hidden z-0"
+              src={`${process.env.REACT_APP_BACKEND_URL}/${data?.media}`}
+              className="object-cover w-full h-full group-hover:scale-[1.03] transition-transform duration-300 ease-in-out will-change-transform"
             />
           </Link>
 
           {/* META TYPE */}
-          <ItemTypeVideoIcon className="absolute w-8 h-8 md:w-10 md:h-10 left-3 bottom-3 sm:left-7 sm:bottom-7 " />
+          {/* <ItemTypeVideoIcon className="absolute w-8 h-8 md:w-10 md:h-10 left-3 bottom-3 sm:left-7 sm:bottom-7 " /> */}
 
           {/* META FAVORITES */}
-          <LikeButton className="absolute right-3 top-3 sm:right-7 sm:top-7" />
+          {/* <LikeButton className="absolute right-3 top-3 sm:right-7 sm:top-7" /> */}
         </div>
       </div>
     </div>

@@ -35,7 +35,7 @@ function PageHome3() {
           />
         </div>
         {/* SECTION 3 */}
-        <SectionMagazine8 />
+        {/* <SectionMagazine8 /> */}
 
         {/* SECTION 4 */}
         <SectionSliderCardNftVideo />

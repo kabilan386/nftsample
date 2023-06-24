@@ -1,10 +1,67 @@
 import useCountDownTime from "hooks/useCountDownTime";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-const TimeCountDown = () => {
-  const timeLeft = useCountDownTime();
+const TimeCountDown = ({ time, enableBid, bidTime }) => {
 
-  console.log(timeLeft, "timeLeft")
+  
+
+
+  const [date, setDate] = useState()
+  const [hours, setHours] = useState()
+  const [minute, setMinte] = useState()
+  const [seconds, setSeconds] = useState()
+
+
+
+  // console.log(new Date(time), "time")
+  // const day = new Date(time);
+  // console.log(day.getMonth(), "month")
+  // const timeLeft = useCountDownTime();
+
+  console.log(enableBid, bidTime, "BidTime")
+
+  const calculateTimeLeft = () => {
+
+
+    // let year = new Date(time).getFullYear();
+    // let month = new Date(time).getMonth();
+    let difference = +new Date(enableBid === true ? bidTime : time) - +new Date();
+
+    console.log(difference, "difference")
+
+    console.log(difference, "difference")
+
+    let timeLeft = {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    };
+  
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+  
+    return timeLeft;
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+     setTimeLeft(calculateTimeLeft());
+     console.log(timeLeft, "timeLeft")
+     console.log("Hi")
+    }, 1000);
+    return () => clearTimeout(timer);
+  });
+
+  console.log(timeLeft.days, "days")
 
 
 
@@ -44,35 +101,35 @@ const TimeCountDown = () => {
         <span className="leading-none mt-1">Auction ending in:</span>
       </div>
       <div className="flex space-x-5 sm:space-x-10">
-        <div className="flex flex-col items-center">
-          <span className="text-2xl sm:text-3xl font-semibold">
+        <div className="flex flex-col ">
+          <span className="text-2xl sm:text-2xl font-semibold">
             {timeLeft.days}
           </span>
           <span className="sm:text-lg text-neutral-500 dark:text-neutral-400">
             Days
           </span>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-2xl sm:text-3xl font-semibold">
+        <div className="flex flex-col ">
+          <span className="text-2xl sm:text-2xl font-semibold">
             {timeLeft.hours}
           </span>
           <span className="sm:text-lg text-neutral-500 dark:text-neutral-400">
             hours
           </span>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-2xl sm:text-3xl font-semibold">
+        <div className="flex flex-col ">
+          <span className="text-2xl sm:text-2xl font-semibold">
             {timeLeft.minutes}
           </span>
           <span className="sm:text-lg text-neutral-500 dark:text-neutral-400">
-            mins
+            minutes
           </span>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-2xl sm:text-3xl font-semibold">
+        <div className="flex flex-col ">
+          <span className="text-2xl sm:text-2xl font-semibold">
             {timeLeft.seconds}
           </span>
-          <span className="sm:text-lg text-neutral-500">secs</span>
+          <span className="sm:text-lg text-neutral-500">seconds</span>
         </div>
       </div>
     </div>

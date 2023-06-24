@@ -4,7 +4,9 @@ import rightImgDemo from "images/rightLargeImg.png";
 import rightLargeImgDark from "images/rightLargeImgDark.png";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Logo from "shared/Logo/Logo";
+import { useNavigate } from "react-router-dom";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
+import { toast } from "react-toastify"
 
 export interface SectionBecomeAnAuthorProps {
   className?: string;
@@ -13,6 +15,18 @@ export interface SectionBecomeAnAuthorProps {
 const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
   className = "",
 }) => {
+
+  const navigate = useNavigate()
+
+  const getToast = () => {
+    if (!sessionStorage.getItem("token")) {
+      toast.error("Please login your account")
+      setTimeout(() => (window.location.href = "/connect-wallet"), 1500);
+    } else {
+      navigate("/page-upload-item")
+    }
+  }
+
   return (
     <div
       className={`nc-SectionBecomeAnAuthor relative flex flex-col lg:flex-row items-center  ${className}`}
@@ -27,7 +41,7 @@ const SectionBecomeAnAuthor: FC<SectionBecomeAnAuthorProps> = ({
           A creative agency that lead and inspire.
         </span>
         <div className="flex space-x-2 sm:space-x-5 mt-6 sm:mt-12">
-          <ButtonPrimary href="/page-upload-item" className="">
+          <ButtonPrimary onClick={getToast} className="">
             Create item
           </ButtonPrimary>
           <ButtonSecondary href="/page-search" className="">
