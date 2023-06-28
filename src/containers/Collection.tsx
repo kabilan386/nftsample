@@ -185,10 +185,10 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         </main>
 
         {/* === SECTION 5 === */}
-        <div className="relative py-20 lg:py-28">
+        {/* <div className="relative py-20 lg:py-28">
           <BackgroundSection />
           <SectionSliderCollections />
-        </div>
+        </div> */}
 
         {/* SUBCRIBES */}
         <SectionBecomeAnAuthor />

@@ -54,10 +54,10 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
         <div className="flex-shrink-0 flex items-center justify-end text-neutral-700 dark:text-neutral-100 space-x-1">
           <div className="hidden items-center xl:flex space-x-2">
             <Navigation />
-            <div className="hidden sm:block h-6 border-l border-neutral-300 dark:border-neutral-6000"></div>
+            {/* <div className="hidden sm:block h-6 border-l border-neutral-300 dark:border-neutral-6000"></div> */}
             <div className="flex">
-              <SwitchDarkMode />
-              <NotifyDropdown />
+              {/* <SwitchDarkMode /> */}
+              {/* <NotifyDropdown /> */}
             </div>
             <div></div>
             <ButtonPrimary
@@ -70,7 +70,7 @@ const MainNav2Logged: FC<MainNav2LoggedProps> = () => {
             <AvatarDropdown />
           </div>
           <div className="flex items-center space-x-3 xl:hidden">
-            <NotifyDropdown />
+            {/* <NotifyDropdown /> */}
             <AvatarDropdown />
             <MenuBar />
           </div>

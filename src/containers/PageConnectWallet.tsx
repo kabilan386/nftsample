@@ -16,6 +16,8 @@ export interface PageConnectWalletProps {
   className?: string;
 }
 
+declare let window: any;
+
 const plans = [
   {
     name: "Metamask",
@@ -34,6 +36,39 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
       position: toast.POSITION.TOP_RIGHT
     });
   };
+
+  // const networkVersion: string = (window as any).ethereum.request({
+  //   method: "net_version",
+  // });
+
+  const [network, setNetwork] = useState("");
+
+  useEffect(() => {
+    // Check if MetaMask is installed
+    if (!(window.ethereum && window.ethereum.isMetaMask)) {
+      console.log("MetaMask is not installed");
+      return;
+    }
+
+    // Retrieve the network ID
+    window.ethereum
+      .request({ method: "net_version" })
+      .then((networkId) => {
+        console.log(networkId, "network")
+        // Map network ID to network name
+        
+
+        setNetwork(networkId);
+      })
+      .catch((error) => {
+        console.log("Failed to retrieve network ID:", error);
+      });
+  }, []);
+  console.log(network, "network")
+
+
+
+ console.log(typeof(network), "network")
   
   //Does the User have an Ethereum wallet/account?
   async function connectWallet(): Promise<void> {
@@ -45,19 +80,38 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
       })
       .then((accounts: string[]) => {
         console.log("networkVersion",(window as any).ethereum.networkVersion);
-        if((window as any).ethereum.networkVersion === process.env.REACT_APP_CHAIN_ID_DECIMAL){
-          WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
-            if (res.status === true) {
-              console.log(res, "resData")
-              // toast.success(`${res?.message}`)
-              sessionStorage.setItem('address', accounts[0]);
-              sessionStorage.setItem("token", res?.token)
-              sessionStorage.setItem("user_id", res.user_id)
-              sessionStorage.setItem('Connected', "true");
-              setAccount(accounts[0]);
-              navigate("/")
-            }
-          })
+        if(network === "97") {
+          if((window as any).ethereum.networkVersion === process.env.REACT_APP_BNB_CHAIN_ID_DECIMAL){
+            WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
+              if (res.status === true) {
+                console.log(res, "resData")
+                // toast.success(`${res?.message}`)
+                sessionStorage.setItem('address', accounts[0]);
+                sessionStorage.setItem("token", res?.token)
+                sessionStorage.setItem("user_id", res.user_id)
+                sessionStorage.setItem('Connected', "true");
+                setAccount(accounts[0]);
+                navigate("/")
+              }
+            })
+          } 
+        } else if(network === "80001") {
+
+          if((window as any).ethereum.networkVersion === process.env.REACT_APP_MATIC_CHAIN_ID_DECIMAL){
+            WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
+              if (res.status === true) {
+                console.log(res, "resData")
+                // toast.success(`${res?.message}`)
+                sessionStorage.setItem('address', accounts[0]);
+                sessionStorage.setItem("token", res?.token)
+                sessionStorage.setItem("user_id", res.user_id)
+                sessionStorage.setItem('Connected', "true");
+                setAccount(accounts[0]);
+                navigate("/")
+              }
+            })
+          }
+
         }
         
       })
@@ -65,6 +119,7 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
         showToastMessage(error.message);
       });
   }
+  
   // ethereum.on('accountsChanged', (accounts: any) => {
   //   connectWallet();
   // });

@@ -11,13 +11,18 @@ export interface CardAuthorBox4Props {
   className?: string;
   following?: boolean;
   authorIndex?: number;
+  data: any;
 }
 
 const CardAuthorBox4: FC<CardAuthorBox4Props> = ({
   className = "",
   following,
   authorIndex,
+  data
 }) => {
+
+  console.log(data, "data")
+
   return (
     <div
       className={`nc-CardAuthorBox4 relative flex flex-col overflow-hidden group bg-white dark:bg-neutral-800 group rounded-3xl hover:shadow-xl transition-shadow ${className}`}
@@ -38,7 +43,7 @@ const CardAuthorBox4: FC<CardAuthorBox4Props> = ({
 
         <NcImage
           containerClassName="flex h-full w-full flex-shrink-0 rounded-3xl overflow-hidden"
-          src={nftsAbstracts[Math.floor(Math.random() * nftsAbstracts.length)]}
+          src={`${process.env.REACT_APP_BACKEND_URL}${data?.image}`}
         />
       </div>
 
@@ -72,14 +77,15 @@ const CardAuthorBox4: FC<CardAuthorBox4Props> = ({
           <div>
             <h2 className={`text-base font-medium flex items-center`}>
               <span className="">
-                {personNames[Math.floor(Math.random() * personNames.length)]}
+                {/* {personNames[Math.floor(Math.random() * personNames.length)]} */}
+                {data?.name}
               </span>
               <VerifyIcon />
             </h2>
             <span className={`block mt-0.5 text-sm `}>
-              <span className="font-medium">12.321</span>
+              <span className="font-medium">{data?.item_count}</span>
               <span className={`ml-1.5 text-neutral-500 dark:text-neutral-400`}>
-                ETH
+                Items
               </span>
             </span>
           </div>

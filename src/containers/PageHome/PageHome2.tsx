@@ -41,7 +41,7 @@ function PageHome() {
 
       <div className="container relative space-y-24 my-24 lg:space-y-32 lg:my-32">
         {/* SECTION 3 */}
-        <SectionMagazine8 />
+        {/* <SectionMagazine8 /> */}
 
         {/* SECTION */}
         <div className="relative py-20 lg:py-28">
@@ -54,25 +54,25 @@ function PageHome() {
         </div>
 
         {/* SECTION 4 */}
-        <SectionSliderCardNftVideo />
+        {/* <SectionSliderCardNftVideo /> */}
 
         {/* SECTION */}
-        <div className="relative py-20 lg:py-28">
+        {/* <div className="relative py-20 lg:py-28">
           <BackgroundSection />
           <SectionSliderCollections2 cardStyle="style2" />
-        </div>
+        </div> */}
 
         {/* SECTION */}
-        <SectionSubscribe2 />
+        {/* <SectionSubscribe2 /> */}
 
         {/* SECTION */}
-        <div className="relative py-20 lg:py-28">
+        {/* <div className="relative py-20 lg:py-28">
           <BackgroundSection className="bg-neutral-100/70 dark:bg-black/20 " />
           <SectionGridFeatureNFT2 />
-        </div>
+        </div> */}
 
         {/* SECTION 1 */}
-        <SectionSliderCategories />
+        {/* <SectionSliderCategories /> */}
 
         {/* SECTION */}
         <div className="relative py-20 lg:py-24">
