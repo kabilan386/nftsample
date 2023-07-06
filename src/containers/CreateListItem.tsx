@@ -374,13 +374,13 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
         }
         console.log(window.ethereum.chainId !== '80001', "wallet");
        
-      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+      } else if (chainData && chainData?.data?.data?.chainID === '11155111') {
         console.log("Hi There Three");
   
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x5' }]
+            params: [{ chainId: '0xaa36a7' }]
           });
           console.log("Hi There");
           console.log("Hii There");
@@ -397,15 +397,15 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                 method: 'wallet_addEthereumChain',
                 params: [
                   {
-                    chainId: '0x5',
-                    chainName: 'Goerli',
+                    chainId: '0xaa36a7',
+                    chainName: 'Sepolia',
                     nativeCurrency: {
                       name: 'ETH',
                       symbol: 'ETH',
                       decimals: 18,
                     },
-                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
-                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                    rpcUrls: ['https://rpc.sepolia.org'],
+                    blockExplorerUrls: ['https://sepolia.etherscan.io'],
                   },
                 ],
               });

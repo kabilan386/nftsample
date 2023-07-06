@@ -536,7 +536,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 </div>
                 {/* ---- */}
                 <div className="justify-center">
-                  {loading ? <ButtonPrimary className=" w-1/2">
+                  {loading ? <ButtonPrimary className=" w-full">
                     <ClipLoader
                       color={color}
                       loading={loading}
@@ -545,7 +545,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                       aria-label="Loading Spinner"
                       data-testid="loader"
                     />
-                  </ButtonPrimary> : <ButtonPrimary className=" w-1/2" type="submit">Upload Collection</ButtonPrimary>}
+                  </ButtonPrimary> : <ButtonPrimary className=" w-full" type="submit">Upload Collection</ButtonPrimary>}
 
                 </div>
               </div>

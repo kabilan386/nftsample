@@ -275,14 +275,14 @@ const pagination = paginationFactory({
                   </svg>
                 </div>
 
-                <span className="block mt-4 text-sm text-neutral-500 dark:text-neutral-400">
+                {/* <span className="block mt-4 text-sm text-neutral-500 dark:text-neutral-400">
                   Punk #4786 / An OG Cryptopunk Collector, hoarder of NFTs.
                   Contributing to @ether_cards, an NFT Monetization Platform.
-                </span>
+                </span> */}
               </div>
-              <div className="mt-4 ">
+              {/* <div className="mt-4 ">
                 <SocialsList itemClass="block w-7 h-7" />
-              </div>
+              </div> */}
             </div>
             <div className="absolute md:static left-5 top-4 sm:left-auto sm:top-5 sm:right-5 flex flex-row-reverse justify-end">
               <NftMoreDropdown
@@ -377,7 +377,7 @@ const pagination = paginationFactory({
                           <Dropdown.Menu align="end" >
 
                             <>
-                            <Link key="index6" to={`/createListItem/${e?._id}`}  className="dropdown-item"  >
+                            <Link key="index6" to={`/createListItem/${e?._id}`} state={{ foo: e?.collection_id?.chain}}  className="dropdown-item"  >
                                 List NFT
                               </Link>
 

@@ -365,13 +365,13 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         }
         console.log(window.ethereum.chainId !== '80001', "wallet");
        
-      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+      } else if (chainData && chainData?.data?.data?.chainID === '11155111') {
         console.log("Hi There Three");
   
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x5' }]
+            params: [{ chainId: '0xaa36a7' }]
           });
           console.log("Hi There");
           console.log("Hii There");
@@ -388,15 +388,15 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 method: 'wallet_addEthereumChain',
                 params: [
                   {
-                    chainId: '0x5',
-                    chainName: 'Goerli',
+                    chainId: '0xaa36a7',
+                    chainName: 'Sepolia',
                     nativeCurrency: {
                       name: 'ETH',
                       symbol: 'ETH',
                       decimals: 18,
                     },
-                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
-                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                    rpcUrls: ['https://rpc.sepolia.org'],
+                    blockExplorerUrls: ['https://sepolia.etherscan.io'],
                   },
                 ],
               });
@@ -417,7 +417,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       };
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
-      if(chainData && chainData?.data?.data?.chainID === '5') {
+      if(chainData && chainData?.data?.data?.chainID === '11155111') {
         let contractAddress = process.env.REACT_APP_SEPHOLIA_MULTI_SEND_CONTRACT_ADDRESS;
 
         let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
@@ -471,7 +471,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 if (res.data.status == true) {
                   //  setLoading(false)
                   toast.success(res.data.message)
-                  //setTimeout(() => (window.location.href = "/page-search"), 1500);
+                  setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
                   toast.error(res.data.message)
@@ -754,13 +754,13 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         }
         console.log(window.ethereum.chainId !== '80001', "wallet");
        
-      } else if (chainData && chainData?.data?.data?.chainID === '5') {
+      } else if (chainData && chainData?.data?.data?.chainID === '11155111') {
         console.log("Hi There Three");
   
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x5' }]
+            params: [{ chainId: '0xaa36a7' }]
           });
           console.log("Hi There");
           console.log("Hii There");
@@ -777,15 +777,15 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 method: 'wallet_addEthereumChain',
                 params: [
                   {
-                    chainId: '0x5',
-                    chainName: 'Goerli',
+                    chainId: '0xaa36a7',
+                    chainName: 'Sepolia',
                     nativeCurrency: {
                       name: 'ETH',
                       symbol: 'ETH',
                       decimals: 18,
                     },
-                    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
-                    blockExplorerUrls: ['https://goerli.etherscan.io'],
+                    rpcUrls: ['https://rpc.sepolia.org'],
+                    blockExplorerUrls: ['https://sepolia.etherscan.io'],
                   },
                 ],
               });
@@ -809,7 +809,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
-      if(chainData && chainData?.data?.data?.chainID === '5') {
+      if(chainData && chainData?.data?.data?.chainID === '11155111') {
         let contractAddress = process.env.REACT_APP_SEPHOLIA_MULTI_SEND_CONTRACT_ADDRESS;
           let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
 
@@ -857,7 +857,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 if (res.data.status == true) {
                   //  setLoading(false)
                   toast.success(res.data.message)
-                  setTimeout(() => (window.location.href = "/collection"), 1500);
+                  setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
                   toast.error(res.data.message)

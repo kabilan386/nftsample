@@ -112,6 +112,21 @@ const PageConnectWallet: FC<PageConnectWalletProps> = ({ className = "" }) => {
             })
           }
 
+        } else if(network === "11155111") {
+          if((window as any).ethereum.networkVersion === process.env.REACT_APP_ETH_CHAIN_ID_DECIMAL){
+            WalletLogin({ address: accounts[0].toLowerCase() }).then((res: any) => {
+              if (res.status === true) {
+                console.log(res, "resData")
+                // toast.success(`${res?.message}`)
+                sessionStorage.setItem('address', accounts[0]);
+                sessionStorage.setItem("token", res?.token)
+                sessionStorage.setItem("user_id", res.user_id)
+                sessionStorage.setItem('Connected', "true");
+                setAccount(accounts[0]);
+                navigate("/")
+              }
+            })
+          }
         }
         
       })
