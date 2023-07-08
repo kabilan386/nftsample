@@ -371,7 +371,7 @@ const pagination = paginationFactory({
                       <div className="absolute top-3 right-3 !w-9 !h-9">
                         <Dropdown>
                           <Dropdown.Toggle className="rounded-pill shadow-sm" >
-                            <i className="fas fa-ellipsis-v"></i>
+                            <i className="fa fa-ellipsis-v"></i>
                           </Dropdown.Toggle>
 
                           <Dropdown.Menu align="end" >
@@ -574,7 +574,7 @@ const pagination = paginationFactory({
                       <div className="absolute top-3 right-3 !w-9 !h-9">
                         {/* <Dropdown>
                           <Dropdown.Toggle className="rounded-pill shadow-sm" >
-                            <i className="fas fa-ellipsis-v"></i>
+                            <i className="fa fa-ellipsis-v"></i>
                           </Dropdown.Toggle>
 
                           <Dropdown.Menu align="end" >

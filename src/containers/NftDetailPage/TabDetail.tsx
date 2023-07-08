@@ -161,8 +161,8 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
               </span>
 
               { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
-              <i className="fas fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
-              <i className="fas fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
+              <i className="fa fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
+              <i className="fa fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
               </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy now</button>}</> }
            
 
