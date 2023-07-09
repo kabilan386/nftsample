@@ -138,6 +138,16 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
     otherwise: (schema) => schema.required("Price Value is Requires"),
     
   }),
+  normalSale: Yup.number().when('saletype', {
+    is: (val) => val === "normal",
+    then: (schema) => schema.required("Price Value is Required").test(
+      'Is positive?',
+      'Price must be greater than 0!',
+      (value) => value > 0
+  ),
+    otherwise: (schema) => schema.required("Price Value is Requires"),
+    
+  }),
     enableAuction: Yup.boolean()
     // enableBID: yup.string().test("console", "console", (value) => {
     //   console.log("bid value", value)
@@ -158,6 +168,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
       link: itemLink,
       saletype: null,
       price: 0,
+      normalSale: 0,
       elem: null
     },
     enableReinitialize: true,
@@ -181,7 +192,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
         "dateRangeBid": valueBid,
         "media": values?.mediafile,
         "name": values.name,
-        "price": values.price,
+        "price": values.saletype === "offer" ? values.price : values.normalSale,
         "attributes": formValues,
         "levels": formValuesforStats,
         "stats": formValuesforStats,
@@ -711,6 +722,20 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                   />
                 </div>
 
+                <div className="col-3">
+                  <Form.Check
+                    className="mb-4 mb-md-0"
+                    type="radio"
+                    label="Normal Sale"
+                    id="rememberMe"
+                    value="normal"
+                    name="saletype"
+                    onChange={formik.handleChange}
+                  // checked={data?.data?.data?.docs?.[0]?.enableBID ? true : false}
+                  // defaultChecked={!formik.values.enableAuction}
+                  />
+                </div>
+
 
 
               </div>
@@ -788,6 +813,23 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
               </>
             ) : null}
 
+
+{formik.values.saletype === "normal" && (
+              <>
+                <div className="col-12">
+
+                 <div style={{ margin: "20px 0" }}>
+                    <FormItem label="Item Price">
+                      <Input defaultValue="NFT name" id="normalSale" type="text" name="normalSale" onChange={formik.handleChange} value={formik.values.normalSale} placeholder="Please enter item Price" />
+                      <div className="form-error">{formik.errors.normalSale}</div>
+                    </FormItem>
+                  </div>
+
+                </div>
+              </>
+            )}
+
+            <br />
             {/* ---- */}
             {/* <FormItem
                             label="External link"

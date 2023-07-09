@@ -244,7 +244,7 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
 
   console.log(logoFile, "logoFile")
 
-  console.log(inputImage, "inputImage")
+  console.log(formik.errors, "errors")
   return (
     <div
       className={`nc-PageUploadItem ${className}`}
@@ -418,15 +418,14 @@ const PageUploadItem: FC<PageUploadItemProps> = ({ className = "" }) => {
                 {/* ---- */}
 
 
-                <div className="w-full border-b-2 border-neutral-100 dark:border-neutral-700"></div>
-
+                
 
 
                 {/* ---- */}
                 <div className="grid grid-cols-8 md:grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-2.5">
                   {/* ---- */}
                   <FormItem label="Royalties">
-                    <Input placeholder="10%" value={formik.values.royalties} />
+                    <Input placeholder="10%"  id="royalties" type="text" name='royalties' onChange={formik.handleChange} value={formik.values.royalties}  />
                     <div className="form-error">{formik.errors.royalties}</div>
                   </FormItem>
                 </div>

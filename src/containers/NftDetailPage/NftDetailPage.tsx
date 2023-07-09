@@ -74,7 +74,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [offerVal, setOfferValue] = useState("")
   const [token_id, setToken_id] = useState("")
   const [item_Bid, setItemBid] = useState("")
-  const [enable_Bid, setEnableBid] = useState("")
+  const [enable_auction, setEnableAuction] = useState()
+  const [enable_Bid, setEnableBid] = useState()
   const [bidTime, setTimeBid] = useState("")
 
 
@@ -111,6 +112,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setRoyalities(res?.data?.data?.docs?.[0]?.collection_id?.royalties)
       setToken_id(res?.data?.data?.docs?.[0]?.token_id)
       setEnableBid(res?.data?.data?.docs?.[0]?.enableBID)
+      setEnableAuction(res?.data?.data?.docs?.[0]?.enableAuction)
       setTimeBid(res?.data?.data?.docs?.[0]?.endDateTimeBID)
 
 
@@ -1111,8 +1113,12 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                     </svg>
 
                     <span className="ml-2.5">BUY NOW</span>
-                  </ButtonPrimary>}
-              </> : <>  {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonPrimary onClick={handleShowBid} className="flex-1">
+                  </ButtonPrimary>
+                  }
+              </> : <>  
+              {
+currentOwner === sessionStorage.getItem("user_id") ? null : 
+<ButtonPrimary onClick={handleShowBid} className="flex-1">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -1148,7 +1154,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               </ButtonPrimary>} </>}
             {placeBid !== true ?
               <>
-                {currentOwner === sessionStorage.getItem("user_id") ? null : <ButtonSecondary onClick={handleShow} className="flex-1">
+                {currentOwner === sessionStorage.getItem("user_id") ? null : 
+                <>{ (enable_Bid === false) && (enable_auction === false) ? <></> : <ButtonSecondary onClick={handleShow} className="flex-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M8.57007 15.27L15.11 8.72998"
@@ -1181,7 +1188,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                   </svg>
 
                   <span className="ml-2.5"> Make offer</span>
-                </ButtonSecondary>}
+                </ButtonSecondary> }</>}
               </> : null}
           </div>
         </div>
