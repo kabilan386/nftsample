@@ -253,9 +253,9 @@ const pagination = paginationFactory({
                     iconClass="w-6 h-6 sm:w-7 sm:h-7 xl:w-8 xl:h-8"
                   />
                 </h2>
-                <div className="flex items-center text-sm font-medium space-x-2.5 mt-2.5 text-green-600 cursor-pointer">
+                {/* <div className="flex items-center text-sm font-medium space-x-2.5 mt-2.5 text-green-600 cursor-pointer">
                   <span className="text-neutral-700 dark:text-neutral-300">
-                    4.0xc4c16ac453sa645a...b21a{" "}
+                    {" "}
                   </span>
                   <svg width="20" height="21" viewBox="0 0 20 21" fill="none">
                     <path
@@ -273,7 +273,7 @@ const pagination = paginationFactory({
                       strokeLinejoin="round"
                     />
                   </svg>
-                </div>
+                </div> */}
 
                 {/* <span className="block mt-4 text-sm text-neutral-500 dark:text-neutral-400">
                   Punk #4786 / An OG Cryptopunk Collector, hoarder of NFTs.
@@ -284,7 +284,7 @@ const pagination = paginationFactory({
                 <SocialsList itemClass="block w-7 h-7" />
               </div> */}
             </div>
-            <div className="absolute md:static left-5 top-4 sm:left-auto sm:top-5 sm:right-5 flex flex-row-reverse justify-end">
+            {/* <div className="absolute md:static left-5 top-4 sm:left-auto sm:top-5 sm:right-5 flex flex-row-reverse justify-end">
               <NftMoreDropdown
                 actions={[
                   {
@@ -300,12 +300,8 @@ const pagination = paginationFactory({
                 panelMenusClass="origin-top-right !-right-5 !w-40 sm:!w-52"
               />
 
-              {/* <FollowButton
-                isFollowing={false}
-                fontSize="text-sm md:text-base font-medium"
-                sizeClass="px-4 py-1 md:py-2.5 h-8 md:!h-10 sm:px-6 lg:px-8"
-              /> */}
-            </div>
+            
+            </div> */}
           </div>
         </div>
       </div>
@@ -536,10 +532,10 @@ const pagination = paginationFactory({
                 </div>
 
                 {/* PAGINATION */}
-                <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
+                {/* <div className="flex flex-col mt-12 lg:mt-16 space-y-5 sm:space-y-0 sm:space-x-3 sm:flex-row sm:justify-between sm:items-center">
                   <Pagination />
                   <ButtonPrimary loading>Show me more</ButtonPrimary>
-                </div>
+                </div> */}
               </Tab.Panel>
               <Tab.Panel className="">
                 {/* LOOP ITEMS */}

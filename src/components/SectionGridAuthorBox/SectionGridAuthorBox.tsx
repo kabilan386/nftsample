@@ -78,9 +78,9 @@ const SectionGridAuthorBox: FC<SectionGridAuthorBoxProps> = ({
         >
           Popular
         </Heading>
-        <div className="mt-4 sm:mt-0">
+        {/* <div className="mt-4 sm:mt-0">
           <SortOrderFilter />
-        </div>
+        </div> */}
       </div>
     );
   };

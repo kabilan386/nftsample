@@ -77,6 +77,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [enable_auction, setEnableAuction] = useState()
   const [enable_Bid, setEnableBid] = useState()
   const [bidTime, setTimeBid] = useState("")
+  const [auctionStatus, setAutionStatus] = useState<any>("")
 
 
   const [show, setShow] = useState(false);
@@ -226,6 +227,16 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       })
 
   }
+
+  const handleCallBack = (e) => {
+    setAutionStatus(e)
+  }
+
+  console.log(typeof(auctionStatus), "aution")
+
+ 
+
+  
 
 
 
@@ -1017,7 +1028,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         <div className="pb-9 space-y-5">
           <div className="flex justify-between items-center">
             <Badge name="Virtual Worlds" color="green" />
-            <LikeSaveBtns id={itemId} owner={currentOwner} />
+            {/* <LikeSaveBtns id={itemId} owner={currentOwner} /> */}
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
             {itemName}
@@ -1054,9 +1065,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         </div>
 
         {/* ---------- 6 ----------  */}
-        <div className="py-9">
+        { (enable_Bid === false) && (enable_auction === false) ? <></> : <div className="py-9">
           <TimeCountDown time={currentBid} enableBid={enable_Bid} bidTime={bidTime} />
-        </div>
+        </div> }
 
         {/* ---------- 7 ----------  */}
         {/* PRICE */}
@@ -1076,7 +1087,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
             </span>
           </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+         {auctionStatus === "accepted" ? <></> :  <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             {placeBid !== true ?
               <>
                 {currentOwner === sessionStorage.getItem("user_id") ? null :
@@ -1155,7 +1166,8 @@ currentOwner === sessionStorage.getItem("user_id") ? null :
             {placeBid !== true ?
               <>
                 {currentOwner === sessionStorage.getItem("user_id") ? null : 
-                <>{ (enable_Bid === false) && (enable_auction === false) ? <></> : <ButtonSecondary onClick={handleShow} className="flex-1">
+                <>{ (enable_Bid === false) && (enable_auction === false) ? <></> : 
+                <ButtonSecondary onClick={handleShow} className="flex-1">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
                       d="M8.57007 15.27L15.11 8.72998"
@@ -1188,14 +1200,15 @@ currentOwner === sessionStorage.getItem("user_id") ? null :
                   </svg>
 
                   <span className="ml-2.5"> Make offer</span>
-                </ButtonSecondary> }</>}
+                </ButtonSecondary> }
+                </>}
               </> : null}
-          </div>
+          </div>}
         </div>
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail current={currentOwner} buyFunctionForauction={buyFunctionForauction} bid={enable_Bid} bidTimer={bidTime} />
+          <TabDetail auction={handleCallBack} current={currentOwner} buyFunctionForauction={buyFunctionForauction} bid={enable_Bid} bidTimer={bidTime} />
         </div>
       </div>
     );

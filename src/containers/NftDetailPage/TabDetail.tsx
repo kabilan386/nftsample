@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { idText } from "typescript";
 
-const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
+const TabDetail = ({ auction, current, buyFunctionForauction, bid , bidTimer}) => {
 
   
 
@@ -50,6 +50,8 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
       })
 
   }
+
+ 
 
   const removeOffer = (ids): any => {
 
@@ -133,43 +135,47 @@ const TabDetail = ({ current, buyFunctionForauction, bid , bidTimer}) => {
   const renderTabBidHistory = () => {
     return (
       <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
-        {offerData?.map((data: any ,index) => (
-          <li
-            key={index}
-            className={`relative py-4 ${
-              index % 2 === 1 ? "bg-neutradl-100" : ""
-            }`}
-          >
-            <div className="flex items-center">
-              <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
-
-              <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
-                <span className="flex items-center text-sm">
-                  <span className="">
-                       Offer <span className="OfferPrice "> ${data?.item_id.price}</span> by
+        {offerData?.map((data: any ,index) => 
+        {
+          auction(data?.status)
+          return (
+            <li
+              key={index}
+              className={`relative py-4 ${
+                index % 2 === 1 ? "bg-neutradl-100" : ""
+              }`}
+            >
+              <div className="flex items-center">
+                <Avatar sizeClass="h-10 w-10" radius="rounded-full" />
+  
+                <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
+                  <span className="flex items-center text-sm">
+                    <span className="">
+                         Offer <span className="OfferPrice "> ${data?.item_id.price}</span> by
+                    </span>
+  
+                    {/* <span className="">
+                        {Math.random() > 0.5 ? "Listed by" : "Minted by"}
+                      </span> */}
+  
+                    <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
+                      {data?.sender?.address}
+                    </span>
                   </span>
-
-                  {/* <span className="">
-                      {Math.random() > 0.5 ? "Listed by" : "Minted by"}
-                    </span> */}
-
-                  <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">
-                    {data?.sender?.address}
-                  </span>
+                  <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
                 </span>
-                <span className="text-xs mt-1">Jun 14 - 4:12 PM</span>
-              </span>
-
-              { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
-              <i className="fa fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
-              <i className="fa fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
-              </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy now</button>}</> }
-           
-
+  
+                { current === sessionStorage?.getItem("user_id") ?  <> { data?.status !== "accepted" ?  <div className="offerIcons">
+                <i className="fa fa-check-circle btn btn-success" onClick={() => acceptOffer(data?._id)}></i>
+                <i className="fa fa-trash btn btn-danger" onClick={() => removeOffer(data?._id)}></i>
+                </div> : <button className="btn btn-danger mx-5">Waiting For Buy</button> } </> : <>{ data?.status !== "accepted" ? null : <button className="btn btn-primary mx-5" onClick={() => buyFunctionForauction(data, data?.price)}>Buy now</button>}</> }
              
-            </div>
-          </li>
-        ))}
+  
+               
+              </div>
+            </li>
+          )
+        })}
       </ul>
     );
   };
