@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, CSSProperties, useEffect, useState } from "react";
 import Avatar from "shared/Avatar/Avatar";
 import Badge from "shared/Badge/Badge";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
 import ButtonSecondary from "shared/Button/ButtonSecondary";
 import NcImage from "shared/NcImage/NcImage";
+import { BeatLoader } from "react-spinners";
 import LikeSaveBtns from "./LikeSaveBtns";
 import BackgroundSection from "components/BackgroundSection/BackgroundSection";
 import SectionSliderCategories from "components/SectionSliderCategories/SectionSliderCategories";
@@ -30,6 +31,12 @@ import { toast } from "react-toastify";
 import { string } from "yup";
 
 declare let window: any;
+
+const override: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "white",
+};
 
 // declare namespace NodeJS {
 //   interface ProcessEnv {
@@ -58,6 +65,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [itemDescription, setItemDescription] = useState('');
   const [itemImage, setItemImage] = useState('');
   const [itemId, setItemId] = useState('');
+  const [color, setColor] = useState("#0000FF");
   const [itemCount, setItemCount] = useState();
   const [itemPrice, setItemPrice] = useState('');
   const [itemContract, setItemContract] = useState("")
@@ -65,6 +73,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [chainName, setChainName] = useState<any>({});
   const [chainNetwork, setChainNetwork] = useState<any>("")
   const [chainId, setChainId] = useState<any>("")
+  const [loading, setLoading] = useState(false);
   const [currentAddress, setCurrentAddress] = useState('');
   const [placeBid, setPlaceBid] = useState();
   const [adminCommistion, setAdminCommistion] = useState("")
@@ -129,6 +138,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   useEffect(() => {
 
     getItem()
+    getOfferData()
 
   }, [])
 
@@ -256,10 +266,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
     } else {
 
-      // setSpinner(true)
-      // let toAddress = data?.data?.data?.docs?.[0]?.current_owner?.metamask_info?.id;
-
-      // console.log(toAddress, "toAddress")
+      setLoading(true)
 
       const requestData = {
         id: chainId
@@ -290,6 +297,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           });
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -316,6 +324,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -338,6 +347,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           })
           
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -365,6 +375,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -389,6 +400,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           console.log("Hi There");
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             toast.warning(err.message)
@@ -414,6 +426,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (addError) {
+              setLoading(false)
               // handle "add" error
             }
           }
@@ -487,6 +500,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                   setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
+                  setLoading(false)
                   toast.error(res.data.message)
                   // setTimeout(() => {
                   //   setLoading(false)
@@ -553,6 +567,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                   setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
+                  setLoading(false)
                   toast.error(res.data.message)
                   // setTimeout(() => {
                   //   setLoading(false)
@@ -619,6 +634,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                   setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
+                  setLoading(false)
                   toast.error(res.data.message)
                   // setTimeout(() => {
                   //   setLoading(false)
@@ -627,7 +643,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               })
 
           }
-        }).catch((err: any) => {  if(err.code === 4001) { toast.warning(err.message)}});
+        }).catch((err: any) => { setLoading(false);  if(err.code === 4001) { toast.warning(err.message)}});
       }
       
 
@@ -636,17 +652,40 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   }
 
 
+
+  console.log(chainName, "chain")
+
+
+
+  const getOfferData = async () => {
+
+    const requestData = {
+      id: chainId
+    };
+
+    const chainData = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData)
+      
+    setChainName(chainData?.data?.data || null)
+
+  }
+
+
+
   const buyFunction = async () => {
 
     if (!sessionStorage.getItem("token")) {
       toast.error("Please login your account")
       setTimeout(() => (window.location.href = "/connect-wallet"), 1500);
     }
+
+    
     // else if (!active) {
     //   toast.error("Please connect your wallet")
     //   setTimeout(() => (window.location.href = "/connet-wallet"), 1500);
     // }
     else {
+
+      setLoading(true)
 
       console.log("HII There")
 
@@ -679,7 +718,9 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           });
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
+            
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
             toast.warning(err.message)
@@ -687,6 +728,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           }
 
           if(err.code === 4902) {
+            
             try {
               await window.ethereum.request({
                 method: 'wallet_addEthereumChain',
@@ -705,6 +747,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -727,6 +770,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           })
           
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -754,6 +798,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -778,6 +823,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
           console.log("Hi There");
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             toast.warning(err.message)
@@ -803,6 +849,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 ],
               });
             } catch (addError) {
+              setLoading(false)
               // handle "add" error
             }
           }
@@ -873,6 +920,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                   setTimeout(() => (window.location.href = "/page-search"), 1500);
 
                 } else {
+                  setLoading(false)
                   toast.error(res.data.message)
                   // setTimeout(() => {
                   //   setLoading(false)
@@ -881,7 +929,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
               })
 
           }
-        }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+        }).catch((err: any) => {setLoading(false); if(err.code === 4001) { toast.warning(err.message) } });
       } else if(chainData && chainData?.data?.data?.chainID === '97') {
         let contractAddress = process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS;
 
@@ -934,6 +982,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                       setTimeout(() => (window.location.href = "/collection"), 1500);
   
                   } else {
+                    setLoading(false)
                     toast.error(res.data.message)
                     // setTimeout(() => {
                     //   setLoading(false)
@@ -942,7 +991,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 })
   
             }
-          }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+          }).catch((err: any) => {setLoading(false); if(err.code === 4001) { toast.warning(err.message) } });
       } else if(chainData && chainData?.data?.data?.chainID === '80001') {
         let contractAddress = process.env.REACT_APP_MATIC_MULTI_SEND_CONTRACT_ADDRESS;
 
@@ -995,6 +1044,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                     setTimeout(() => (window.location.href = "/collection"), 1500);
   
                   } else {
+                    setLoading(false)
                     toast.error(res.data.message)
                     // setTimeout(() => {
                     //   setLoading(false)
@@ -1003,7 +1053,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
                 })
   
             }
-          }).catch((err: any) => { if(err.code === 4001) { toast.warning(err.message) } });
+          }).catch((err: any) => {setLoading(false); if(err.code === 4001) { toast.warning(err.message) } });
       }
     
       
@@ -1214,115 +1264,126 @@ currentOwner === sessionStorage.getItem("user_id") ? null :
     );
   };
 
+
+
   return (
+<>
+{ !loading ?  
     <div
-      className={`nc-NftDetailPage  ${className}`}
-      data-nc-id="NftDetailPage"
-    >
-      {/* MAIn */}
-      <main className="container mt-11 flex ">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14">
-          {/* CONTENT */}
-          <div className="space-y-8 lg:space-y-10">
-            {/* HEADING */}
-            <div className="relative">
-              <NcImage
-                src={`${process.env.REACT_APP_BACKEND_URL}/${itemImage}`}
-                containerClassName="aspect-w-11 aspect-h-12 rounded-3xl overflow-hidden"
-              />
-              {/* META TYPE */}
-              <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
+    className={`nc-NftDetailPage  ${className}`}
+    data-nc-id="NftDetailPage"
+  >
+    {/* MAIn */}
+    <main className="container mt-11 flex ">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14">
+        {/* CONTENT */}
+        <div className="space-y-8 lg:space-y-10">
+          {/* HEADING */}
+          <div className="relative">
+            <NcImage
+              src={`${process.env.REACT_APP_BACKEND_URL}/${itemImage}`}
+              containerClassName="aspect-w-11 aspect-h-12 rounded-3xl overflow-hidden"
+            />
+            {/* META TYPE */}
+            <ItemTypeVideoIcon className="absolute left-3 top-3  w-8 h-8 md:w-10 md:h-10" />
 
-              {/* META FAVORITES */}
-              <LikeButton className="absolute right-3 top-3" id={itemId} likeCount={itemCount} />
-            </div>
-
-            <AccordionInfo details={itemDescription} contract={itemContract} token_id={token_id} />
+            {/* META FAVORITES */}
+            <LikeButton className="absolute right-3 top-3" id={itemId} likeCount={itemCount} />
           </div>
 
-          {/* SIDEBAR */}
-          <div className="pt-10 lg:pt-0 xl:pl-10 border-t-2 border-neutral-200 dark:border-neutral-700 lg:border-t-0">
-            {renderSection1()}
-          </div>
+          <AccordionInfo details={itemDescription} contract={itemContract} token_id={token_id} />
         </div>
-      </main>
 
-      {/* OTHER SECTION */}
-      {!isPreviewMode && (
-        <div className="container py-24 lg:py-32">
-          {/* SECTION 1 */}
-          <div className="relative py-24 lg:py-28">
-            <BackgroundSection />
-            <SectionSliderCategories />
-          </div>
-
-          {/* SECTION */}
-          <SectionBecomeAnAuthor className="pt-24 lg:pt-32" />
+        {/* SIDEBAR */}
+        <div className="pt-10 lg:pt-0 xl:pl-10 border-t-2 border-neutral-200 dark:border-neutral-700 lg:border-t-0">
+          {renderSection1()}
         </div>
-      )}
+      </div>
+    </main>
 
-      <>
+    {/* OTHER SECTION */}
+    {!isPreviewMode && (
+      <div className="container py-24 lg:py-32">
+        {/* SECTION 1 */}
+        <div className="relative py-24 lg:py-28">
+          <BackgroundSection />
+          <SectionSliderCategories />
+        </div>
+
+        {/* SECTION */}
+        <SectionBecomeAnAuthor className="pt-24 lg:pt-32" />
+      </div>
+    )}
+
+    <>
 
 
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Make Offer</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div>
-              <p>Enter your Price IN (BNB)</p>
-              <Box
-                component="form"
-                sx={{
-                  '& > :not(style)': { m: 1, width: '35ch' },
-                }}
-                noValidate
-                autoComplete="off"
-              >
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Make Offer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <p>Enter your Price IN {chainName?.chainSymbol} </p>
+            <Box
+              component="form"
+              sx={{
+                '& > :not(style)': { m: 1, width: '35ch' },
+              }}
+              noValidate
+              autoComplete="off"
+            >
 
-                <TextField id="filled-basic" label="Enter Your Offer" variant="filled" onChange={(e) => setOfferValue(e.target.value)} />
+              <TextField id="filled-basic" label="Enter Your Offer" variant="filled" onChange={(e) => setOfferValue(e.target.value)} />
 
-              </Box>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="contained" onClick={() => AddOffer()}>Add Offer</Button>
-          </Modal.Footer>
-        </Modal>
-      </>
+            </Box>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="contained" onClick={() => AddOffer()}>Add Offer</Button>
+        </Modal.Footer>
+      </Modal>
+    </>
 
-      <>
+    <>
 
 
 <Modal show={showBid} onHide={handleCloseBid}>
-  <Modal.Header closeButton>
-    <Modal.Title>Make Bid</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div>
-      <p>Enter your Price IN (BNB)</p>
-      <Box
-        component="form"
-        sx={{
-          '& > :not(style)': { m: 1, width: '35ch' },
-        }}
-        noValidate
-        autoComplete="off"
-      >
+<Modal.Header closeButton>
+  <Modal.Title>Make Bid</Modal.Title>
+</Modal.Header>
+<Modal.Body>
+  <div>
+    <p>Enter your Price IN { chainName?.chainSymbol }</p>
+    <Box
+      component="form"
+      sx={{
+        '& > :not(style)': { m: 1, width: '35ch' },
+      }}
+      noValidate
+      autoComplete="off"
+    >
 
-        <TextField id="filled-basic" label="Enter Your Bid Amount" variant="filled" onChange={(e) => setItemBid(e.target.value)} />
+      <TextField id="filled-basic" label="Enter Your Bid Amount" variant="filled" onChange={(e) => setItemBid(e.target.value)} />
 
-      </Box>
-    </div>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="contained" onClick={() => AddBid()}>Add Bid</Button>
-  </Modal.Footer>
+    </Box>
+  </div>
+</Modal.Body>
+<Modal.Footer>
+  <Button variant="contained" onClick={() => AddBid()}>Add Bid</Button>
+</Modal.Footer>
 </Modal>
 </>
 
 
-    </div>
+  </div> :   
+  <div style={{ display:"flex", flexDirection: "row", alignItems: "center", justifyContent: "center", height: "50vh" }}>
+  <BeatLoader
+  color="#3a9fbf"
+  size={25}
+/></div> 
+}
+</>
   );
 };
 

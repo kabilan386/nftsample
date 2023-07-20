@@ -10,6 +10,7 @@ import ButtonPrimary from "shared/Button/ButtonPrimary";
 import Input from "shared/Input/Input";
 import Textarea from "shared/Textarea/Textarea";
 import { Helmet } from "react-helmet";
+import { BeatLoader } from 'react-spinners';
 import FormItem from "components/FormItem";
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
 import Form from 'react-bootstrap/Form';
@@ -99,7 +100,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
   const [mediaFile, setMediaFile] = useState("")
   const [spinner, setSpinner] = useState(false)
   const [chainName, setChainName] = useState<any>({});
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
 
 
 
@@ -270,6 +271,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
 
     try {
 
+     setLoading(true)
+
       const requestData = {
         id: chainID
       };
@@ -299,6 +302,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
           });
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -325,6 +329,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -345,6 +350,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
             params: [{ chainId: '0x13881' }]
           })
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -372,6 +378,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -396,6 +403,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
           console.log("Hi There");
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             toast.warning(err.message)
@@ -421,6 +429,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                 ],
               });
             } catch (addError) {
+              setLoading(false)
               // handle "add" error
             }
           }
@@ -468,6 +477,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
                 setTimeout(() => (window.location.href = `/page-search`), 1500);
     
               } else {
+                setLoading(false)
                 toast.error(res.data.message)
               }
 
@@ -476,8 +486,10 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
 
         }
       } catch (error: any) {
+        setLoading(false)
         console.log(error, "error");
         if (error.code === 4001) {
+
           toast.warning(error.message)
         }
         setSpinner(false)
@@ -485,9 +497,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
    
   }
 
-  const DeList = () => {
-    
-  }
+ 
 
   const selectInputRef = useRef<HTMLInputElement>(null)
   const onClear = () => {
@@ -600,7 +610,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
 
 
   return (
-    <div
+  <>
+    { !loading ? <div
       className={`nc-PageUploadItem ${className}`}
       data-nc-id="PageUploadItem"
     >
@@ -981,7 +992,12 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
           </div>
         </div>
       </div>
-    </div>
+    </div> :  <div style={{ display:"flex", flexDirection: "row", alignItems: "center", justifyContent: "center", height: "50vh" }}>
+    <BeatLoader
+    color="#3a9fbf"
+    size={25}
+  /></div>  }
+  </>
   )
 }
 

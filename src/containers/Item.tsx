@@ -5,6 +5,7 @@ import NcImage from "shared/NcImage/NcImage";
 import CardNFT from "components/CardNFT";
 import Pagination from "shared/Pagination/Pagination";
 import ButtonPrimary from "shared/Button/ButtonPrimary";
+import { BeatLoader } from "react-spinners";
 import collectionBanner from "images/nfts/collectionBanner.png";
 import { nftsImgs } from "contains/fakeData";
 import NftMoreDropdown from "components/NftMoreDropdown";
@@ -143,6 +144,9 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
   const marketClaim = async (id: any, chainID: any) => {
     try {
+
+      setLoading(true)
+
       console.log(chainID, "chainId");
   
       const requestData = {
@@ -172,6 +176,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           });
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -198,6 +203,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -218,6 +224,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
             params: [{ chainId: '0x13881' }]
           })
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             networkSwitched = false;
@@ -245,6 +252,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                 ],
               });
             } catch (err: any) {
+              setLoading(false)
               if (err.code === 4001) {
                 console.log("User rejected the request to switch or add Ethereum");
                 networkSwitched = false;
@@ -269,6 +277,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
           console.log("Hi There");
           console.log("Hii There");
         } catch (err: any) {
+          setLoading(false)
           if (err.code === 4001) {
             console.log("User rejected the request to switch or add Ethereum");
             toast.warning(err.message)
@@ -294,6 +303,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                 ],
               });
             } catch (addError) {
+              setLoading(false)
               // handle "add" error
             }
           }
@@ -331,6 +341,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
               window.location.reload(false);
               setSpinner(false);
             } else if (res?.data?.status === false) {
+              setLoading(false)
               toast.error(res?.data?.message);
               setSpinner(false);
             }
@@ -338,6 +349,7 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         setSpinner(false);
       }
     } catch (err: any) {
+      setLoading(false)
       if (err?.code === 4001) {
         toast.error("User rejected the request");
         throw new Error("User rejected the request to switch Ethereum");
@@ -349,6 +361,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
 
   return (
+    <>
+    {!loading ? 
     <div
       className={`nc-PageCollection  ${className}`}
       data-nc-id="PageCollection"
@@ -433,7 +447,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
                       ) : ( */}
                       <ItemTypeImageIcon className="absolute top-3 left-3 !w-9 !h-9" />
                       {/* )} */}
-                      <div className="absolute top-3 right-3 !w-9 !h-9">
+
+                      {e?.current_owner?.address === sessionStorage.getItem("address") ? <div className="absolute top-3 right-3 !w-9 !h-9">
                         <Dropdown>
                           <Dropdown.Toggle className="rounded-pill shadow-sm" >
                             <i className="fa fa-ellipsis-v"></i>
@@ -464,7 +479,8 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
 
                           </Dropdown.Menu>
                         </Dropdown>
-                      </div>
+                      </div> : <></>}
+                      
                       {/* <LikeButton
           liked={isLiked}
           className="absolute top-3 right-3 z-10 !h-9"
@@ -523,7 +539,12 @@ const PageCollection: FC<PageCollectionProps> = ({ className = "" }) => {
         {/* SUBCRIBES */}
         <SectionBecomeAnAuthor />
       </div>
-    </div>
+    </div> : <div style={{ display:"flex", flexDirection: "row", alignItems: "center", justifyContent: "center", height: "50vh" }}>
+  <BeatLoader
+  color="#3a9fbf"
+  size={25}
+/></div>  }
+    </>
   );
 };
 
