@@ -138,9 +138,14 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   useEffect(() => {
 
     getItem()
+    
+  }, [])
+
+  useEffect(() => {
+
     getOfferData()
 
-  }, [])
+  }, [chainId])
 
   useEffect(() => {
 
