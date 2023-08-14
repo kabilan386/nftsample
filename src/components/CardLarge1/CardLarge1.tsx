@@ -101,7 +101,7 @@ const CardLarge1: FC<CardLarge1Props> = ({
           </div>
 
           {/* AUTION TIME */}
-          <TimeCountDown time={data?.endDateTime} enableBid={data?.enableBID} bidTime={data?.endDateTimeBID} />
+          <TimeCountDown time={data?.endDateTimeUtc} enableBid={data?.enableBID} bidTime={data?.endDateTimeBID} />
 
           <div className="w h-[1px] bg-neutral-100 dark:bg-neutral-700"></div>
 

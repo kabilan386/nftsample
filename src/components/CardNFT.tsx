@@ -29,13 +29,11 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
   const [filterPrice, setFilterPrice] = useState(0)
 
 
-  const handleChange = (data, sale, price) => {
-    setFilterData(data)
-    setFilterSale(sale)
-    setFilterPrice(price)
+  const handleChange = (data) => {
+    setmarketData(data)
   }
 
-  console.log(filterData, filterSale, filterPrice[1], "filter")
+  // console.log(filterData, filterSale, filterPrice[1], "filter")
 
 
 
@@ -70,34 +68,17 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
 
 
   const getmarketPlace = async () => {
-
-    if (filterData !== "") {
-      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=collection&collection_id=${filterData}`).then(res => {
-        setmarketData(res?.data?.data?.docs)
-        console.log(marketData, "res")
-      })
-
-    }  else if (filterSale !== "") {
-       axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=${filterSale[0]}`).then(res => {
-        setmarketData(res?.data?.data?.docs)
-        console.log(marketData, "res")
-      })
-    } else if ( (filterPrice[1] !== 0) || ( filterPrice[1]  !== undefined) ) {
-      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=price&price_range=10`).then(res => {
-        setmarketData(res?.data?.data?.docs)
-        console.log(marketData, "res")
-      })
-    } else {
-      axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
-        setmarketData(res?.data?.data?.docs)
-        console.log(marketData, "res")
-      })
-    }
+    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
   }
 
   useEffect(() => {
-    getmarketPlace()
-  }, [filterData, filterSale, filterPrice])
+      getmarketPlace()  
+  }, [])
+
+ 
 
   
 
@@ -106,7 +87,12 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
     <div className="container py-16 lg:pb-28 lg:pt-20 space-y-16 lg:space-y-28">
       <main>
         {/* FILTER */}
-        <HeaderFilterSearchPage data={handleChange} />
+       
+       <div style={{ marginLeft: "60px" }}>
+       <HeaderFilterSearchPage data={handleChange} />
+       </div>
+       
+        
 
         {/* LOOP ITEMS */}
         <div className="flex sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 mt-8 lg:mt-10">
@@ -116,6 +102,7 @@ const CardNFT: FC<CardNFTProps> = ({ className = "", isLiked }) => {
               <div
                 className={`grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10  mt-8 lg:mt-10"`}
                 data-nc-id="CardNFT"
+                style={{ margin: "20px auto" }}
               >
                 {marketData?.filter(elem => elem.status === "active").map((e, index) => (
                   <>

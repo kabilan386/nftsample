@@ -52,16 +52,15 @@ const TabFilters = ({ data }) => {
   const [isVerifiedCreator, setIsVerifiedCreator] = useState(true);
   const [rangePrices, setRangePrices] = useState([0.00, 0]);
   const [fileTypesState, setfileTypesState] = useState<string[]>([]);
+  const [marketData, setmarketData] = useState<string[]>([]);
   const [saleTypeStates, setSaleTypeStates] = useState<string[]>([]);
   const [collectionData, setCollectionData] = useState<any[]>([]);
   const [sortOrderStates, setSortOrderStates] = useState<string>("");
   const [isOpen, setIsOpen] = React.useState(true);
 
-  console.log(rangePrices, "range")
+  console.log(rangePrices, saleTypeStates, sortOrderStates, "range")
 
-  useEffect(() => {
-    data(sortOrderStates, saleTypeStates, rangePrices)
-  }, [sortOrderStates, saleTypeStates, rangePrices])
+ 
 
   //
   const closeModalMoreFilter = () => setisOpenMoreFilter(false);
@@ -93,6 +92,44 @@ const TabFilters = ({ data }) => {
     getCollection()
 
   }, [])
+
+  const handleClearCollection = async () => {
+    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&`).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      data(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  const handleFilterPrice = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=price&price_range=${rangePrices[1]}`).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      data(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  const handleFilterSale = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=${saleTypeStates[0]}`).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      data(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  const handleFilterCollections = () => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/item/list?user=user&=&page=1&type=collection&collection_id=${sortOrderStates}`).then(res => {
+      setmarketData(res?.data?.data?.docs)
+      data(res?.data?.data?.docs)
+      console.log(marketData, "res")
+    })
+  }
+
+  
+
+  // useEffect(() => {
+  //   getmarketPlace()
+  // }, [filterData, filterSale, filterPrice])
 
   //
 
@@ -208,13 +245,17 @@ const TabFilters = ({ data }) => {
                       onClick={() => {
                         close();
                         setSaleTypeStates([]);
+                        handleClearCollection();
                       }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Clear
                     </ButtonThird>
                     <ButtonPrimary
-                      onClick={close}
+                      onClick={() => {
+                        close();
+                        handleFilterSale();
+                      }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Apply
@@ -331,13 +372,17 @@ const TabFilters = ({ data }) => {
                       onClick={() => {
                         close();
                         setSortOrderStates("");
+                        handleClearCollection()
                       }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Clear
                     </ButtonThird>
                     <ButtonPrimary
-                      onClick={close}
+                      onClick={() => {
+                        close();
+                        handleFilterCollections()
+                      }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Apply
@@ -451,6 +496,7 @@ const TabFilters = ({ data }) => {
                       onClick={() => {
                         close();
                         setfileTypesState([]);
+                        handleClearCollection()
                       }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
@@ -597,13 +643,17 @@ const TabFilters = ({ data }) => {
                       onClick={() => {
                         setRangePrices([0.01, 10]);
                         close();
+                        handleClearCollection()
                       }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Clear
                     </ButtonThird>
                     <ButtonPrimary
-                      onClick={close}
+                      onClick={() => {
+                        close();
+                        handleFilterPrice()
+                      }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >
                       Apply
@@ -886,6 +936,7 @@ const TabFilters = ({ data }) => {
                         setfileTypesState([]);
                         setSortOrderStates("");
                         closeModalMoreFilter();
+                        handleClearCollection();
                       }}
                       sizeClass="px-4 py-2 sm:px-5"
                     >

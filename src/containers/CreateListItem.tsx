@@ -182,6 +182,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
       };
 
 
+      console.log(value.toString(), "postData")
+
       let postData = {
         "collection_id": values?.collection_id,
         "description": values?.description,
@@ -190,7 +192,7 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
         "enableBID": values.saletype === "bid" ? "true" : "false",
         "external_link": values.link,
         "dateRange": value,
-        "dateRangeBid": valueBid,
+        "dateRangeBid": value,
         "media": values?.mediafile,
         "name": values.name,
         "price": values.saletype === "offer" ? values.price : values.normalSale,
@@ -208,6 +210,8 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
       // if (formik.enableAuction === "true") {
       //     postData.dateRange = value;
       // }
+
+      console.log(postData, "postData")
 
       axios
         .put(`${process.env.REACT_APP_BACKEND_URL}/item/update`, postData, config)
@@ -472,7 +476,6 @@ const CreateListItem: FC<PageUploadItemProps> = ({ className = ""}) => {
               // setMediaFile(res?.data?.file)
               if (res.data.status == true) {
                 toast.success(res.data.message)
-               
                 console.log("Tested")
                 setTimeout(() => (window.location.href = `/page-search`), 1500);
     

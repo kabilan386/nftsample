@@ -107,7 +107,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setItemLink(res?.data?.data?.docs?.[0]?.external_link)
       setItemImage(res?.data?.data?.docs?.[0]?.media)
       setItemPrice(res?.data?.data?.docs?.[0]?.price)
-      setCurrentBid(res?.data?.data?.docs?.[0]?.endDateTime)
+      setCurrentBid(res?.data?.data?.docs?.[0]?.endDateTimeUtc)
       setItemContract(res?.data?.data?.docs?.[0]?.collection_id?.contract_address)
       setCollectionName(res?.data?.data?.docs?.[0]?.collection_id?.name)
       setChainId(res?.data?.data?.docs?.[0]?.collection_id?.chain)

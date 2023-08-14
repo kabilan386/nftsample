@@ -11,6 +11,8 @@ const TimeCountDown = ({ time, enableBid, bidTime }) => {
   const [minute, setMinte] = useState()
   const [seconds, setSeconds] = useState()
 
+  console.log(time, "time")
+
 
 
   // console.log(new Date(time), "time")
@@ -18,7 +20,7 @@ const TimeCountDown = ({ time, enableBid, bidTime }) => {
   // console.log(day.getMonth(), "month")
   // const timeLeft = useCountDownTime();
 
-  console.log(enableBid, bidTime, "BidTime")
+  console.log(enableBid, bidTime, time, "BidTime")
 
   const calculateTimeLeft = () => {
 
@@ -61,7 +63,7 @@ const TimeCountDown = ({ time, enableBid, bidTime }) => {
     return () => clearTimeout(timer);
   });
 
-  console.log(timeLeft.days, "days")
+  console.log(timeLeft, "days")
 
 
 
