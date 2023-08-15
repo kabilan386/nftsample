@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { idText } from "typescript";
 
-const TabDetail = ({ auction, current, buyFunctionForauction, bid , bidTimer}) => {
+const TabDetail = ({ auction, current, buyFunctionForauction, chainNameDetails, bid , bidTimer}) => {
 
   
 
@@ -190,7 +190,7 @@ const TabDetail = ({ auction, current, buyFunctionForauction, bid , bidTimer}) =
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
   
-    console.log(highestBidPrice, "high")
+    console.log(highestBidPrice, bidData, "high")
     return (
       <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
         {bidData?.map((data: any, index) => {
@@ -208,7 +208,7 @@ const TabDetail = ({ auction, current, buyFunctionForauction, bid , bidTimer}) =
                 <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                   <span className="flex items-center text-sm">
                     <span className="">
-                      Bid By <span className="OfferPrice "> ${data?.price}</span> by
+                      Bid By <span className="OfferPrice "> {chainNameDetails} {data?.price}</span> by
                     </span>
   
                     <span className="font-medium text-neutral-900 dark:text-neutral-200 ml-1 currentAddress">

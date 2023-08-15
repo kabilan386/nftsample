@@ -154,6 +154,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
 
   }, [adminCommistion])
 
+  console.log(chainName, "chainName")
+
 
 
   const getCommission = () => {
@@ -1263,7 +1265,7 @@ currentOwner === sessionStorage.getItem("user_id") ? null :
 
         {/* ---------- 9 ----------  */}
         <div className="pt-9">
-          <TabDetail auction={handleCallBack} current={currentOwner} buyFunctionForauction={buyFunctionForauction} bid={enable_Bid} bidTimer={bidTime} />
+          <TabDetail chainNameDetails={chainName?.chainSymbol} auction={handleCallBack} current={currentOwner} buyFunctionForauction={buyFunctionForauction} bid={enable_Bid} bidTimer={bidTime} />
         </div>
       </div>
     );
