@@ -10,6 +10,7 @@ import { idText } from "typescript";
 
 const TabDetail = ({ auction, current, buyFunctionForauction, chainNameDetails, bid , bidTimer}) => {
 
+  console.log(chainNameDetails, "offerData")
   
 
   const [offerData, setOfferData] = useState<any[]>([])
@@ -137,6 +138,7 @@ const TabDetail = ({ auction, current, buyFunctionForauction, chainNameDetails, 
       <ul className="divide-y divide-neutral-100 dark:divide-neutral-700">
         {offerData?.map((data: any ,index) => 
         {
+          console.log(data, "offerData")
           auction(data?.status)
           return (
             <li
@@ -151,7 +153,7 @@ const TabDetail = ({ auction, current, buyFunctionForauction, chainNameDetails, 
                 <span className="ml-4 text-neutral-500 dark:text-neutral-400 flex flex-col">
                   <span className="flex items-center text-sm">
                     <span className="">
-                         Offer <span className="OfferPrice "> ${data?.item_id.price}</span> by
+                         Offer <span className="OfferPrice "> {chainNameDetails}  {data?.item_id.price}</span> by
                     </span>
   
                     {/* <span className="">
