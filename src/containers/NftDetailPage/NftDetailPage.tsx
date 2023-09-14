@@ -48,6 +48,7 @@ const override: CSSProperties = {
 export interface NftDetailPageProps {
   className?: string;
   isPreviewMode?: boolean;
+  address?: string
 }
 
 const NftDetailPage: FC<NftDetailPageProps> = ({
@@ -87,6 +88,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
   const [enable_Bid, setEnableBid] = useState()
   const [bidTime, setTimeBid] = useState("")
   const [auctionStatus, setAutionStatus] = useState<any>("")
+  const [auctionID, setAuctionID] = useState<any>("")
 
 
   const [show, setShow] = useState(false);
@@ -124,6 +126,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       setEnableBid(res?.data?.data?.docs?.[0]?.enableBID)
       setEnableAuction(res?.data?.data?.docs?.[0]?.enableAuction)
       setTimeBid(res?.data?.data?.docs?.[0]?.endDateTimeBID)
+      setAuctionID(res?.data?.data?.docs?.[0]?.author_id?.address)
 
 
 
@@ -448,6 +451,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         value: Number((price * Math.pow(10, 18))).toString(),
         gasPrice: '20000000000'
       };
+
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
       if(chainData && chainData?.data?.data?.chainID === '11155111') {
@@ -464,22 +468,16 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       let recipients: string[] = [];
       let amounts: number[] = [];
 
-      // const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
-      // console.log(address, "address")
-      // if (address) {
-      //   console.log("Address")
-
-      // }
+      
       console.log(currentAddress, currentAddress, "sample")
-      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS;
+      const address = process.env.REACT_APP_BSC_CHAIN_TESTNET_PLATFORMADDRESS || "{}";
       console.log(address, "address")
-      if (address) {
-        recipients.push(address);
-      }
-      console.log(currentAddress, currentAddress, "sample")
-      console.log("test")
+      
+      recipients.push(address);
       recipients.push(currentAddress);
       recipients.push(currentAddress);
+
+      
       amounts.push(Math.floor(platformprice * Math.pow(10, 18)));
       amounts.push(Math.floor(royalties * Math.pow(10, 18)));
       amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
@@ -618,7 +616,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       amounts.push(Math.floor(royalties * Math.pow(10, 18)));
       amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
       console.log("test")
-      console.log(recipients, amounts, "test")
+      console.log(recipients, amounts, price, "test")
 
  
 
@@ -703,8 +701,6 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       const chainData = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/chain/getSingleChain`, requestData)
       
       setChainName(chainData?.data?.data || null)
-  
-     
   
       console.log(chainName?.chainID === "80001", "chain");
       let networkSwitched = true;
@@ -880,7 +876,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
         let contractAddress = process.env.REACT_APP_SEPHOLIA_MULTI_SEND_CONTRACT_ADDRESS;
           let factoryabi = JSON.parse(process.env.REACT_APP_MULTI_SEND_CONTRACT_ADDRESS_ABI || '{}')
 
-      console.log("test")
+     
       let instance = new window.web3.eth.Contract(factoryabi, contractAddress);
       let platformcommision = adminCommistion != null ? Number(adminCommistion) : 0;
       let royaltiesCommission = royaltiesVal ? Number(royaltiesVal) : 0;
@@ -888,7 +884,7 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       let royalties = price * royaltiesCommission / 100;
       let totalCommission = Number(platformcommision) + Number(royaltiesCommission);
       let balancePrice = price * ((100 - totalCommission) / 100);
-      let recipients: string[] = [];;
+      let recipients: string[] = [];
       let amounts: number[] = [];
 
 
@@ -898,7 +894,6 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       if (address) {
         recipients.push(address);
       }
-      
       recipients.push(currentAddress);
       recipients.push(currentAddress);
 
@@ -907,7 +902,8 @@ const NftDetailPage: FC<NftDetailPageProps> = ({
       amounts.push(Math.floor(balancePrice * Math.pow(10, 18)));
       // setSpinner(true)
 
-      console.log("test")
+      console.log("test", recipients, price, amounts);
+      console.log(platformprice, royalties, balancePrice, "test")
    
         instance.methods.sendNFT(recipients, amounts).send(params).then((res: any) => {
           if (res.status) {
